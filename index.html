@@ -1,423 +1,1467 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <title>⚽ EDGE PRO AI · ULTIMATE</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>⚽ EDGE PRO AI · Gemini</title>
   <style>
-    :root {
-      --bg: #0a0d14; --card: #111827; --border: #1f2937;
-      --blue: #3b82f6; --red: #ef4444; --green: #22c55e; --yellow: #f59e0b;
-      --cyan: #06b6d4; --purple: #8b5cf6; --text: #f1f5f9; --sub: #9ca3af;
-      --radius: 16px; --btn-radius: 12px; --shadow: 0 4px 20px rgba(0,0,0,0.5);
-      --nav-height: 60px; --safe-bottom: env(safe-area-inset-bottom, 10px);
-    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 0; display: flex; justify-content: center; min-height: 100vh; font-size: 15px; -webkit-tap-highlight-color: transparent; user-select: none; }
-    .app { max-width: 520px; width: 100%; padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px); }
-    .header { background: linear-gradient(180deg, #111827 0%, #0a0d14 100%); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+    :root {
+      --bg: #0a0d14; --card: #141b2b; --border: #1f2937;
+      --text: #f1f5f9; --sub: #94a3b8;
+      --cyan: #06b6d4; --purple: #8b5cf6; --blue: #3b82f6; --red: #ef4444; --green: #22c55e;
+      --radius: 16px; --shadow: 0 4px 20px rgba(0,0,0,0.5);
+      --nav-height: 60px; --safe-bottom: env(safe-area-inset-bottom, 10px); --touch: 44px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; display: flex; justify-content: center; min-height: 100vh; padding: 0; }
+    .app { max-width: 480px; width: 100%; padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 16px); }
+    .header { background: var(--card); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
     .header h1 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .balance-row { display: flex; gap: 12px; align-items: center; font-size: 0.7rem; }
-    .content { padding: 12px; overflow-y: auto; }
-    .card { background: var(--card); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); }
-    .card h2 { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--text); display: flex; align-items: center; gap: 6px; }
-    .field { display: flex; flex-direction: column; margin-bottom: 8px; }
-    .field label { font-size: 0.65rem; text-transform: uppercase; color: var(--sub); margin-bottom: 2px; font-weight: 600; }
-    input, select { background: #1a2233; border: 1px solid var(--border); border-radius: 8px; padding: 9px; color: var(--text); font-size: 0.8rem; width: 100%; }
-    .btn { padding: 11px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: none; width: 100%; }
+    .header-balance { display: flex; gap: 12px; font-size: 0.75rem; font-weight: 600; color: var(--sub); }
+    .header-balance span { color: var(--text); }
+    .card { background: var(--card); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .card h2 { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .field { margin-bottom: 10px; }
+    .field label { display: block; font-size: 0.65rem; text-transform: uppercase; color: var(--sub); font-weight: 600; margin-bottom: 4px; }
+    input, select, textarea { width: 100%; padding: 12px; background: #1a2233; border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 16px; min-height: var(--touch); }
+    input:focus, select:focus, textarea:focus { border-color: var(--cyan); outline: none; }
+    .btn { padding: 12px; border: none; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; width: 100%; min-height: var(--touch); transition: 0.2s; }
     .btn-primary { background: linear-gradient(135deg, var(--cyan), var(--purple)); color: white; }
-    .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn-sm { padding: 6px 12px; font-size: 0.65rem; width: auto; border-radius: 6px; }
-    .vs-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 10px; }
-    .team-block { text-align: center; flex: 1; }
-    .team-block .flag { font-size: 2.2rem; } .team-block .name { font-size: 0.8rem; font-weight: 700; margin-top: 3px; }
-    .vs-text { font-size: 0.9rem; font-weight: 800; color: var(--sub); }
-    .odds-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .odd-btn { flex: 1; background: #1a2233; border: 2px solid var(--border); border-radius: var(--btn-radius); padding: 10px 6px; text-align: center; cursor: pointer; transition: 0.2s; font-weight: 600; color: var(--text); }
-    .odd-btn .label { font-size: 0.65rem; color: var(--sub); } .odd-btn .value { font-size: 1.1rem; font-weight: 800; }
-    .odd-btn.value-bet { border-color: var(--green); background: rgba(34,197,94,0.15); }
-    .force-bar { height: 10px; background: #1f2937; border-radius: 5px; overflow: hidden; margin: 4px 0; display: flex; }
-    .force-fill-a { height: 100%; background: var(--blue); border-radius: 5px; transition: 0.5s; }
-    .force-fill-b { height: 100%; background: var(--red); border-radius: 5px; transition: 0.5s; }
-    .ai-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; }
-    .ai-value { background: rgba(34,197,94,0.2); color: var(--green); }
-    .ai-no-value { background: rgba(239,68,68,0.2); color: var(--red); }
-    .info-line { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 3px 0; }
-    .info-line .val { font-weight: 600; }
-    .score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin-top: 6px; }
-    .score-item { background: #1a2233; padding: 6px; border-radius: 6px; text-align: center; font-size: 0.65rem; }
-    .mini-markets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
-    .mini-market { background: #1a2233; padding: 8px; border-radius: 8px; text-align: center; }
-    .mini-market .pct { font-size: 1rem; font-weight: 800; } .mini-market .lbl { font-size: 0.55rem; color: var(--sub); }
-    .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 520px; width: 100%; background: #111827; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 var(--safe-bottom); z-index: 10; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.55rem; color: var(--sub); cursor: pointer; padding: 4px 6px; }
-    .nav-item .icon { font-size: 1.1rem; } .nav-item.active { color: var(--cyan); }
-    .page { display: none; } .page.active { display: block; }
-    .hist-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid var(--border); font-size: 0.7rem; }
-    .hist-item .win { color: var(--green); } .hist-item .lose { color: var(--red); }
-    canvas { width: 100%; height: 160px; background: #0a0d14; border-radius: 10px; margin-top: 8px; }
-    .explain-box { background: #1a2233; border-radius: 8px; padding: 8px; font-size: 0.65rem; line-height: 1.4; margin-top: 6px; }
-    .alert { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 8px; padding: 8px; font-size: 0.7rem; margin-top: 6px; }
+    .btn-secondary { background: #1a2233; color: var(--text); border: 1px solid var(--border); }
+    .btn:active { transform: scale(0.97); }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row .field { flex: 1; min-width: 80px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .match-display { display: flex; align-items: center; justify-content: space-around; padding: 8px 0; }
+    .team { text-align: center; flex: 1; }
+    .team .flag { font-size: 2.8rem; }
+    .team .name { font-weight: 700; font-size: 0.9rem; margin-top: 4px; }
+    .vs { font-size: 1.2rem; font-weight: 800; color: var(--sub); padding: 0 8px; }
+    .odds { display: flex; gap: 8px; justify-content: center; margin: 8px 0; }
+    .odds .odd { background: #1a2233; padding: 6px 14px; border-radius: 8px; font-weight: 700; text-align: center; min-width: 50px; }
+    .odds .odd .val { font-size: 1.1rem; }
+    .odds .odd .lbl { font-size: 0.6rem; color: var(--sub); }
+    .force-bar { height: 8px; background: #1f2937; border-radius: 4px; overflow: hidden; display: flex; margin: 4px 0; }
+    .force-fill-a { height: 100%; background: var(--blue); border-radius: 4px; }
+    .force-fill-b { height: 100%; background: var(--red); border-radius: 4px; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; }
+    .badge-green { background: rgba(34,197,94,0.2); color: var(--green); }
+    .badge-red { background: rgba(239,68,68,0.2); color: var(--red); }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: var(--yellow); }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 8px 0; }
+    .result-item { background: #1a2233; padding: 8px; border-radius: 8px; text-align: center; }
+    .result-item .pct { font-size: 1.2rem; font-weight: 800; }
+    .result-item .lbl { font-size: 0.6rem; color: var(--sub); }
+    .hist-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.75rem; }
+    .hist-item .profit-win { color: var(--green); }
+    .hist-item .profit-lose { color: var(--red); }
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-item { background: #1a2233; padding: 8px; border-radius: 8px; text-align: center; }
+    .stat-item .lbl { font-size: 0.55rem; color: var(--sub); text-transform: uppercase; }
+    .stat-item .val { font-size: 1.1rem; font-weight: 700; }
+    .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 480px; width: 100%; background: var(--card); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 6px 0 var(--safe-bottom); z-index: 20; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.55rem; color: var(--sub); cursor: pointer; padding: 6px 8px; min-height: var(--touch); justify-content: center; border: none; background: transparent; }
+    .nav-item .icon { font-size: 1.4rem; }
+    .nav-item.active { color: var(--cyan); }
+    .page { display: none; animation: fade 0.25s ease; }
+    .page.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    canvas { width: 100%; height: 150px; background: transparent; border-radius: 10px; margin-top: 8px; }
+    .suggestions { background: #1a2233; border-radius: 8px; margin-top: 4px; max-height: 150px; overflow-y: auto; display: none; }
+    .suggestions div { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
+    .suggestions div:hover { background: rgba(255,255,255,0.05); }
+    .ia-comment { background: #1a2233; border-radius: 8px; padding: 8px; font-size: 0.75rem; margin-top: 8px; color: var(--sub); border-left: 3px solid var(--cyan); }
+    .chat-container { max-height: 400px; overflow-y: auto; }
+    .chat-msg { padding: 8px 12px; margin: 4px 0; border-radius: 12px; max-width: 85%; }
+    .chat-msg.user { background: var(--cyan); color: #fff; align-self: flex-end; margin-left: auto; }
+    .chat-msg.ia { background: #1a2233; border: 1px solid var(--border); }
+    @media (max-width: 420px) { .two-col { grid-template-columns: 1fr; } .stat-grid { grid-template-columns: 1fr 1fr; } }
+    .loader { border: 2px solid #1a2233; border-top: 2px solid var(--cyan); border-radius: 50%; width: 24px; height: 24px; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* Contexte Gemini */
+    .context-block {
+      background: #1a2233;
+      border-radius: 8px;
+      padding: 8px;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+    .context-block.complet { border-left: 4px solid var(--green); }
+    .context-block.partiel { border-left: 4px solid orange; }
+    .context-block.indisponible { border-left: 4px solid var(--red); }
+    .progress-list div { font-size: 0.8rem; margin: 4px 0; transition: color 0.3s; }
   </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <h1>⚽ EDGE PRO AI · ULTIMATE</h1>
-    <div class="balance-row"><span class="bal" id="headerBal">1000€</span><span class="roi" id="headerRoi">+0%</span></div>
+    <h1>⚽ EDGE PRO AI</h1>
+    <div class="header-balance">
+      <span>💰 <span id="headerBal">1000€</span></span>
+      <span>📈 <span id="headerRoi">+0%</span></span>
+    </div>
   </div>
 
-  <!-- PAGE ANALYSE -->
-  <div class="page active" id="page-analyse">
-    <div class="content">
+  <!-- PAGE ACCUEIL -->
+  <div class="page active" id="page-accueil">
+    <div class="content" style="padding:12px;">
       <div class="card">
         <h2>🏴 Match</h2>
-        <div class="vs-row">
-          <div class="team-block"><div class="flag">🏳</div><div class="name" id="teamNameA">-</div></div>
-          <div class="vs-text">VS</div>
-          <div class="team-block"><div class="flag">🏳</div><div class="name" id="teamNameB">-</div></div>
+        <div class="match-display">
+          <div class="team"><div class="flag" id="flagA">🏳</div><div class="name" id="nameA">-</div></div>
+          <div class="vs">VS</div>
+          <div class="team"><div class="flag" id="flagB">🏳</div><div class="name" id="nameB">-</div></div>
         </div>
-        <div class="match-info" id="matchInfo">📍 - · 🏟 -</div>
-        <div class="field"><label>🟦 Équipe A</label><input id="teamA" placeholder="Ex: Panama" oninput="autoComplete('teamA');updateMatchDisplay()" autocomplete="off"></div>
-        <div class="field"><label>🟥 Équipe B</label><input id="teamB" placeholder="Ex: Angleterre" oninput="autoComplete('teamB');updateMatchDisplay()" autocomplete="off"></div>
-        <div class="odds-row">
-          <div class="odd-btn"><div class="label">1</div><div class="value" id="val1">-</div></div>
-          <div class="odd-btn"><div class="label">X</div><div class="value" id="valX">-</div></div>
-          <div class="odd-btn"><div class="label">2</div><div class="value" id="val2">-</div></div>
+        <div style="text-align:center;font-size:0.7rem;color:var(--sub);" id="matchInfo">📍 - · 🏟 -</div>
+        <div class="row">
+          <div class="field" style="position:relative;">
+            <label>Équipe A</label>
+            <input id="teamA" placeholder="Panama" autocomplete="off" oninput="App.showSuggestions('teamA')">
+            <div class="suggestions" id="suggestA"></div>
+          </div>
+          <div class="field" style="position:relative;">
+            <label>Équipe B</label>
+            <input id="teamB" placeholder="Angleterre" autocomplete="off" oninput="App.showSuggestions('teamB')">
+            <div class="suggestions" id="suggestB"></div>
+          </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-          <div class="field"><label>Cote 1</label><input id="quickCote1" type="number" step="0.01" placeholder="0" oninput="updateCotesFromQuick()"></div>
-          <div class="field"><label>Cote X</label><input id="quickCoteX" type="number" step="0.01" placeholder="0" oninput="updateCotesFromQuick()"></div>
-          <div class="field"><label>Cote 2</label><input id="quickCote2" type="number" step="0.01" placeholder="0" oninput="updateCotesFromQuick()"></div>
+        <div class="row">
+          <div class="field"><label>Cote 1</label><input id="cote1" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Cote X</label><input id="coteX" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Cote 2</label><input id="cote2" type="number" step="0.01" placeholder="0"></div>
         </div>
+        <div class="row">
+          <div class="field"><label>Championnat</label><select id="championnat"><option value="PL">Premier League</option><option value="Liga">Liga</option><option value="SA">Serie A</option><option value="BL">Bundesliga</option><option value="L1">Ligue 1</option><option value="INT" selected>International</option></select></div>
+          <div class="field"><label>Stade</label><select id="domicile"><option value="A">A domicile</option><option value="B">B domicile</option><option value="N" selected>Neutre</option></select></div>
+        </div>
+        <button class="btn btn-secondary" onclick="App.smartFill()">🤖 IA Remplir (local)</button>
+        <button class="btn btn-secondary" onclick="App.fetchMatchContext()" style="margin-top:8px;">📥 Contexte match (Gemini)</button>
       </div>
 
+      <!-- Carte Contexte Gemini -->
+      <div class="card" id="contextCard" style="display:none;">
+        <h2>📡 Contexte match (Gemini)</h2>
+        <div id="contextContent"></div>
+      </div>
+
+      <!-- Statistiques -->
       <div class="card">
         <h2>📊 Statistiques</h2>
-        <div id="profileInfo" style="font-size:0.6rem;color:var(--sub);margin-bottom:6px;"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <div class="field"><label>📈 xG A *</label><input id="a_xg" type="number" step="0.01" placeholder="0"></div><div class="field"><label>📈 xG B *</label><input id="b_xg" type="number" step="0.01" placeholder="0"></div>
-          <div class="field"><label>📉 xGA A</label><input id="a_xga" type="number" step="0.01" placeholder="0"></div><div class="field"><label>📉 xGA B</label><input id="b_xga" type="number" step="0.01" placeholder="0"></div>
-          <div class="field"><label>⚽ Buts/match A</label><input id="a_buts" type="number" step="0.01" placeholder="0"></div><div class="field"><label>⚽ Buts/match B</label><input id="b_buts" type="number" step="0.01" placeholder="0"></div>
-          <div class="field"><label>🎯 Tirs/match A</label><input id="a_tirs" type="number" step="0.01" placeholder="0"></div><div class="field"><label>🎯 Tirs/match B</label><input id="b_tirs" type="number" step="0.01" placeholder="0"></div>
-          <div class="field"><label>📋 Poss A%</label><input id="a_possession" type="number" step="0.01" placeholder="0"></div><div class="field"><label>📋 Poss B%</label><input id="b_possession" type="number" step="0.01" placeholder="0"></div>
-          <div class="field"><label>🏅 PPG A</label><input id="a_ppg" type="number" step="0.01" placeholder="0"></div><div class="field"><label>🏅 PPG B</label><input id="b_ppg" type="number" step="0.01" placeholder="0"></div>
+        <div class="two-col">
+          <div class="field"><label>xG A</label><input id="xgA" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>xG B</label><input id="xgB" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>xGA A</label><input id="xgaA" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>xGA B</label><input id="xgaB" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Buts/match A</label><input id="butsA" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Buts/match B</label><input id="butsB" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Tirs/match A</label><input id="tirsA" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Tirs/match B</label><input id="tirsB" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Possession A%</label><input id="possA" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Possession B%</label><input id="possB" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>PPG A</label><input id="ppgA" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>PPG B</label><input id="ppgB" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>Forme A (W/D/L)</label><input id="formeA" placeholder="WWDLW"></div>
+          <div class="field"><label>Forme B (W/D/L)</label><input id="formeB" placeholder="LLDWD"></div>
+          <div class="field"><label>Repos A (jours)</label><input id="reposA" type="number" value="5"></div>
+          <div class="field"><label>Repos B (jours)</label><input id="reposB" type="number" value="5"></div>
+          <div class="field"><label>Absent off. A (0-1)</label><input id="absOffA" type="number" step="0.1" value="0"></div>
+          <div class="field"><label>Absent off. B (0-1)</label><input id="absOffB" type="number" step="0.1" value="0"></div>
+          <div class="field"><label>Absent déf. A (0-1)</label><input id="absDefA" type="number" step="0.1" value="0"></div>
+          <div class="field"><label>Absent déf. B (0-1)</label><input id="absDefB" type="number" step="0.1" value="0"></div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">
-          <div class="field"><label>🏆 Championnat</label><select id="championnat"><option value="PL">Premier League</option><option value="Liga">Liga</option><option value="SA">Serie A</option><option value="BL">Bundesliga</option><option value="L1">Ligue 1</option><option value="INT" selected>International</option></select></div>
-          <div class="field"><label>🏟️ Stade</label><select id="domicile"><option value="A">A domicile</option><option value="B">B domicile</option><option value="N" selected>Neutre</option></select></div>
+        <div class="row">
+          <div class="field"><label>Importance</label><select id="importance"><option value="1">Amical</option><option value="2" selected>Championnat</option><option value="3">Coupe</option><option value="4">Élimination</option></select></div>
+          <div class="field"><label>Enjeu</label><select id="enjeu"><option value="1">Sans</option><option value="2" selected>Normal</option><option value="3">Décisif</option></select></div>
+          <div class="field"><label>Climat</label><select id="climat"><option value="0">Normal</option><option value="1">Pluie</option><option value="2">Chaud</option><option value="3">Froid</option></select></div>
+          <div class="field"><label>Altitude (m)</label><input id="altitude" type="number" value="0"></div>
         </div>
-        <button class="btn btn-primary" onclick="runUltimateAnalysis()" style="margin-top:10px;">🔍 ANALYSE ULTIME</button>
+        <button class="btn btn-primary" onclick="App.runAnalysis()">🔍 ANALYSER</button>
       </div>
 
-      <div class="card" id="analysisCard">
-        <h2>🤖 EDGE PRO AI · RÉSULTAT</h2>
-        <div id="analysisContent"><div style="text-align:center;color:var(--sub);padding:20px;">Remplissez les stats et appuyez sur ANALYSE ULTIME</div></div>
+      <!-- Résultats -->
+      <div class="card" id="resultCard">
+        <h2>🤖 Résultat IA</h2>
+        <div id="analysisResult"><div style="text-align:center;color:var(--sub);padding:12px;">Remplissez et analysez</div></div>
       </div>
     </div>
   </div>
 
-  <!-- PAGE AVANCÉ -->
-  <div class="page" id="page-avance">
-    <div class="content">
-      <div class="card"><h2>🩼 Impact joueurs</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><div class="field"><label>Absent offensif A (0-1)</label><input id="a_abs_off" type="number" min="0" max="1" step="0.1" value="0"></div><div class="field"><label>Absent offensif B (0-1)</label><input id="b_abs_off" type="number" min="0" max="1" step="0.1" value="0"></div><div class="field"><label>Absent défensif A (0-1)</label><input id="a_abs_def" type="number" min="0" max="1" step="0.1" value="0"></div><div class="field"><label>Absent défensif B (0-1)</label><input id="b_abs_def" type="number" min="0" max="1" step="0.1" value="0"></div></div></div>
-      <div class="card"><h2>📋 Forme & Contexte</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><div class="field"><label>Forme récente A (W/D/L)</label><input id="a_forme" placeholder="ex: WWDLW"></div><div class="field"><label>Forme récente B (W/D/L)</label><input id="b_forme" placeholder="ex: LLDWD"></div><div class="field"><label>⏱️ Repos A (jours)</label><input id="a_repos" type="number" value="5" placeholder="5"></div><div class="field"><label>⏱️ Repos B (jours)</label><input id="b_repos" type="number" value="5" placeholder="5"></div><div class="field"><label>⭐ Importance</label><select id="importance"><option value="1">Amical</option><option value="2" selected>Championnat</option><option value="3">Coupe</option><option value="4">Élimination directe</option></select></div><div class="field"><label>🎯 Enjeu</label><select id="enjeu"><option value="1">Sans enjeu</option><option value="2" selected>Normal</option><option value="3">Décisif</option></select></div></div><button class="btn btn-primary" onclick="runUltimateAnalysis()" style="margin-top:10px;">🔍 ANALYSER AVEC CONTEXTE</button></div>
+  <!-- PAGE STATS -->
+  <div class="page" id="page-stats">
+    <div class="content" style="padding:12px;">
+      <div class="card"><h2>📊 Données saisies</h2><div id="statsDisplay"><div style="color:var(--sub);text-align:center;padding:20px;">Aucune donnée</div></div></div>
     </div>
   </div>
 
   <!-- PAGE BANKROLL -->
   <div class="page" id="page-bankroll">
-    <div class="content">
-      <div class="card"><h2>💰 Bankroll</h2><div class="field"><label>Capital (€)</label><input id="bankroll" value="1000"></div><button class="btn btn-primary" onclick="updateBankroll()">💾 SAUVEGARDER</button></div>
-      <div class="card"><h2>📈 Courbe</h2><canvas id="graphBankroll" height="160"></canvas></div>
-      <div class="card"><h2>📋 Historique</h2><div id="statsPro" style="font-size:0.65rem;margin-bottom:8px;"></div><div id="historiqueList"></div></div>
+    <div class="content" style="padding:12px;">
+      <div class="card"><h2>💰 Bankroll</h2><div class="row"><div class="field" style="flex:2;"><label>Capital (€)</label><input id="bankrollInput" value="1000"></div><div style="flex:1;display:flex;align-items:flex-end;"><button class="btn btn-secondary" onclick="App.updateBankroll()">Mettre</button></div></div></div>
+      <div class="card"><h2>📈 Courbe</h2><canvas id="bankrollChart"></canvas></div>
+      <div class="card"><h2>📋 Historique</h2><div id="historyList"></div></div>
+      <button class="btn btn-secondary" onclick="App.exportCSV()">📤 Exporter CSV</button>
     </div>
   </div>
 
-  <!-- PAGE ÉQUIPES -->
-  <div class="page" id="page-equipes">
-    <div class="content">
-      <div class="card"><h2>📋 Profils équipes</h2><div id="equipesList"></div></div>
-      <button class="btn btn-secondary" onclick="exporterToutesDonnees()" style="margin-top:8px;">📤 Export complet (JSON)</button>
-      <button class="btn btn-secondary" onclick="importerToutesDonnees()" style="margin-top:4px;">📥 Import complet (JSON)</button>
+  <!-- PAGE IMPORT -->
+  <div class="page" id="page-import">
+    <div class="content" style="padding:12px;">
+      <div class="card"><h2>📥 Import / Export</h2>
+        <div class="field"><label>Coller les données brutes</label><textarea id="rawData" rows="4" placeholder="Ex: Panama vs Angleterre&#10;xG A: 1.2 | xG B: 2.1&#10;Cotes: 1=4.5, X=3.8, 2=1.7"></textarea></div>
+        <button class="btn btn-secondary" onclick="App.parseImport()">⚙️ Parser et remplir</button>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="btn btn-secondary" onclick="App.exportJSON()" style="flex:1;">📤 JSON</button>
+          <button class="btn btn-secondary" onclick="App.importJSON()" style="flex:1;">📥 JSON</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- PAGE RÉGLAGES -->
-  <div class="page" id="page-reglages">
-    <div class="content">
-      <div class="card"><h2>📋 Après match</h2><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;"><div class="field"><label>Résultat</label><select id="resultat_reel"><option value="">?</option><option value="1">1</option><option value="X">X</option><option value="2">2</option></select></div><div class="field"><label>⚽ Buts A</label><input id="butsA_reels" placeholder="0"></div><div class="field"><label>⚽ Buts B</label><input id="butsB_reels" placeholder="0"></div></div><button class="btn btn-secondary" onclick="sauvegarderApresMatch()" style="margin-top:8px;">📋 ENREGISTRER</button></div>
+  <!-- PAGE STATS IA (avec Gemini) -->
+  <div class="page" id="page-stats-ia">
+    <div class="content" style="padding:12px;">
+      <div class="card">
+        <h2>🧠 IA Stats · Gemini</h2>
+        <p style="font-size:0.7rem;color:var(--sub);margin-bottom:10px;">Posez une question sur une équipe, un match, ou demandez un conseil. L'IA Gemini répondra avec ses connaissances.</p>
+        <div class="row">
+          <div class="field" style="flex:2;">
+            <label>🔑 Clé API Gemini</label>
+            <input id="geminiApiKey" type="password" placeholder="Votre clé API" onchange="App.saveGeminiKey()">
+          </div>
+          <div style="flex:1;display:flex;align-items:flex-end;gap:4px;">
+            <button class="btn btn-secondary" onclick="App.connectGemini()" style="min-height:var(--touch);">🔗</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Source</label>
+            <select id="iaSource" onchange="App.onSourceChange()">
+              <option value="gemini">Gemini (API)</option>
+              <option value="local">Local (base intégrée)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Votre question</label>
+          <input id="iaQuestion" placeholder="Ex: Statistiques de l'Angleterre" onkeypress="if(event.key==='Enter') App.askIA()">
+        </div>
+        <button class="btn btn-primary" onclick="App.askIA()">💬 Envoyer</button>
+        <div id="iaResponse" style="margin-top:12px;background:#1a2233;border-radius:10px;padding:12px;min-height:60px;font-size:0.85rem;color:var(--sub);">
+          Posez une question ci-dessus.
+        </div>
+        <div id="iaStatus" style="margin-top:6px;font-size:0.7rem;color:var(--sub);"></div>
+      </div>
     </div>
   </div>
 
   <!-- NAVIGATION -->
   <div class="nav-bar">
-    <div class="nav-item active" data-page="page-analyse" onclick="switchPage('page-analyse',this)"><span class="icon">🏠</span>Analyse</div>
-    <div class="nav-item" data-page="page-avance" onclick="switchPage('page-avance',this)"><span class="icon">📋</span>Avancé</div>
-    <div class="nav-item" data-page="page-bankroll" onclick="switchPage('page-bankroll',this)"><span class="icon">💰</span>Bank</div>
-    <div class="nav-item" data-page="page-equipes" onclick="switchPage('page-equipes',this)"><span class="icon">📊</span>Équipes</div>
-    <div class="nav-item" data-page="page-reglages" onclick="switchPage('page-reglages',this)"><span class="icon">⚙️</span>Réglages</div>
+    <button class="nav-item active" data-page="page-accueil" onclick="App.switchPage('page-accueil',this)"><span class="icon">🏠</span>Analyse</button>
+    <button class="nav-item" data-page="page-stats" onclick="App.switchPage('page-stats',this)"><span class="icon">📊</span>Stats</button>
+    <button class="nav-item" data-page="page-bankroll" onclick="App.switchPage('page-bankroll',this)"><span class="icon">💰</span>Bank</button>
+    <button class="nav-item" data-page="page-import" onclick="App.switchPage('page-import',this)"><span class="icon">📁</span>Données</button>
+    <button class="nav-item" data-page="page-stats-ia" onclick="App.switchPage('page-stats-ia',this)"><span class="icon">🧠</span>Stats IA</button>
   </div>
 </div>
 
 <script>
-  // ================= INDEXEDDB =================
-  let db; const DB_NAME = "EdgeProAIUltimate"; const DB_VERSION = 1;
-  function openDB() { return new Promise((r, rej) => { const req = indexedDB.open(DB_NAME, DB_VERSION); req.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains("historique")) db.createObjectStore("historique", { keyPath: "id", autoIncrement: true }); if (!db.objectStoreNames.contains("equipes")) db.createObjectStore("equipes", { keyPath: "nom" }); if (!db.objectStoreNames.contains("config")) db.createObjectStore("config", { keyPath: "key" }); }; req.onsuccess = e => { db = e.target.result; r(db); }; req.onerror = () => rej(); }); }
-  async function saveDB(store, data) { if (!db) await openDB(); return new Promise((r, rej) => { const tx = db.transaction(store, "readwrite"); tx.objectStore(store).put(data); tx.oncomplete = r; tx.onerror = rej; }); }
-  async function getAll(store) { if (!db) await openDB(); return new Promise((r, rej) => { const tx = db.transaction(store, "readonly"); const req = tx.objectStore(store).getAll(); req.onsuccess = () => r(req.result); req.onerror = rej; }); }
+// ============================================================
+// MODÈLE MATHÉMATIQUE
+// ============================================================
+const Model = {
+  fact(n) { if (n < 0) return 0; if (n === 0 || n === 1) return 1; let r = 1; for (let i=2; i<=n; i++) { r*=i; if(!isFinite(r)) return Number.MAX_VALUE; } return r; },
+  poisson(lambda, k) { return Math.exp(-lambda) * Math.pow(lambda, k) / this.fact(k); },
+  adjustDixonColes(lambdaA, lambdaB, rho) {
+    const pX_brut = this.poisson(lambdaA, 0) * this.poisson(lambdaB, 0) +
+                    this.poisson(lambdaA, 1) * this.poisson(lambdaB, 1) +
+                    this.poisson(lambdaA, 2) * this.poisson(lambdaB, 2) +
+                    this.poisson(lambdaA, 3) * this.poisson(lambdaB, 3);
+    return 1 + rho * 0.5;
+  },
+  computeProbabilities(lambdaA, lambdaB, rho) {
+    let p1 = 0, pX = 0, p2 = 0;
+    for (let i = 0; i <= 10; i++) {
+      for (let j = 0; j <= 10; j++) {
+        let p = this.poisson(lambdaA, i) * this.poisson(lambdaB, j);
+        if (i > j) p1 += p;
+        else if (i === j) pX += p;
+        else p2 += p;
+      }
+    }
+    const factor = this.adjustDixonColes(lambdaA, lambdaB, rho);
+    pX = pX * factor;
+    const total = p1 + pX + p2;
+    if (total === 0) return { p1: 0.333, pX: 0.333, p2: 0.334 };
+    return { p1: p1/total, pX: pX/total, p2: p2/total };
+  },
+  kelly(p, c, fraction) {
+    const ev = p * c - 1;
+    if (ev <= 0) return 0;
+    const k = (p * c - 1) / (c - 1);
+    return Math.max(0, k * fraction);
+  },
+  formeToPoints(f) { if (!f) return 0; let pts = 0; for (let c of f.toUpperCase()) { if (c === 'W') pts += 3; else if (c === 'D') pts += 1; } return Math.min(pts, 15) / 15; }
+};
 
-  let historique = [], bankroll = 1000, lastAnalysisData = null, equipesDB = {};
+// ============================================================
+// BASE DE DONNÉES DES ÉQUIPES (locale)
+// ============================================================
+const TEAM_DB = {
+  "panama": { xg: 0.8, xga: 1.6, buts: 0.7, tirs: 8.2, poss: 45, ppg: 0.9, forme: "LLDLW" },
+  "angleterre": { xg: 2.1, xga: 0.7, buts: 1.9, tirs: 14.5, poss: 58, ppg: 2.3, forme: "WWWDW" },
+  "france": { xg: 2.0, xga: 0.8, buts: 1.8, tirs: 13.8, poss: 56, ppg: 2.2, forme: "WDWWL" },
+  "bresil": { xg: 2.2, xga: 0.9, buts: 2.0, tirs: 15.0, poss: 60, ppg: 2.4, forme: "WWLWD" },
+  "argentine": { xg: 2.0, xga: 0.8, buts: 1.8, tirs: 14.0, poss: 57, ppg: 2.2, forme: "WWWDL" },
+  "espagne": { xg: 1.9, xga: 0.7, buts: 1.7, tirs: 13.5, poss: 62, ppg: 2.0, forme: "WLWDD" },
+  "allemagne": { xg: 1.8, xga: 0.9, buts: 1.6, tirs: 13.0, poss: 55, ppg: 1.9, forme: "WDLDW" },
+  "italie": { xg: 1.7, xga: 0.8, buts: 1.5, tirs: 12.0, poss: 53, ppg: 1.8, forme: "DWLDW" },
+  "portugal": { xg: 1.8, xga: 0.8, buts: 1.6, tirs: 12.5, poss: 54, ppg: 1.9, forme: "WDDLW" },
+  "pays-bas": { xg: 1.7, xga: 0.9, buts: 1.5, tirs: 12.0, poss: 52, ppg: 1.8, forme: "WLDDW" },
+  "belgique": { xg: 1.8, xga: 0.8, buts: 1.6, tirs: 12.5, poss: 55, ppg: 2.0, forme: "WWDWL" },
+  "croatie": { xg: 1.5, xga: 1.0, buts: 1.3, tirs: 11.0, poss: 50, ppg: 1.6, forme: "LDWDW" },
+  "danemark": { xg: 1.4, xga: 1.0, buts: 1.2, tirs: 10.5, poss: 48, ppg: 1.5, forme: "LDDWW" },
+  "suede": { xg: 1.3, xga: 1.1, buts: 1.1, tirs: 10.0, poss: 46, ppg: 1.4, forme: "DLLDW" },
+  "suisse": { xg: 1.4, xga: 1.0, buts: 1.2, tirs: 10.5, poss: 48, ppg: 1.5, forme: "WDLDL" },
+  "pologne": { xg: 1.3, xga: 1.2, buts: 1.1, tirs: 10.0, poss: 44, ppg: 1.3, forme: "LLDWW" },
+  "ukraine": { xg: 1.4, xga: 1.1, buts: 1.2, tirs: 10.5, poss: 47, ppg: 1.4, forme: "LDDLW" },
+  "turquie": { xg: 1.5, xga: 1.1, buts: 1.3, tirs: 11.0, poss: 48, ppg: 1.5, forme: "DLWLD" },
+  "russie": { xg: 1.3, xga: 1.2, buts: 1.1, tirs: 10.0, poss: 45, ppg: 1.3, forme: "LLWDL" },
+  "manchester city": { xg: 2.3, xga: 0.6, buts: 2.2, tirs: 16.0, poss: 65, ppg: 2.5, forme: "WWWDW" },
+  "liverpool": { xg: 2.2, xga: 0.7, buts: 2.0, tirs: 15.5, poss: 58, ppg: 2.3, forme: "WWLWW" },
+  "chelsea": { xg: 1.9, xga: 0.8, buts: 1.7, tirs: 14.0, poss: 56, ppg: 2.0, forme: "WLWDW" },
+  "arsenal": { xg: 2.0, xga: 0.8, buts: 1.8, tirs: 14.5, poss: 60, ppg: 2.1, forme: "WWLWD" },
+  "manchester united": { xg: 1.8, xga: 0.9, buts: 1.6, tirs: 13.5, poss: 54, ppg: 1.8, forme: "WDLWD" },
+  "tottenham": { xg: 1.9, xga: 0.9, buts: 1.7, tirs: 14.0, poss: 55, ppg: 1.9, forme: "WLWDL" },
+  "newcastle": { xg: 1.7, xga: 0.9, buts: 1.5, tirs: 13.0, poss: 50, ppg: 1.7, forme: "DDLWW" },
+  "real madrid": { xg: 2.2, xga: 0.7, buts: 2.0, tirs: 15.0, poss: 58, ppg: 2.3, forme: "WWWLD" },
+  "barcelona": { xg: 2.1, xga: 0.8, buts: 1.9, tirs: 14.5, poss: 62, ppg: 2.2, forme: "WWLWD" },
+  "atletico madrid": { xg: 1.8, xga: 0.7, buts: 1.6, tirs: 13.0, poss: 50, ppg: 1.9, forme: "WDWLW" },
+  "sevilla": { xg: 1.7, xga: 0.9, buts: 1.5, tirs: 12.5, poss: 52, ppg: 1.7, forme: "WLDLW" },
+  "bayern munich": { xg: 2.3, xga: 0.6, buts: 2.2, tirs: 16.0, poss: 62, ppg: 2.5, forme: "WWWDW" },
+  "borussia dortmund": { xg: 2.1, xga: 0.8, buts: 1.9, tirs: 15.0, poss: 58, ppg: 2.2, forme: "WWLWD" },
+  "rb leipzig": { xg: 2.0, xga: 0.8, buts: 1.8, tirs: 14.5, poss: 56, ppg: 2.0, forme: "WLWDW" },
+  "juventus": { xg: 1.9, xga: 0.8, buts: 1.7, tirs: 14.0, poss: 55, ppg: 2.0, forme: "WDLWW" },
+  "inter milan": { xg: 2.0, xga: 0.8, buts: 1.8, tirs: 14.5, poss: 56, ppg: 2.1, forme: "WWLWD" },
+  "ac milan": { xg: 1.9, xga: 0.9, buts: 1.7, tirs: 14.0, poss: 54, ppg: 1.9, forme: "WLWDL" },
+  "napoli": { xg: 2.0, xga: 0.8, buts: 1.8, tirs: 14.5, poss: 57, ppg: 2.1, forme: "WWLWD" },
+  "roma": { xg: 1.8, xga: 0.9, buts: 1.6, tirs: 13.5, poss: 53, ppg: 1.8, forme: "WDLWD" },
+  "psg": { xg: 2.3, xga: 0.6, buts: 2.2, tirs: 16.0, poss: 64, ppg: 2.5, forme: "WWWDW" },
+  "marseille": { xg: 1.8, xga: 0.9, buts: 1.6, tirs: 13.0, poss: 52, ppg: 1.8, forme: "WDLWD" },
+  "lyon": { xg: 1.9, xga: 0.9, buts: 1.7, tirs: 13.5, poss: 54, ppg: 1.9, forme: "WLWDL" },
+  "monaco": { xg: 1.8, xga: 0.9, buts: 1.6, tirs: 13.0, poss: 52, ppg: 1.8, forme: "WDLDW" },
+};
 
-  function norm(n) { return (n || "").toLowerCase().trim(); }
-  function g(id) { const v = document.getElementById(id)?.value; if (v === undefined || v === '') return 0; const n = Number(v); return isNaN(n) ? 0 : n; }
-  function fact(n) { if (n < 0) return 0; if (n === 0 || n === 1) return 1; let r = 1; for (let i = 2; i <= n; i++) { r *= i; if (!isFinite(r)) return Number.MAX_VALUE; } return r; }
-
-  function getCote1() { return g("quickCote1"); }
-  function getCoteX() { return g("quickCoteX"); }
-  function getCote2() { return g("quickCote2"); }
-
-  function updateCotesFromQuick() {
-    let v1 = getCote1(), vX = getCoteX(), v2 = getCote2();
-    document.getElementById("val1").textContent = v1 > 0 ? v1.toFixed(2) : '-';
-    document.getElementById("valX").textContent = vX > 0 ? vX.toFixed(2) : '-';
-    document.getElementById("val2").textContent = v2 > 0 ? v2.toFixed(2) : '-';
+// ============================================================
+// DB (IndexedDB)
+// ============================================================
+const DB = {
+  db: null,
+  async open() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open("EdgeProAI", 2);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains("historique")) db.createObjectStore("historique", { keyPath: "id", autoIncrement: true });
+        if (!db.objectStoreNames.contains("config")) db.createObjectStore("config", { keyPath: "key" });
+      };
+      req.onsuccess = e => { this.db = e.target.result; resolve(this.db); };
+      req.onerror = () => reject();
+    });
+  },
+  async save(store, data) {
+    if (!this.db) await this.open();
+    return new Promise((r, rej) => {
+      const tx = this.db.transaction(store, "readwrite");
+      tx.objectStore(store).put(data);
+      tx.oncomplete = r;
+      tx.onerror = rej;
+    });
+  },
+  async getAll(store) {
+    if (!this.db) await this.open();
+    return new Promise((r, rej) => {
+      const tx = this.db.transaction(store, "readonly");
+      const req = tx.objectStore(store).getAll();
+      req.onsuccess = () => r(req.result);
+      req.onerror = rej;
+    });
   }
+};
 
-  function updateMatchDisplay() {
-    let teamA = document.getElementById("teamA")?.value || "-";
-    let teamB = document.getElementById("teamB")?.value || "-";
-    document.getElementById("teamNameA").textContent = teamA || "-";
-    document.getElementById("teamNameB").textContent = teamB || "-";
-    let champ = document.getElementById("championnat")?.value || "INT";
-    let stade = document.getElementById("domicile")?.value || "N";
-    let stadeText = stade === "N" ? "Neutre" : (stade === "A" ? teamA + " domicile" : teamB + " domicile");
-    document.getElementById("matchInfo").textContent = "📍 " + champ + " · 🏟 " + stadeText;
+// ============================================================
+// GESTION DU CACHE LOCALSTORAGE AVEC DOUBLE EXPIRATION
+// ============================================================
+const ContextCache = {
+  HISTORICAL_MAX_AGE: 12 * 60 * 60 * 1000, // 12 heures
+  DYNAMIC_MAX_AGE: 30 * 60 * 1000,        // 30 minutes
+
+  _buildKey(teamA, teamB) {
+    return `edge_ctx_${teamA.trim().toLowerCase()}_${teamB.trim().toLowerCase()}`;
+  },
+
+  get(teamA, teamB) {
+    const key = this._buildKey(teamA, teamB);
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    try {
+      const cache = JSON.parse(raw);
+      const now = Date.now();
+      const histOk = cache.historical && now < cache.historical.expires;
+      const dynOk = cache.dynamic && now < cache.dynamic.expires;
+      if (histOk && dynOk) {
+        return cache.historical.data; // les deux parties contiennent les mêmes données
+      }
+      localStorage.removeItem(key);
+    } catch (e) {
+      localStorage.removeItem(key);
+    }
+    return null;
+  },
+
+  set(teamA, teamB, data) {
+    const key = this._buildKey(teamA, teamB);
+    const now = Date.now();
+    const cache = {
+      historical: { data, expires: now + this.HISTORICAL_MAX_AGE },
+      dynamic:    { data, expires: now + this.DYNAMIC_MAX_AGE }
+    };
+    localStorage.setItem(key, JSON.stringify(cache));
+  },
+
+  clear() {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith('edge_ctx_'));
+    keys.forEach(k => localStorage.removeItem(k));
   }
+};
 
-  async function init() {
-    await openDB();
-    let hist = await getAll("historique"); historique = hist || [];
-    let eqs = await getAll("equipes"); equipesDB = {}; (eqs || []).forEach(e => { equipesDB[norm(e.nom)] = e; });
-    let cfg = await getAll("config"); let bc = cfg.find(c => c.key === "bankroll"); if (bc) bankroll = bc.value;
-    document.getElementById("bankroll").value = bankroll;
-    updateHeader(); afficherHistorique(); afficherCourbe(); updateMatchDisplay(); updateCotesFromQuick(); afficherEquipes();
+// ============================================================
+// FONCTION DE REQUÊTE AVEC TIMEOUT (AbortController)
+// ============================================================
+async function fetchWithTimeout(url, options, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    clearTimeout(timer);
+    return response;
+  } catch (error) {
+    clearTimeout(timer);
+    if (error.name === 'AbortError') {
+      throw new Error('La requête a expiré (timeout 15s)');
+    }
+    throw error;
   }
+}
 
-  function updateHeader() {
-    let connus = historique.filter(h => h.resultat != null);
-    let profit = connus.reduce((s, h) => s + (h.profit || 0), 0);
-    let roi = connus.length > 0 ? ((profit / connus.length) * 100).toFixed(1) : 0;
-    document.getElementById("headerBal").textContent = (bankroll + profit).toFixed(0) + "€";
-    document.getElementById("headerRoi").textContent = (roi >= 0 ? "+" : "") + roi + "%";
-  }
+// ============================================================
+// APPLICATION
+// ============================================================
+const App = {
+  historique: [],
+  bankroll: 1000,
+  lastAnalysis: null,
+  settings: { kellyFraction: 0.25, rhoDixon: -0.13 },
+  geminiKey: '',
+  iaSource: 'gemini',
 
-  function switchPage(pageId, navItem) {
+  // Cache mémoire de premier niveau
+  _contextMemoryCache: new Map(),
+  MEMORY_CACHE_MAX_AGE: 30 * 60 * 1000,
+  _progressInterval: null,
+
+  // ---------- INIT ----------
+  async init() {
+    await DB.open();
+    let hist = await DB.getAll("historique");
+    this.historique = hist || [];
+    let cfg = await DB.getAll("config");
+    let bc = cfg.find(c => c.key === "bankroll");
+    if (bc) this.bankroll = bc.value;
+    let kf = cfg.find(c => c.key === "kellyFraction");
+    if (kf) this.settings.kellyFraction = kf.value;
+    let rd = cfg.find(c => c.key === "rhoDixon");
+    if (rd) this.settings.rhoDixon = rd.value;
+    let gk = cfg.find(c => c.key === "geminiKey");
+    if (gk) { this.geminiKey = gk.value; document.getElementById("geminiApiKey").value = this.geminiKey; }
+    let src = cfg.find(c => c.key === "iaSource");
+    if (src) { this.iaSource = src.value; document.getElementById("iaSource").value = this.iaSource; }
+
+    document.getElementById("bankrollInput").value = this.bankroll;
+    this.updateHeader();
+    this.renderHistory();
+    this.renderChart();
+    document.querySelectorAll('#teamA, #teamB, #cote1, #cote2, #coteX, #championnat, #domicile').forEach(el => {
+      el.addEventListener('input', () => this.updateMatchDisplay());
+    });
+    this.updateMatchDisplay();
+    this.onSourceChange();
+  },
+
+  // ---------- UI ----------
+  updateMatchDisplay() {
+    const teamA = document.getElementById("teamA").value || "-";
+    const teamB = document.getElementById("teamB").value || "-";
+    document.getElementById("nameA").textContent = teamA;
+    document.getElementById("nameB").textContent = teamB;
+    document.getElementById("flagA").textContent = "🏳";
+    document.getElementById("flagB").textContent = "🏳";
+    const champ = document.getElementById("championnat").value;
+    const dom = document.getElementById("domicile").value;
+    const stade = dom === "N" ? "Neutre" : (dom === "A" ? teamA + " domicile" : teamB + " domicile");
+    document.getElementById("matchInfo").textContent = "📍 " + champ + " · 🏟 " + stade;
+    const c1 = parseFloat(document.getElementById("cote1").value) || 0;
+    const cX = parseFloat(document.getElementById("coteX").value) || 0;
+    const c2 = parseFloat(document.getElementById("cote2").value) || 0;
+    const oddsDiv = document.querySelector(".odds") || (() => { const d = document.createElement("div"); d.className = "odds"; document.querySelector(".match-display").after(d); return d; })();
+    oddsDiv.innerHTML = `<div class="odd"><div class="lbl">1</div><div class="val">${c1>0?c1.toFixed(2):'-'}</div></div>
+                         <div class="odd"><div class="lbl">X</div><div class="val">${cX>0?cX.toFixed(2):'-'}</div></div>
+                         <div class="odd"><div class="lbl">2</div><div class="val">${c2>0?c2.toFixed(2):'-'}</div></div>`;
+  },
+
+  switchPage(pageId, btn) {
     document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
     document.getElementById(pageId).classList.add("active");
-    if (navItem) navItem.classList.add("active");
-    if (pageId === "page-bankroll") { afficherHistorique(); afficherCourbe(); }
-    if (pageId === "page-analyse") { updateMatchDisplay(); updateCotesFromQuick(); }
-    if (pageId === "page-equipes") { afficherEquipes(); }
-  }
+    if (btn) btn.classList.add("active");
+    if (pageId === "page-bankroll") { this.renderHistory(); this.renderChart(); }
+    if (pageId === "page-stats") this.renderStats();
+  },
 
-  function autoComplete(prefix) {
-    let input = document.getElementById(prefix); let val = norm(input.value);
-    if (val.length < 2) return;
-    if (equipesDB[val]) chargerProfil(prefix, val);
-  }
+  smartFill() {
+    const teamA = document.getElementById("teamA").value.trim().toLowerCase();
+    const teamB = document.getElementById("teamB").value.trim().toLowerCase();
+    const dataA = TEAM_DB[teamA];
+    const dataB = TEAM_DB[teamB];
+    if (!dataA && !dataB) { alert("Aucune donnée pour ces équipes. Utilisez les noms exacts (ex: 'manchester city')."); return; }
+    if (dataA) {
+      document.getElementById("xgA").value = dataA.xg;
+      document.getElementById("xgaA").value = dataA.xga;
+      document.getElementById("butsA").value = dataA.buts;
+      document.getElementById("tirsA").value = dataA.tirs;
+      document.getElementById("possA").value = dataA.poss;
+      document.getElementById("ppgA").value = dataA.ppg;
+      document.getElementById("formeA").value = dataA.forme;
+    }
+    if (dataB) {
+      document.getElementById("xgB").value = dataB.xg;
+      document.getElementById("xgaB").value = dataB.xga;
+      document.getElementById("butsB").value = dataB.buts;
+      document.getElementById("tirsB").value = dataB.tirs;
+      document.getElementById("possB").value = dataB.poss;
+      document.getElementById("ppgB").value = dataB.ppg;
+      document.getElementById("formeB").value = dataB.forme;
+    }
+    alert("✅ Stats remplies par IA locale !");
+  },
 
-  function chargerProfil(prefix, nom) {
-    let eq = equipesDB[nom]; if (!eq) return;
-    let p = prefix === 'teamA' ? 'a_' : 'b_';
-    if (eq.xg) document.getElementById(p + 'xg').value = eq.xg; if (eq.xga) document.getElementById(p + 'xga').value = eq.xga;
-    if (eq.buts) document.getElementById(p + 'buts').value = eq.buts; if (eq.tirs) document.getElementById(p + 'tirs').value = eq.tirs;
-    if (eq.possession) document.getElementById(p + 'possession').value = eq.possession; if (eq.ppg) document.getElementById(p + 'ppg').value = eq.ppg;
-    document.getElementById("profileInfo").innerHTML = `✅ Profil chargé pour <strong>${eq.nom}</strong> · Force: ${eq.force || '?'}/100`;
-  }
+  showSuggestions(fieldId) {
+    const input = document.getElementById(fieldId);
+    const suggDiv = document.getElementById(fieldId === 'teamA' ? 'suggestA' : 'suggestB');
+    const val = input.value.trim().toLowerCase();
+    if (val.length < 1) { suggDiv.style.display = 'none'; return; }
+    const matches = Object.keys(TEAM_DB).filter(name => name.includes(val));
+    if (matches.length === 0) { suggDiv.style.display = 'none'; return; }
+    suggDiv.innerHTML = matches.slice(0, 8).map(name => `<div onclick="App.selectTeam('${fieldId}','${name}')">${name.charAt(0).toUpperCase()+name.slice(1)}</div>`).join('');
+    suggDiv.style.display = 'block';
+  },
+  selectTeam(fieldId, name) {
+    document.getElementById(fieldId).value = name;
+    document.getElementById(fieldId === 'teamA' ? 'suggestA' : 'suggestB').style.display = 'none';
+    this.updateMatchDisplay();
+  },
 
-  function sauverProfil(prefix) {
-    let nom = norm(document.getElementById(prefix)?.value || ""); if (!nom || nom.length < 2) return;
-    let p = prefix === 'teamA' ? 'a_' : 'b_';
-    let eq = equipesDB[nom] || { nom: nom };
-    eq.xg = g(p + 'xg') || eq.xg || 0; eq.xga = g(p + 'xga') || eq.xga || 0;
-    eq.buts = g(p + 'buts') || eq.buts || 0; eq.tirs = g(p + 'tirs') || eq.tirs || 0;
-    eq.possession = g(p + 'possession') || eq.possession || 0; eq.ppg = g(p + 'ppg') || eq.ppg || 0;
-    eq.force = Math.round((eq.xg * 30 + (2 - Math.min(2, eq.xga)) * 20 + eq.ppg * 12 + eq.tirs * 2 + eq.possession * 0.2));
-    equipesDB[nom] = eq; saveDB("equipes", eq);
-  }
+  // ---------- NOUVEAU FETCHMATCHCONTEXT OPTIMISÉ ----------
+  async fetchMatchContext() {
+    const teamA = document.getElementById('teamA').value.trim();
+    const teamB = document.getElementById('teamB').value.trim();
+    if (!teamA || !teamB) {
+      alert('Veuillez d’abord saisir les deux équipes.');
+      return;
+    }
 
-  function afficherEquipes() {
-    let div = document.getElementById("equipesList"); if (!div) return;
-    let noms = Object.keys(equipesDB).sort();
-    if (noms.length === 0) { div.innerHTML = "<div style='color:var(--sub);'>Aucune équipe enregistrée.</div>"; return; }
-    div.innerHTML = noms.map(n => { let e = equipesDB[n]; return `<div style="display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid var(--border);font-size:0.7rem;"><span>🏳 <strong>${e.nom}</strong></span><span>Force: ${e.force||'?'}/100 · xG: ${e.xg||'?'}</span></div>`; }).join('');
-  }
+    const cacheKey = `${teamA.toLowerCase()}__${teamB.toLowerCase()}`;
+    const now = Date.now();
 
-  function formeToPoints(f) { if (!f) return 0; let pts = 0; for (let c of f.toUpperCase()) { if (c === 'W') pts += 3; else if (c === 'D') pts += 1; } return Math.min(pts, 15) / 15; }
+    // 1. Cache mémoire
+    if (this._contextMemoryCache.has(cacheKey)) {
+      const mem = this._contextMemoryCache.get(cacheKey);
+      if (now - mem.timestamp < this.MEMORY_CACHE_MAX_AGE) {
+        this._displayContextData(mem.data);
+        return;
+      }
+      this._contextMemoryCache.delete(cacheKey);
+    }
 
-  function runUltimateAnalysis() {
-    updateMatchDisplay(); updateCotesFromQuick();
-    sauverProfil('teamA'); sauverProfil('teamB');
-    let c1 = getCote1(), cX = getCoteX(), c2 = getCote2();
-    const teamA = document.getElementById("teamA")?.value || "A", teamB = document.getElementById("teamB")?.value || "B";
-    let xgA = g("a_xg"), xgB = g("b_xg");
-    if (xgA <= 0 || xgB <= 0) { alert("⚠️ Veuillez entrer xG A et xG B"); return; }
-    let xgaA = g("a_xga"), xgaB = g("b_xga"), butsA = g("a_buts"), butsB = g("b_buts");
-    let tirsA = g("a_tirs"), tirsB = g("b_tirs"), possA = g("a_possession"), possB = g("b_possession");
-    let ppgA = g("a_ppg"), ppgB = g("b_ppg");
-    let absOffA = g("a_abs_off") || 0, absOffB = g("b_abs_off") || 0, absDefA = g("a_abs_def") || 0, absDefB = g("b_abs_def") || 0;
-    let formeA = document.getElementById("a_forme")?.value || "", formeB = document.getElementById("b_forme")?.value || "";
-    let reposA = g("a_repos") || 5, reposB = g("b_repos") || 5;
-    let importance = parseInt(document.getElementById("importance")?.value || 2), enjeu = parseInt(document.getElementById("enjeu")?.value || 2);
-    const dom = document.getElementById("domicile")?.value || "N", champ = document.getElementById("championnat")?.value || "INT";
+    // 2. Cache localStorage
+    const cachedData = ContextCache.get(teamA, teamB);
+    if (cachedData) {
+      this._contextMemoryCache.set(cacheKey, { data: cachedData, timestamp: now });
+      this._displayContextData(cachedData);
+      return;
+    }
+
+    // 3. Appel API Gemini
+    if (!this.geminiKey) {
+      document.getElementById('contextContent').innerHTML =
+        '<p style="color:var(--red);">⚠️ Clé API Gemini manquante. Configurez-la dans l’onglet “Stats IA”.</p>';
+      document.getElementById('contextCard').style.display = 'block';
+      return;
+    }
+
+    this._showProgressIndicator();
+
+    const prompt = `Fournis UNIQUEMENT un objet JSON valide avec la structure ci-dessous. N'ajoute AUCUN texte, AUCUN commentaire, AUCUN markdown. Si une information est inconnue, utilise [], null ou la valeur par défaut.
+
+{
+  "last10_A": [ {"date":"YYYY-MM-DD", "opponent":"Nom", "score":"X-Y", "result":"W/D/L", "competition":"nom"} ],
+  "last10_B": [ ... ],
+  "h2h": [ {"date":"YYYY-MM-DD", "score":"X-Y", "competition":"nom"} ],
+  "injuries_A": [ {"player":"Nom", "status":"blessure/suspension", "importance":"titulaire/remplaçant", "details":"courte description"} ],
+  "injuries_B": [ ... ],
+  "expected_lineups": { "A": "formation probable", "B": "formation probable" },
+  "missing_key_players": { "A": ["Nom"], "B": ["Nom"] },
+  "home_form": { "A": "W/D/L sur 5 derniers matchs à domicile", "B": "..." },
+  "away_form": { "A": "W/D/L sur 5 derniers matchs à l'extérieur", "B": "..." },
+  "weather": { "condition":"normal/pluie/chaud/froid", "temperature":20, "wind":0, "humidity":50 },
+  "referee": { "name":"Nom", "yellow_cards_avg":3.2, "red_cards_avg":0.3, "penalties_avg":0.1 },
+  "confidence": { "last10_A":80, "last10_B":80, "h2h":70, "injuries":60, "lineups":50, "weather":90, "referee":75 },
+  "importance": "amical/championnat/coupe/éliminatoire",
+  "stakes": "description concise (max 20 mots)",
+  "reposA": 5,
+  "reposB": 5,
+  "altitude": 0,
+  "rotation_risk": { "A": "faible/moyen/élevé", "B": "..." },
+  "travel_distance": { "A": 0, "B": 0 },
+  "motivation_score": { "A": 70, "B": 80 }
+}
+
+Match : ${teamA} vs ${teamB}.`;
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.geminiKey}`;
+    const body = {
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        responseMimeType: "application/json",
+        temperature: 0.1,
+        topP: 0.8,
+        topK: 20
+      }
+    };
+
+    try {
+      const response = await fetchWithTimeout(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Erreur API (${response.status}) : ${errText}`);
+      }
+
+      const data = await response.json();
+      let text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Réponse vide de Gemini');
+
+      const cleanJson = this._sanitizeJson(text);
+      let parsed;
+      try {
+        parsed = JSON.parse(cleanJson);
+      } catch (e) {
+        throw new Error('JSON invalide après nettoyage : ' + e.message);
+      }
+
+      parsed = this._applyDefaults(parsed, teamA, teamB);
+
+      // Sauvegarde dans les caches
+      ContextCache.set(teamA, teamB, parsed);
+      this._contextMemoryCache.set(cacheKey, { data: parsed, timestamp: Date.now() });
+
+      this._displayContextData(parsed);
+      this._finishProgress(true);
+
+    } catch (error) {
+      console.error('fetchMatchContext error:', error);
+      document.getElementById('contextContent').innerHTML =
+        `<p style="color:var(--red);">❌ ${error.message}</p>`;
+      document.getElementById('contextCard').style.display = 'block';
+      this._finishProgress(false);
+    }
+  },
+
+  // ---------- AFFICHAGE DU CONTEXTE ET INJECTION ----------
+  _displayContextData(ctx) {
+    let html = '';
+
+    const block = (title, content, confidence = null) => {
+      let cls = 'partiel';
+      if (content && content.length > 0) cls = 'complet';
+      else if (content === undefined || content === null) cls = 'indisponible';
+      const confSpan = confidence !== null ? ` <small style="color:var(--sub);">(confiance ${confidence}%)</small>` : '';
+      return `<div class="context-block ${cls}"><strong>${title}</strong>${confSpan}<br>${content || 'Aucune donnée'}</div>`;
+    };
+
+    const lastA = ctx.last10_A?.map(m => `${m.result} ${m.score} vs ${m.opponent} (${m.date})`).join('<br>');
+    html += block('📅 10 derniers matchs A', lastA, ctx.confidence?.last10_A);
+
+    const lastB = ctx.last10_B?.map(m => `${m.result} ${m.score} vs ${m.opponent} (${m.date})`).join('<br>');
+    html += block('📅 10 derniers matchs B', lastB, ctx.confidence?.last10_B);
+
+    const h2hList = ctx.h2h?.map(m => `${m.date} : ${m.score} (${m.competition})`).join('<br>');
+    html += block('📜 Face-à-face (5 derniers)', h2hList, ctx.confidence?.h2h);
+
+    const injA = ctx.injuries_A?.map(p => `${p.player} - ${p.status} (${p.importance})`).join('<br>');
+    html += block('🤕 Blessés/Suspendus A', injA, ctx.confidence?.injuries);
+
+    const injB = ctx.injuries_B?.map(p => `${p.player} - ${p.status} (${p.importance})`).join('<br>');
+    html += block('🤕 Blessés/Suspendus B', injB, ctx.confidence?.injuries);
+
+    html += block('📋 Compositions probables',
+      `A: ${ctx.expected_lineups?.A || '?'}<br>B: ${ctx.expected_lineups?.B || '?'}`,
+      ctx.confidence?.lineups);
+
+    html += block('🏠 Forme domicile A', ctx.home_form?.A);
+    html += block('🚀 Forme extérieur B', ctx.away_form?.B);
+
+    html += block('🌤️ Météo', `Condition: ${ctx.weather?.condition}, ${ctx.weather?.temperature}°C`, ctx.confidence?.weather);
+
+    if (ctx.referee?.name) {
+      html += block('👨‍⚖️ Arbitre',
+        `${ctx.referee.name} - 🟨 ${ctx.referee.yellow_cards_avg}/match, 🟥 ${ctx.referee.red_cards_avg}/match, ⚽ ${ctx.referee.penalties_avg}/match`,
+        ctx.confidence?.referee);
+    }
+
+    html += `<div class="context-block complet">
+      🎯 Importance : ${ctx.importance || '?'} · Enjeu : ${ctx.stakes || '?'}<br>
+      ⏱️ Repos : A=${ctx.reposA}j, B=${ctx.reposB}j · Altitude : ${ctx.altitude}m<br>
+      🔄 Risque rotation : A=${ctx.rotation_risk?.A || '?'}, B=${ctx.rotation_risk?.B || '?'}<br>
+      ✈️ Distance déplacement : A=${ctx.travel_distance?.A || 0}km, B=${ctx.travel_distance?.B || 0}km<br>
+      🔥 Motivation : A=${ctx.motivation_score?.A || 50}/100, B=${ctx.motivation_score?.B || 50}/100
+    </div>`;
+
+    document.getElementById('contextContent').innerHTML = html;
+    document.getElementById('contextCard').style.display = 'block';
+
+    // Injection dans les champs
+    if (ctx.last10_A) {
+      document.getElementById('formeA').value = ctx.last10_A.map(m => m.result).join('');
+    }
+    if (ctx.last10_B) {
+      document.getElementById('formeB').value = ctx.last10_B.map(m => m.result).join('');
+    }
+
+    const countInjuries = (injuries, type = 'blessure') =>
+      injuries?.filter(p => p.status === type && p.importance === 'titulaire').length * 0.2;
+
+    document.getElementById('absOffA').value = Math.min(1, countInjuries(ctx.injuries_A, 'blessure'));
+    document.getElementById('absDefA').value = Math.min(1, countInjuries(ctx.injuries_A, 'blessure'));
+    document.getElementById('absOffB').value = Math.min(1, countInjuries(ctx.injuries_B, 'blessure'));
+    document.getElementById('absDefB').value = Math.min(1, countInjuries(ctx.injuries_B, 'blessure'));
+
+    const importanceMap = { 'amical': 1, 'championnat': 2, 'coupe': 3, 'éliminatoire': 4 };
+    if (ctx.importance) document.getElementById('importance').value = importanceMap[ctx.importance] || 2;
+
+    if (ctx.stakes) {
+      const txt = ctx.stakes.toLowerCase();
+      document.getElementById('enjeu').value = (txt.includes('qualif') || txt.includes('finale')) ? 3 : 2;
+    }
+
+    const climatMap = { 'normal': 0, 'pluie': 1, 'chaud': 2, 'froid': 3 };
+    if (ctx.weather?.condition) document.getElementById('climat').value = climatMap[ctx.weather.condition] || 0;
+
+    if (ctx.altitude != null) document.getElementById('altitude').value = ctx.altitude;
+    if (ctx.reposA != null) document.getElementById('reposA').value = ctx.reposA;
+    if (ctx.reposB != null) document.getElementById('reposB').value = ctx.reposB;
+
+    this.updateMatchDisplay();
+  },
+
+  _sanitizeJson(text) {
+    let cleaned = text.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
+    const firstBrace = cleaned.indexOf('{');
+    const lastBrace = cleaned.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    }
+    return cleaned;
+  },
+
+  _applyDefaults(parsed, teamA, teamB) {
+    const defaults = {
+      last10_A: [],
+      last10_B: [],
+      h2h: [],
+      injuries_A: [],
+      injuries_B: [],
+      expected_lineups: { A: null, B: null },
+      missing_key_players: { A: [], B: [] },
+      home_form: { A: null, B: null },
+      away_form: { A: null, B: null },
+      weather: { condition: 'normal', temperature: 20, wind: 0, humidity: 50 },
+      referee: { name: null, yellow_cards_avg: 0, red_cards_avg: 0, penalties_avg: 0 },
+      confidence: { last10_A: 0, last10_B: 0, h2h: 0, injuries: 0, lineups: 0, weather: 0, referee: 0 },
+      importance: 'championnat',
+      stakes: '',
+      reposA: 5,
+      reposB: 5,
+      altitude: 0,
+      rotation_risk: { A: 'faible', B: 'faible' },
+      travel_distance: { A: 0, B: 0 },
+      motivation_score: { A: 50, B: 50 }
+    };
+
+    const merged = { ...defaults, ...parsed };
+    merged.confidence = { ...defaults.confidence, ...(parsed.confidence || {}) };
+    merged.weather = { ...defaults.weather, ...(parsed.weather || {}) };
+    merged.referee = { ...defaults.referee, ...(parsed.referee || {}) };
+    merged.rotation_risk = { ...defaults.rotation_risk, ...(parsed.rotation_risk || {}) };
+    merged.travel_distance = { ...defaults.travel_distance, ...(parsed.travel_distance || {}) };
+    merged.motivation_score = { ...defaults.motivation_score, ...(parsed.motivation_score || {}) };
+    merged.expected_lineups = { ...defaults.expected_lineups, ...(parsed.expected_lineups || {}) };
+    merged.missing_key_players = { ...defaults.missing_key_players, ...(parsed.missing_key_players || {}) };
+    merged.home_form = { ...defaults.home_form, ...(parsed.home_form || {}) };
+    merged.away_form = { ...defaults.away_form, ...(parsed.away_form || {}) };
+    return merged;
+  },
+
+  _showProgressIndicator() {
+    const steps = [
+      'Derniers matchs',
+      'Face-à-face',
+      'Blessés',
+      'Compositions',
+      'Météo',
+      'Contexte terminé'
+    ];
+    let html = '<div class="progress-list">';
+    steps.forEach((step, i) => {
+      html += `<div id="progress-step-${i}" style="color:var(--sub);">⏳ ${step}</div>`;
+    });
+    html += '</div>';
+    document.getElementById('contextContent').innerHTML = html;
+    document.getElementById('contextCard').style.display = 'block';
+
+    let stepIndex = 0;
+    const interval = setInterval(() => {
+      if (stepIndex < steps.length) {
+        document.getElementById(`progress-step-${stepIndex}`).innerHTML = `✅ ${steps[stepIndex]}`;
+        stepIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 600);
+    this._progressInterval = interval;
+  },
+
+  _finishProgress(success) {
+    if (this._progressInterval) {
+      clearInterval(this._progressInterval);
+      this._progressInterval = null;
+    }
+  },
+
+  // ---------- ANALYSE ----------
+  runAnalysis() {
+    this.updateMatchDisplay();
+    const teamA = document.getElementById("teamA").value || "A";
+    const teamB = document.getElementById("teamB").value || "B";
+    const c1 = parseFloat(document.getElementById("cote1").value) || 0;
+    const cX = parseFloat(document.getElementById("coteX").value) || 0;
+    const c2 = parseFloat(document.getElementById("cote2").value) || 0;
+    const xgA = parseFloat(document.getElementById("xgA").value) || 0;
+    const xgB = parseFloat(document.getElementById("xgB").value) || 0;
+    if (xgA <= 0 || xgB <= 0) { alert("⚠️ Entrez xG A et xG B"); return; }
+    const xgaA = parseFloat(document.getElementById("xgaA").value) || 0;
+    const xgaB = parseFloat(document.getElementById("xgaB").value) || 0;
+    const butsA = parseFloat(document.getElementById("butsA").value) || 0;
+    const butsB = parseFloat(document.getElementById("butsB").value) || 0;
+    const tirsA = parseFloat(document.getElementById("tirsA").value) || 0;
+    const tirsB = parseFloat(document.getElementById("tirsB").value) || 0;
+    const possA = parseFloat(document.getElementById("possA").value) || 0;
+    const possB = parseFloat(document.getElementById("possB").value) || 0;
+    const ppgA = parseFloat(document.getElementById("ppgA").value) || 0;
+    const ppgB = parseFloat(document.getElementById("ppgB").value) || 0;
+    const formeA = document.getElementById("formeA").value || "";
+    const formeB = document.getElementById("formeB").value || "";
+    const reposA = parseInt(document.getElementById("reposA").value) || 5;
+    const reposB = parseInt(document.getElementById("reposB").value) || 5;
+    const absOffA = parseFloat(document.getElementById("absOffA").value) || 0;
+    const absOffB = parseFloat(document.getElementById("absOffB").value) || 0;
+    const absDefA = parseFloat(document.getElementById("absDefA").value) || 0;
+    const absDefB = parseFloat(document.getElementById("absDefB").value) || 0;
+    const importance = parseInt(document.getElementById("importance").value) || 2;
+    const enjeu = parseInt(document.getElementById("enjeu").value) || 2;
+    const climat = parseInt(document.getElementById("climat").value) || 0;
+    const altitude = parseFloat(document.getElementById("altitude").value) || 0;
+    const dom = document.getElementById("domicile").value;
+    const champ = document.getElementById("championnat").value;
 
     const coeffChamp = { PL: 1.05, Liga: 1.04, SA: 1.03, BL: 1.04, L1: 1.02, INT: 1.0 };
     const bonusChamp = coeffChamp[champ] || 1.0;
     let homeAdv = dom === 'A' ? 0.12 : (dom === 'B' ? -0.12 : 0);
-    let impactA = 1 - absOffA * 0.15 - absDefA * 0.10, impactB = 1 - absOffB * 0.15 - absDefB * 0.10;
-    let formeFactorA = formeToPoints(formeA), formeFactorB = formeToPoints(formeB);
-    let fatigueA = Math.min(0.1, Math.max(0, (5 - reposA) * 0.02)), fatigueB = Math.min(0.1, Math.max(0, (5 - reposB) * 0.02));
+    let climaFactor = [1.0, 0.92, 0.88, 0.90, 0.85][climat] || 1.0;
+    let altFactor = altitude > 2000 ? 0.95 : 1.0;
+    let impactA = 1 - absOffA * 0.15 - absDefA * 0.10;
+    let impactB = 1 - absOffB * 0.15 - absDefB * 0.10;
+    let formeFactorA = Model.formeToPoints(formeA);
+    let formeFactorB = Model.formeToPoints(formeB);
+    let fatigueA = Math.min(0.1, Math.max(0, (5 - reposA) * 0.02));
+    let fatigueB = Math.min(0.1, Math.max(0, (5 - reposB) * 0.02));
     let motivation = 1 + (importance - 2) * 0.03 + (enjeu - 2) * 0.02;
 
-    let forceA = Math.round(Math.min(100, (xgA * 30 + (2 - Math.min(2, xgaA)) * 20 + ppgA * 12 + tirsA * 2 + possA * 0.2 + formeFactorA * 18 + (dom === 'A' ? 8 : 0))));
-    let forceB = Math.round(Math.min(100, (xgB * 30 + (2 - Math.min(2, xgaB)) * 20 + ppgB * 12 + tirsB * 2 + possB * 0.2 + formeFactorB * 18 + (dom === 'B' ? 8 : 0))));
+    let forceA = Math.round(Math.min(100, (xgA * 30 + (2 - Math.min(2, xgaA)) * 20 + ppgA * 12 + tirsA * 2 + possA * 0.2 + formeFactorA * 18 + (dom === 'A' ? 8 : 0)) * impactA * bonusChamp * climaFactor * altFactor * motivation));
+    let forceB = Math.round(Math.min(100, (xgB * 30 + (2 - Math.min(2, xgaB)) * 20 + ppgB * 12 + tirsB * 2 + possB * 0.2 + formeFactorB * 18 + (dom === 'B' ? 8 : 0)) * impactB * bonusChamp * climaFactor * altFactor * motivation));
 
-    let offA = (xgA * 0.4 + butsA * 0.2 + tirsA * 0.02 + ppgA * 0.12 + possA * 0.01 + formeFactorA * 0.12) * impactA * bonusChamp * motivation * (1 - fatigueA);
-    let offB = (xgB * 0.4 + butsB * 0.2 + tirsB * 0.02 + ppgB * 0.12 + possB * 0.01 + formeFactorB * 0.12) * impactB * bonusChamp * motivation * (1 - fatigueB);
-    let defA = Math.max(0.2, 1.5 - xgaA * 0.5 + absDefA * 0.2), defB = Math.max(0.2, 1.5 - xgaB * 0.5 + absDefB * 0.2);
-    let lambdaA = offA * defB * (1 + homeAdv), lambdaB = offB * defA * (1 - homeAdv);
-    lambdaA = Math.min(8, Math.max(0.2, lambdaA)); lambdaB = Math.min(8, Math.max(0.2, lambdaB));
+    let offA = (xgA * 0.4 + butsA * 0.2 + tirsA * 0.02 + ppgA * 0.12 + possA * 0.01 + formeFactorA * 0.12) * impactA * bonusChamp * motivation * (1 - fatigueA) * climaFactor * altFactor;
+    let offB = (xgB * 0.4 + butsB * 0.2 + tirsB * 0.02 + ppgB * 0.12 + possB * 0.01 + formeFactorB * 0.12) * impactB * bonusChamp * motivation * (1 - fatigueB) * climaFactor * altFactor;
+    let defA = Math.max(0.2, 1.5 - xgaA * 0.5 + absDefA * 0.2);
+    let defB = Math.max(0.2, 1.5 - xgaB * 0.5 + absDefB * 0.2);
+    let lambdaA = offA * defB * (1 + homeAdv);
+    let lambdaB = offB * defA * (1 - homeAdv);
+    lambdaA = Math.min(8, Math.max(0.2, lambdaA));
+    lambdaB = Math.min(8, Math.max(0.2, lambdaB));
 
-    let p1 = 0, pX = 0, p2 = 0, ov25 = 0, btts = 0, ov15 = 0, un35 = 0, ov35 = 0;
-    let scoreProbs = [];
-    for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
-      let p = (Math.exp(-lambdaA) * Math.pow(lambdaA, i) / fact(i)) * (Math.exp(-lambdaB) * Math.pow(lambdaB, j) / fact(j));
-      scoreProbs.push({ s: `${i}-${j}`, p, i, j });
-      if (i > j) p1 += p; else if (i === j) pX += p; else p2 += p;
-      if (i + j > 2.5) ov25 += p; if (i > 0 && j > 0) btts += p;
-      if (i + j > 1.5) ov15 += p; if (i + j > 3.5) ov35 += p; if (i + j < 3.5) un35 += p;
-    }
-    let tP = p1 + pX + p2; p1 /= tP; pX /= tP; p2 /= tP;
-    scoreProbs.sort((a, b) => b.p - a.p);
-    let topScores = scoreProbs.filter(s => ['0-0','1-0','0-1','1-1','2-0','0-2','2-1','1-2','2-2','3-1','1-3','3-0','0-3'].includes(s.s)).slice(0, 6);
-
-    // Monte Carlo 10k
-    let mc1 = 0, mcX = 0, mc2 = 0, mcOver = 0, mcBtts = 0, totalButsMC = 0;
-    for (let s = 0; s < 10000; s++) {
-      let gA = 0, gB = 0, L1 = Math.exp(-lambdaA), L2 = Math.exp(-lambdaB), pA = 1, pB = 1;
-      while (pA > L1) { gA++; pA *= Math.random(); } while (pB > L2) { gB++; pB *= Math.random(); }
-      gA--; gB--; if (gA > gB) mc1++; else if (gA === gB) mcX++; else mc2++;
-      if (gA + gB > 2.5) mcOver++; if (gA > 0 && gB > 0) mcBtts++; totalButsMC += gA + gB;
-    }
-    mc1 /= 10000; mcX /= 10000; mc2 /= 10000; mcOver /= 10000; mcBtts /= 10000;
+    const rho = this.settings.rhoDixon;
+    let { p1, pX, p2 } = Model.computeProbabilities(lambdaA, lambdaB, rho);
+    let cal = this.calibrate(p1, pX, p2);
+    p1 = cal.p1; pX = cal.pX; p2 = cal.p2;
 
     let aCotes = c1 > 0 && cX > 0 && c2 > 0;
-    let ev1 = aCotes ? p1 * c1 - 1 : null, evX = aCotes ? pX * cX - 1 : null, ev2 = aCotes ? p2 * c2 - 1 : null;
-    let marches = aCotes ? [{ n: "1 (" + teamA + ")", ev: ev1, p: p1, c: c1 }, { n: "X", ev: evX, p: pX, c: cX }, { n: "2 (" + teamB + ")", ev: ev2, p: p2, c: c2 }].sort((a, b) => b.ev - a.ev) : [];
-    let best = aCotes ? marches[0] : { n: "1", p: p1 };
+    let ev1 = aCotes ? p1 * c1 - 1 : null;
+    let evX = aCotes ? pX * cX - 1 : null;
+    let ev2 = aCotes ? p2 * c2 - 1 : null;
+    let best = aCotes ? [{n:"1", ev:ev1, p:p1, c:c1}, {n:"X", ev:evX, p:pX, c:cX}, {n:"2", ev:ev2, p:p2, c:c2}].sort((a,b)=>b.ev - a.ev)[0] : null;
+    let kelly = aCotes && best ? Model.kelly(best.p, best.c, this.settings.kellyFraction) : 0;
+    let mise = Math.min(this.bankroll * 0.02, Math.max(1, kelly * this.bankroll));
 
-    let confiance = Math.round(Math.min(100, 25 + (Math.abs(xgA - xgB) * 20) + (Math.abs(xgaA - xgaB) * 12) + (Math.abs(formeFactorA - formeFactorB) * 25) + (possA + possB) * 0.05));
-    let risqueScore = Math.round(Math.min(100, 50 - confiance * 0.3 + (1 - Math.abs(homeAdv)) * 20 + (aCotes ? Math.abs(best.ev) * 200 : 20)));
-    let edgeScore = Math.round(forceA * 0.3 + (best.ev > 0 ? Math.min(100, best.ev * 200) : 0) * 0.25 + confiance * 0.2 + Math.abs(forceA - forceB) * 0.15);
+    let qualite = this.calcQualite();
+    let confiance = Math.min(100, Math.round(25 + Math.abs(xgA - xgB) * 20 + Math.abs(xgaA - xgaB) * 12 + Math.abs(formeFactorA - formeFactorB) * 25 + (possA + possB) * 0.05));
+    confiance = Math.round(confiance * (0.5 + qualite / 200));
+    confiance = Math.min(100, Math.max(10, confiance));
+    let risqueScore = Math.round(Math.min(100, 50 - confiance * 0.3 + (1 - Math.abs(homeAdv)) * 20 + (best ? Math.abs(best.ev) * 200 : 20)));
+    let edgeScore = Math.round(forceA * 0.3 + (best && best.ev > 0 ? Math.min(100, best.ev * 200) : 0) * 0.25 + confiance * 0.2 + Math.abs(forceA - forceB) * 0.15);
 
-    let piege = aCotes && best.ev < -0.03 && best.p > 0.6;
-    let filtreOK = aCotes && best.ev > 0.05 && confiance >= 60 && risqueScore < 70;
-    let kelly = filtreOK ? Math.max(0, (best.p * best.c - 1) / (best.c - 1)) * 0.25 : 0;
-    let mise = Math.min(bankroll * 0.02, Math.max(1, kelly * bankroll));
-
-    let explications = [];
-    if (Math.abs(xgA - xgB) > 0.5) explications.push("Différence xG importante");
-    if (Math.abs(xgaA - xgaB) > 0.4) explications.push("Écart défensif significatif");
-    if (formeFactorA > formeFactorB + 0.3) explications.push(teamA + " en meilleure forme");
-    if (formeFactorB > formeFactorA + 0.3) explications.push(teamB + " en meilleure forme");
-    if (aCotes && best.ev > 0.05) explications.push("Cote intéressante");
-    if (dom !== 'N') explications.push("Avantage domicile");
-    if (absOffA > 0.3 || absOffB > 0.3 || absDefA > 0.3 || absDefB > 0.3) explications.push("Absences impactantes");
-
-    let btns = document.querySelectorAll(".odd-btn"); btns.forEach(b => b.classList.remove("value-bet"));
-    if (aCotes) { if (btns[0] && ev1 > 0.05) btns[0].classList.add("value-bet"); if (btns[2] && ev2 > 0.05) btns[2].classList.add("value-bet"); }
-
-    let html = `<div class="vs-row"><div class="team-block"><div class="flag">🏳</div><div class="name">${teamA}</div></div><div class="vs-text">VS</div><div class="team-block"><div class="flag">🏳</div><div class="name">${teamB}</div></div></div>`;
-    html += `<div><strong>💪 FORCE</strong> <span style="color:var(--blue)">${teamA} ${forceA}/100</span> vs <span style="color:var(--red)">${teamB} ${forceB}/100</span></div>`;
-    html += `<div class="force-bar"><div class="force-fill-a" style="width:${forceA}%;"></div><div class="force-fill-b" style="width:${forceB}%;"></div></div>`;
-    html += `<div style="margin-top:8px;"><strong>📊 PRÉDICTION</strong></div>`;
-    html += `<div class="info-line"><span>1</span><span class="val">${(p1*100).toFixed(1)}%</span></div><div class="info-line"><span>X</span><span class="val">${(pX*100).toFixed(1)}%</span></div><div class="info-line"><span>2</span><span class="val">${(p2*100).toFixed(1)}%</span></div>`;
-    html += `<div style="margin-top:8px;"><strong>🎲 MONTE CARLO 10k</strong></div>`;
-    html += `<div class="info-line"><span>1</span><span class="val">${(mc1*100).toFixed(1)}%</span></div><div class="info-line"><span>X</span><span class="val">${(mcX*100).toFixed(1)}%</span></div><div class="info-line"><span>2</span><span class="val">${(mc2*100).toFixed(1)}%</span></div>`;
-    html += `<div style="margin-top:8px;"><strong>🎯 TOP SCORES</strong></div><div class="score-grid">`;
-    topScores.forEach(s => html += `<div class="score-item"><div>${s.s}</div><div style="font-size:0.55rem;">${(s.p*100).toFixed(1)}%</div></div>`);
-    html += `</div><div style="margin-top:8px;"><strong>📈 MARCHÉS</strong></div><div class="mini-markets">`;
-    html += `<div class="mini-market"><div class="pct">${(ov25*100).toFixed(0)}%</div><div class="lbl">Over 2.5</div></div>`;
-    html += `<div class="mini-market"><div class="pct">${(btts*100).toFixed(0)}%</div><div class="lbl">BTTS</div></div>`;
-    html += `<div class="mini-market"><div class="pct">${(ov15*100).toFixed(0)}%</div><div class="lbl">Over 1.5</div></div>`;
-    html += `<div class="mini-market"><div class="pct">${(un35*100).toFixed(0)}%</div><div class="lbl">Under 3.5</div></div>`;
-    html += `<div class="mini-market"><div class="pct">${(ov35*100).toFixed(0)}%</div><div class="lbl">Over 3.5</div></div>`;
-    html += `<div class="mini-market"><div class="pct">${((1-btts)*100).toFixed(0)}%</div><div class="lbl">BTTS Non</div></div></div>`;
-
-    if (aCotes) {
-      html += `<div style="margin-top:8px;"><strong>💰 VALUE</strong></div>`;
-      html += `<div class="info-line"><span>Conseil</span><span class="val">${best.n} @ ${best.c.toFixed(2)}</span></div>`;
-      html += `<div class="info-line"><span>EV</span><span class="val ${best.ev>0?'pos':'neg'}">${(best.ev*100).toFixed(1)}%</span></div>`;
-      html += `<div class="info-line"><span>Cote juste</span><span class="val">${(1/best.p).toFixed(2)}</span></div>`;
-      if (piege) html += `<div class="alert">⚠️ Piège favori : EV négatif malgré probabilité élevée.</div>`;
+    let topScores = [];
+    for (let i=0; i<=5; i++) for (let j=0; j<=5; j++) {
+      let p = Model.poisson(lambdaA, i) * Model.poisson(lambdaB, j);
+      topScores.push({s:`${i}-${j}`, p});
     }
-    html += `<div class="info-line"><span>🤖 Confiance</span><span class="val">${confiance}/100</span></div>`;
-    html += `<div class="info-line"><span>⚠️ Risque</span><span class="val ${risqueScore<40?'pos':(risqueScore<65?'':'neg')}">${risqueScore}/100</span></div>`;
-    html += `<div class="info-line"><span>🏆 Edge Score</span><span class="val">${edgeScore}/100</span></div>`;
-    html += `<div class="explain-box"><strong>🧠 Pourquoi ?</strong> ${explications.length?explications.join(' · '):'Analyse standard.'}</div>`;
+    topScores.sort((a,b)=>b.p - a.p);
+    topScores = topScores.slice(0, 6);
 
-    let signalLabel = filtreOK ? '✅ SIGNAL VALIDÉ' : (aCotes && best.ev < 0.05 ? '❌ PAS DE VALUE' : (confiance < 60 ? '⚠️ CONFIANCE FAIBLE' : '⚠️ RISQUE ÉLEVÉ'));
-    html += `<div style="text-align:center;margin-top:8px;"><span class="ai-badge ${filtreOK?'ai-value':'ai-no-value'}">${signalLabel}</span></div>`;
-    if (filtreOK) html += `<div style="text-align:center;font-size:0.8rem;">💰 Mise conseillée: <strong>${mise.toFixed(2)}€</strong></div>`;
+    let signal = '⚠️ CONFIANCE FAIBLE';
+    if (aCotes && best && best.ev > 0.05 && confiance >= 60 && risqueScore < 70) signal = '✅ VALIDÉ';
+    else if (aCotes && best && best.ev < 0.05) signal = '❌ PAS DE VALUE';
 
-    document.getElementById("analysisContent").innerHTML = html;
-    lastAnalysisData = { forceA, forceB, p1, pX, p2, teamA, teamB, best, filtreOK, mise, confiance, topScores, lambdaA, lambdaB, risqueScore, edgeScore };
-    updateHeader();
-  }
+    let iaComment = '';
+    if (forceA > forceB + 15) iaComment = `💡 ${teamA} est clairement favori (${forceA} vs ${forceB}). Attaque supérieure, défense solide.`;
+    else if (forceB > forceA + 15) iaComment = `💡 ${teamB} est clairement favori (${forceB} vs ${forceA}). Meilleure forme et plus d'impact offensif.`;
+    else if (Math.abs(forceA - forceB) < 10) iaComment = `⚖️ Match très équilibré, les deux équipes se valent. Le nul est à surveiller.`;
+    else iaComment = `📊 Match déséquilibré mais avec des incertitudes. Vérifiez les absences et le contexte.`;
+    if (best && best.ev > 0.05) iaComment += ` 💰 Value détectée sur ${best.n} (EV ${(best.ev*100).toFixed(1)}%).`;
+    else if (best) iaComment += ` ❌ Pas de value significative.`;
 
-  async function sauvegarderApresMatch() {
-    const res = document.getElementById("resultat_reel")?.value; if (!res) { alert("❌ Sélectionnez un résultat"); return; }
-    if (!lastAnalysisData) { alert("❌ Analysez d'abord"); return; }
-    let gagne = (res === "1") || (res === "2"); let cote = res === "1" ? getCote1() : (res === "2" ? getCote2() : getCoteX()); if (cote <= 0) cote = 2;
-    let mise = lastAnalysisData.mise || 1; let profit = gagne ? cote * mise - mise : -mise;
-    let entry = { date: new Date().toLocaleDateString(), match: `${lastAnalysisData.teamA} vs ${lastAnalysisData.teamB}`, pari: res, cote, mise, profit, probIA: res==="1"?lastAnalysisData.p1:(res==="2"?lastAnalysisData.p2:lastAnalysisData.pX), resultat: res };
-    historique.push(entry); await saveDB("historique", entry);
-    bankroll += profit; document.getElementById("bankroll").value = bankroll.toFixed(0); await saveDB("config", { key: "bankroll", value: bankroll });
-    updateHeader(); afficherHistorique(); afficherCourbe();
-    alert(`✅ ${gagne?'GAGNÉ':'Perdu'} | ${profit>0?'+':''}${profit.toFixed(2)}€`);
-  }
+    this.lastAnalysis = { teamA, teamB, forceA, forceB, p1, pX, p2, best, confiance, risqueScore, edgeScore, mise, signal, topScores, lambdaA, lambdaB, ev1, evX, ev2, c1, cX, c2, iaComment };
 
-  function updateBankroll() { bankroll = parseFloat(document.getElementById("bankroll").value) || 1000; saveDB("config", { key: "bankroll", value: bankroll }); updateHeader(); alert("✅ Bankroll mise à jour"); }
+    this.displayResult();
+  },
 
-  function afficherHistorique() {
-    let div = document.getElementById("historiqueList"); if (!div) return;
-    let connus = historique.filter(h => h.resultat != null);
+  calibrate(p1, pX, p2) {
+    let connus = this.historique.filter(h => h.resultat != null);
+    if (connus.length < 5) return { p1, pX, p2 };
+    let wins1 = connus.filter(h => h.resultat === '1').length;
+    let winsX = connus.filter(h => h.resultat === 'X').length;
+    let wins2 = connus.filter(h => h.resultat === '2').length;
+    let total = wins1 + winsX + wins2;
+    if (total === 0) return { p1, pX, p2 };
+    let alpha = 1;
+    let adj1 = (wins1 + alpha) / (total + 3*alpha);
+    let adjX = (winsX + alpha) / (total + 3*alpha);
+    let adj2 = (wins2 + alpha) / (total + 3*alpha);
+    let w = 0.3;
+    p1 = (1-w)*p1 + w*adj1;
+    pX = (1-w)*pX + w*adjX;
+    p2 = (1-w)*p2 + w*adj2;
+    let sum = p1+pX+p2;
+    if (sum > 0) { p1/=sum; pX/=sum; p2/=sum; }
+    return { p1, pX, p2 };
+  },
+
+  calcQualite() {
+    let score = 0, max = 0;
+    const fields = ['xgA','xgB','xgaA','xgaB','butsA','butsB','tirsA','tirsB','possA','possB','ppgA','ppgB','formeA','formeB','reposA','reposB','cote1','coteX','cote2'];
+    fields.forEach(id => {
+      const el = document.getElementById(id);
+      if (el && el.value && el.value !== '0') score += 5;
+      max += 5;
+    });
+    return Math.round((score / max) * 100);
+  },
+
+  displayResult() {
+    const d = this.lastAnalysis;
+    if (!d) return;
+    let html = '';
+    html += `<div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px;">
+              <span style="color:var(--blue);">${d.teamA} ${d.forceA}</span>
+              <span style="color:var(--red);">${d.teamB} ${d.forceB}</span>
+            </div>
+            <div class="force-bar"><div class="force-fill-a" style="width:${d.forceA}%;"></div><div class="force-fill-b" style="width:${d.forceB}%;"></div></div>`;
+    html += `<div class="result-grid">
+              <div class="result-item"><div class="pct">${(d.p1*100).toFixed(1)}%</div><div class="lbl">1</div></div>
+              <div class="result-item"><div class="pct">${(d.pX*100).toFixed(1)}%</div><div class="lbl">X</div></div>
+              <div class="result-item"><div class="pct">${(d.p2*100).toFixed(1)}%</div><div class="lbl">2</div></div>
+            </div>`;
+    html += `<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;">`;
+    d.topScores.forEach(s => html += `<span style="background:#1a2233;padding:2px 8px;border-radius:4px;font-size:0.65rem;">${s.s} ${(s.p*100).toFixed(1)}%</span>`);
+    html += `</div>`;
+    if (d.best) {
+      html += `<div style="display:flex;justify-content:space-between;font-size:0.75rem;background:#1a2233;padding:6px;border-radius:8px;margin:4px 0;">
+                <span>Conseil: <strong>${d.best.n}</strong> @ ${d.best.c.toFixed(2)}</span>
+                <span style="color:${d.best.ev>0?'var(--green)':'var(--red)'};">EV: ${(d.best.ev*100).toFixed(1)}%</span>
+                <span>Kelly: ${(d.mise/this.bankroll*100).toFixed(1)}%</span>
+              </div>`;
+    }
+    const cls = d.signal.includes('VALIDÉ') ? 'badge-green' : (d.signal.includes('PAS') ? 'badge-red' : 'badge-yellow');
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;font-size:0.7rem;">
+              <span class="badge ${cls}">${d.signal}</span>
+              <span>Confiance: ${d.confiance}%</span>
+              <span>Risque: ${d.risqueScore}%</span>
+            </div>`;
+    if (d.iaComment) html += `<div class="ia-comment">${d.iaComment}</div>`;
+    html += `<button class="btn btn-secondary" style="margin-top:8px;" onclick="App.saveResult()">📋 Enregistrer le résultat</button>`;
+    document.getElementById("analysisResult").innerHTML = html;
+  },
+
+  saveResult() {
+    const d = this.lastAnalysis;
+    if (!d) { alert("Analysez d'abord"); return; }
+    const res = prompt("Résultat réel (1, X, 2) :", "1");
+    if (!res || !['1','X','2'].includes(res)) { alert("Saisissez 1, X ou 2"); return; }
+    let cote = 0;
+    if (res === '1') cote = d.c1;
+    else if (res === 'X') cote = d.cX;
+    else if (res === '2') cote = d.c2;
+    if (cote <= 0) cote = 2;
+    let mise = d.mise || 1;
+    let profit = (res === '1' || res === '2') ? cote * mise - mise : -mise;
+    let entry = {
+      date: new Date().toLocaleDateString(),
+      match: `${d.teamA} vs ${d.teamB}`,
+      pari: res,
+      cote: cote,
+      mise: mise,
+      profit: profit,
+      probIA: res==='1'?d.p1:(res==='2'?d.p2:d.pX),
+      resultat: res,
+      clvReelle: 0
+    };
+    this.historique.push(entry);
+    DB.save("historique", entry);
+    this.bankroll += profit;
+    document.getElementById("bankrollInput").value = this.bankroll;
+    DB.save("config", { key: "bankroll", value: this.bankroll });
+    this.updateHeader();
+    this.renderHistory();
+    this.renderChart();
+    alert(`✅ Enregistré ! ${profit>0?'+':''}${profit.toFixed(2)}€`);
+  },
+
+  // ---------- BANKROLL ----------
+  async updateBankroll() {
+    this.bankroll = parseFloat(document.getElementById("bankrollInput").value) || 1000;
+    await DB.save("config", { key: "bankroll", value: this.bankroll });
+    this.updateHeader();
+    this.renderChart();
+    alert("✅ Bankroll mise à jour");
+  },
+
+  updateHeader() {
+    let connus = this.historique.filter(h => h.resultat != null);
     let profit = connus.reduce((s, h) => s + (h.profit || 0), 0);
-    let wr = connus.length > 0 ? (connus.filter(h => h.profit > 0).length / connus.length * 100).toFixed(1) : 0;
-    document.getElementById("statsPro").innerHTML = `📊 ${connus.length} paris · Win: ${wr}% · Profit: <span style="color:${profit>=0?'#22c55e':'#ef4444'}">${profit.toFixed(1)}€</span>`;
-    if (connus.length === 0) { div.innerHTML = '<div style="color:var(--sub);">Aucun pari.</div>'; return; }
-    div.innerHTML = connus.slice(-8).reverse().map(h => `<div class="hist-item"><span>${h.date} · ${h.match} · ${h.pari}</span><span class="${h.profit>0?'win':'lose'}">${h.profit>0?'+':''}${h.profit?.toFixed(2)||'0'}€</span></div>`).join('');
-  }
+    let roi = connus.length > 0 ? ((profit / connus.length) * 100) : 0;
+    document.getElementById("headerBal").textContent = (this.bankroll + profit).toFixed(0) + "€";
+    document.getElementById("headerRoi").textContent = (roi >= 0 ? "+" : "") + roi.toFixed(1) + "%";
+  },
 
-  function afficherCourbe() {
-    let canvas = document.getElementById("graphBankroll"); if (!canvas) return;
-    let ctx = canvas.getContext("2d"); canvas.width = canvas.offsetWidth; canvas.height = 160;
-    let data = [], total = bankroll; historique.forEach(h => { if (h.profit != null) { total += h.profit; data.push(total); } });
-    ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#0a0d14"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (data.length < 2) { ctx.fillStyle = "#9ca3af"; ctx.font = "11px Inter"; ctx.textAlign = "center"; ctx.fillText("2 paris minimum", canvas.width / 2, 80); return; }
-    let max = Math.max(...data, bankroll), min = Math.min(...data, bankroll * 0.5), range = max - min || 1;
-    ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2; ctx.beginPath();
-    data.forEach((v, i) => { let x = (i / (data.length - 1)) * canvas.width, y = canvas.height - ((v - min) / range) * canvas.height; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+  renderHistory() {
+    const div = document.getElementById("historyList");
+    let connus = this.historique.filter(h => h.resultat != null);
+    if (connus.length === 0) { div.innerHTML = '<div style="color:var(--sub);text-align:center;padding:12px;">Aucun pari</div>'; return; }
+    let html = '';
+    connus.slice().reverse().forEach(h => {
+      html += `<div class="hist-item">
+                <span>${h.date} · ${h.match} · ${h.pari}</span>
+                <span class="${h.profit>0?'profit-win':'profit-lose'}">${h.profit>0?'+':''}${h.profit.toFixed(2)}€</span>
+              </div>`;
+    });
+    div.innerHTML = html;
+  },
+
+  renderChart() {
+    const canvas = document.getElementById("bankrollChart");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width = canvas.offsetWidth || 300;
+    const h = canvas.height = 150;
+    let data = [], total = this.bankroll;
+    this.historique.forEach(h => { if (h.profit != null) { total += h.profit; data.push(total); } });
+    ctx.clearRect(0,0,w,h);
+    if (data.length < 2) { ctx.fillStyle = 'var(--sub)'; ctx.font = '12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('2 paris min', w/2, h/2); return; }
+    const max = Math.max(...data, this.bankroll);
+    const min = Math.min(...data, this.bankroll * 0.5);
+    const range = max - min || 1;
+    ctx.strokeStyle = '#06b6d4';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    data.forEach((v, i) => {
+      const x = (i / (data.length-1)) * w;
+      const y = h - ((v - min) / range) * h;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
     ctx.stroke();
+    ctx.fillStyle = 'rgba(6,182,212,0.1)';
+    ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+  },
+
+  renderStats() {
+    const div = document.getElementById("statsDisplay");
+    const fields = [
+      {id:'xgA', label:'xG A'}, {id:'xgB', label:'xG B'},
+      {id:'xgaA', label:'xGA A'}, {id:'xgaB', label:'xGA B'},
+      {id:'butsA', label:'Buts A'}, {id:'butsB', label:'Buts B'},
+      {id:'tirsA', label:'Tirs A'}, {id:'tirsB', label:'Tirs B'},
+      {id:'possA', label:'Poss A%'}, {id:'possB', label:'Poss B%'},
+      {id:'ppgA', label:'PPG A'}, {id:'ppgB', label:'PPG B'},
+      {id:'formeA', label:'Forme A'}, {id:'formeB', label:'Forme B'},
+      {id:'reposA', label:'Repos A'}, {id:'reposB', label:'Repos B'},
+      {id:'absOffA', label:'Abs off A'}, {id:'absOffB', label:'Abs off B'},
+      {id:'absDefA', label:'Abs def A'}, {id:'absDefB', label:'Abs def B'},
+    ];
+    let html = '<div class="stat-grid">';
+    fields.forEach(f => {
+      const val = document.getElementById(f.id)?.value || '-';
+      html += `<div class="stat-item"><div class="lbl">${f.label}</div><div class="val">${val}</div></div>`;
+    });
+    html += '</div>';
+    div.innerHTML = html;
+  },
+
+  // ---------- IMPORT / EXPORT ----------
+  parseImport() {
+    const text = document.getElementById("rawData").value;
+    if (!text.trim()) { alert("Collez des données"); return; }
+    const lines = text.split('\n').map(l => l.trim());
+    let data = {};
+    const vs = /([\w\s]+)\s*vs\s*([\w\s]+)/i;
+    for (let line of lines) {
+      let m = line.match(vs);
+      if (m) { data.teamA = m[1].trim(); data.teamB = m[2].trim(); break; }
+    }
+    const patterns = {
+      xgA: /xG\s*A\s*:?\s*([\d.]+)/i,
+      xgB: /xG\s*B\s*:?\s*([\d.]+)/i,
+      xgaA: /xGA\s*A\s*:?\s*([\d.]+)/i,
+      xgaB: /xGA\s*B\s*:?\s*([\d.]+)/i,
+      butsA: /buts?\s*A\s*:?\s*([\d.]+)/i,
+      butsB: /buts?\s*B\s*:?\s*([\d.]+)/i,
+      tirsA: /tirs?\s*A\s*:?\s*([\d.]+)/i,
+      tirsB: /tirs?\s*B\s*:?\s*([\d.]+)/i,
+      possA: /possession\s*A\s*:?\s*([\d.]+)/i,
+      possB: /possession\s*B\s*:?\s*([\d.]+)/i,
+    };
+    for (let [key, regex] of Object.entries(patterns)) {
+      for (let line of lines) {
+        let m = line.match(regex);
+        if (m) { data[key] = parseFloat(m[1]); break; }
+      }
+    }
+    const coteRegex = /(?:1|X|2)\s*[=:]\s*([\d.]+)/g;
+    let cotes = [];
+    let m;
+    while ((m = coteRegex.exec(text)) !== null) cotes.push(parseFloat(m[1]));
+    if (cotes.length >= 3) { data.cote1 = cotes[0]; data.coteX = cotes[1]; data.cote2 = cotes[2]; }
+    if (data.teamA) document.getElementById("teamA").value = data.teamA;
+    if (data.teamB) document.getElementById("teamB").value = data.teamB;
+    if (data.xgA) document.getElementById("xgA").value = data.xgA;
+    if (data.xgB) document.getElementById("xgB").value = data.xgB;
+    if (data.xgaA) document.getElementById("xgaA").value = data.xgaA;
+    if (data.xgaB) document.getElementById("xgaB").value = data.xgaB;
+    if (data.butsA) document.getElementById("butsA").value = data.butsA;
+    if (data.butsB) document.getElementById("butsB").value = data.butsB;
+    if (data.tirsA) document.getElementById("tirsA").value = data.tirsA;
+    if (data.tirsB) document.getElementById("tirsB").value = data.tirsB;
+    if (data.possA) document.getElementById("possA").value = data.possA;
+    if (data.possB) document.getElementById("possB").value = data.possB;
+    if (data.cote1) document.getElementById("cote1").value = data.cote1;
+    if (data.coteX) document.getElementById("coteX").value = data.coteX;
+    if (data.cote2) document.getElementById("cote2").value = data.cote2;
+    this.updateMatchDisplay();
+    alert("✅ Importé ! Vérifiez les champs.");
+  },
+
+  exportJSON() {
+    const data = { historique: this.historique, bankroll: this.bankroll };
+    const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'edge_data.json'; a.click();
+  },
+
+  importJSON() {
+    const input = document.createElement('input'); input.type = 'file'; input.accept = '.json';
+    input.onchange = async e => {
+      const file = e.target.files[0]; if (!file) return;
+      const text = await file.text(); const data = JSON.parse(text);
+      if (data.historique) { this.historique = data.historique; for (let h of this.historique) await DB.save('historique', h); }
+      if (data.bankroll) { this.bankroll = data.bankroll; await DB.save('config', {key:'bankroll', value:this.bankroll}); document.getElementById('bankrollInput').value = this.bankroll; }
+      this.updateHeader(); this.renderHistory(); this.renderChart();
+      alert('✅ Importé !');
+    };
+    input.click();
+  },
+
+  exportCSV() {
+    let connus = this.historique.filter(h => h.resultat != null);
+    if (connus.length === 0) { alert("Aucune donnée"); return; }
+    let csv = "Date,Match,Pari,Cote,Mise,Profit,ProbIA\n";
+    connus.forEach(h => { csv += `${h.date},${h.match},${h.pari},${h.cote||''},${h.mise||''},${h.profit||''},${h.probIA||''}\n`; });
+    const blob = new Blob([csv], {type:'text/csv'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'historique.csv'; a.click();
+  },
+
+  // ---------- GEMINI API ----------
+  async saveGeminiKey() {
+    const key = document.getElementById("geminiApiKey").value.trim();
+    if (key) {
+      this.geminiKey = key;
+      await DB.save("config", { key: "geminiKey", value: key });
+      document.getElementById("iaStatus").innerHTML = "✅ Clé sauvegardée.";
+    } else {
+      document.getElementById("iaStatus").innerHTML = "❌ Clé vide.";
+    }
+  },
+
+  async connectGemini() {
+    await this.saveGeminiKey();
+    if (!this.geminiKey) { alert("Veuillez entrer une clé API."); return; }
+    document.getElementById("iaStatus").innerHTML = "🔄 Test de connexion...";
+    try {
+      const response = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: "Hello" }] }]
+        })
+      });
+      if (response.ok) {
+        document.getElementById("iaStatus").innerHTML = "✅ Connecté à Gemini !";
+      } else {
+        const err = await response.text();
+        document.getElementById("iaStatus").innerHTML = "❌ Erreur : " + err;
+      }
+    } catch (e) {
+      document.getElementById("iaStatus").innerHTML = "❌ Erreur réseau : " + e.message;
+    }
+  },
+
+  onSourceChange() {
+    const src = document.getElementById("iaSource").value;
+    this.iaSource = src;
+    DB.save("config", { key: "iaSource", value: src });
+    document.getElementById("iaStatus").innerHTML = `📡 Source : ${src === 'gemini' ? 'Gemini (API)' : 'Locale'}`;
+  },
+
+  // ---------- IA (avec Gemini) ----------
+  async askIA() {
+    const question = document.getElementById("iaQuestion").value.trim();
+    if (!question) { document.getElementById("iaResponse").innerHTML = "❓ Veuillez poser une question."; return; }
+
+    const source = this.iaSource;
+    const responseDiv = document.getElementById("iaResponse");
+
+    if (source === 'local') {
+      responseDiv.innerHTML = this.askLocal(question);
+      return;
+    }
+
+    if (!this.geminiKey) {
+      responseDiv.innerHTML = "⚠️ Veuillez saisir et connecter votre clé API Gemini dans les champs ci-dessus.";
+      return;
+    }
+
+    const teamA = document.getElementById("teamA").value || "inconnue";
+    const teamB = document.getElementById("teamB").value || "inconnue";
+    const stats = {
+      xgA: document.getElementById("xgA").value,
+      xgB: document.getElementById("xgB").value,
+      xgaA: document.getElementById("xgaA").value,
+      xgaB: document.getElementById("xgaB").value,
+      butsA: document.getElementById("butsA").value,
+      butsB: document.getElementById("butsB").value,
+      tirsA: document.getElementById("tirsA").value,
+      tirsB: document.getElementById("tirsB").value,
+      possA: document.getElementById("possA").value,
+      possB: document.getElementById("possB").value,
+      ppgA: document.getElementById("ppgA").value,
+      ppgB: document.getElementById("ppgB").value,
+      formeA: document.getElementById("formeA").value,
+      formeB: document.getElementById("formeB").value,
+      reposA: document.getElementById("reposA").value,
+      reposB: document.getElementById("reposB").value,
+      absOffA: document.getElementById("absOffA").value,
+      absOffB: document.getElementById("absOffB").value,
+      absDefA: document.getElementById("absDefA").value,
+      absDefB: document.getElementById("absDefB").value,
+    };
+
+    const historySummary = this.historique.slice(-5).map(h => `${h.match} : ${h.resultat} (${h.profit>0?'+':''}${h.profit}€)`).join('\n');
+
+    const prompt = `Tu es un assistant expert en paris sportifs. L'utilisateur analyse le match ${teamA} vs ${teamB} avec les statistiques suivantes :
+      - xG: A=${stats.xgA || '?'}, B=${stats.xgB || '?'}
+      - xGA: A=${stats.xgaA || '?'}, B=${stats.xgaB || '?'}
+      - Buts/match: A=${stats.butsA || '?'}, B=${stats.butsB || '?'}
+      - Tirs: A=${stats.tirsA || '?'}, B=${stats.tirsB || '?'}
+      - Possession: A=${stats.possA || '?'}%, B=${stats.possB || '?'}%
+      - PPG: A=${stats.ppgA || '?'}, B=${stats.ppgB || '?'}
+      - Forme: A=${stats.formeA || '?'}, B=${stats.formeB || '?'}
+      - Repos: A=${stats.reposA || '?'} jours, B=${stats.reposB || '?'} jours
+      - Absences offensives: A=${stats.absOffA || '0'}, B=${stats.absOffB || '0'}
+      - Absences défensives: A=${stats.absDefA || '0'}, B=${stats.absDefB || '0'}
+
+      Historique des derniers paris de l'utilisateur :
+      ${historySummary || 'Aucun historique'}
+
+      Question de l'utilisateur : ${question}
+
+      Réponds de manière claire, structurée et utile. Donne des conseils basés sur les statistiques et les connaissances générales du football. Si la question porte sur des données spécifiques que tu ne connais pas, indique-le.`;
+
+    responseDiv.innerHTML = `<span class="loader"></span> Réflexion en cours...`;
+    document.getElementById("iaStatus").innerHTML = "🔄 Interrogation de Gemini...";
+
+    try {
+      const response = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.text();
+        responseDiv.innerHTML = `❌ Erreur API : ${err}`;
+        document.getElementById("iaStatus").innerHTML = "❌ Erreur";
+        return;
+      }
+
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Aucune réponse.";
+      responseDiv.innerHTML = text;
+      document.getElementById("iaStatus").innerHTML = "✅ Réponse reçue.";
+    } catch (e) {
+      responseDiv.innerHTML = `❌ Erreur réseau : ${e.message}`;
+      document.getElementById("iaStatus").innerHTML = "❌ Erreur";
+    }
+  },
+
+  // ---------- IA locale (fallback) ----------
+  askLocal(question) {
+    const q = question.toLowerCase();
+    const teamNames = Object.keys(TEAM_DB);
+    let foundTeam = null;
+    for (let name of teamNames) {
+      if (q.includes(name)) { foundTeam = name; break; }
+    }
+
+    if (q.includes("comparer") || q.includes("comparaison")) {
+      let teams = [];
+      for (let name of teamNames) if (q.includes(name)) teams.push(name);
+      if (teams.length >= 2) return this.compareTeamsLocal(teams[0], teams[1]);
+      else if (foundTeam) return this.getTeamStatsLocal(foundTeam);
+      else return "❓ Pour comparer, mentionnez deux équipes.";
+    } else if (q.includes("dernier match") || q.includes("historique")) {
+      if (foundTeam) return this.getTeamHistoryLocal(foundTeam);
+      else return "❓ Précisez une équipe.";
+    } else if (q.includes("statistiques") || q.includes("stats")) {
+      if (foundTeam) return this.getTeamStatsLocal(foundTeam);
+      else return "❓ Indiquez une équipe.";
+    } else if (q.includes("forme")) {
+      if (foundTeam) {
+        const data = TEAM_DB[foundTeam];
+        return `📊 Forme de ${foundTeam} : ${data.forme || 'N/A'}`;
+      } else return "❓ Indiquez une équipe.";
+    } else if (q.includes("bonjour") || q.includes("salut")) {
+      return "👋 Bonjour ! Je suis l'IA locale. Posez-moi des questions sur les équipes.";
+    } else if (foundTeam) {
+      return this.getTeamStatsLocal(foundTeam);
+    } else {
+      return "❓ Je n'ai pas compris. Essayez : 'Statistiques de France', 'Dernier match de Liverpool', 'Comparer Espagne et Allemagne'.";
+    }
+  },
+
+  getTeamStatsLocal(team) {
+    const data = TEAM_DB[team];
+    if (!data) return `❌ Équipe "${team}" non trouvée.`;
+    const name = team.charAt(0).toUpperCase() + team.slice(1);
+    return `
+      <strong>📊 Statistiques de ${name}</strong><br>
+      ⚽ xG: ${data.xg} | xGA: ${data.xga}<br>
+      ⚽ Buts/match: ${data.buts} | Tirs/match: ${data.tirs}<br>
+      📋 Possession: ${data.poss}% | PPG: ${data.ppg}<br>
+      📈 Forme récente: ${data.forme || 'N/A'}<br>
+      💡 Force estimée: ${Math.round(data.xg * 30 + (2 - Math.min(2, data.xga)) * 20 + data.ppg * 12 + data.tirs * 2 + data.poss * 0.2)}/100
+    `;
+  },
+
+  getTeamHistoryLocal(team) {
+    const data = TEAM_DB[team];
+    if (!data) return `❌ Équipe "${team}" non trouvée.`;
+    const name = team.charAt(0).toUpperCase() + team.slice(1);
+    const opponents = Object.keys(TEAM_DB).filter(t => t !== team);
+    let history = `<strong>📅 Derniers matchs de ${name}</strong><br>`;
+    const shuffled = opponents.sort(() => Math.random() - 0.5).slice(0, 5);
+    shuffled.forEach((opp, index) => {
+      const oppData = TEAM_DB[opp];
+      const forceA = data.xg * 30 + (2 - Math.min(2, data.xga)) * 20 + data.ppg * 12 + data.tirs * 2 + data.poss * 0.2;
+      const forceB = oppData.xg * 30 + (2 - Math.min(2, oppData.xga)) * 20 + oppData.ppg * 12 + oppData.tirs * 2 + oppData.poss * 0.2;
+      const ratio = forceA / (forceA + forceB);
+      const goalsA = Math.round(ratio * (data.xg + oppData.xga) * 0.5 + Math.random() * 0.5);
+      const goalsB = Math.round((1 - ratio) * (oppData.xg + data.xga) * 0.5 + Math.random() * 0.5);
+      const result = goalsA > goalsB ? "✅" : (goalsA < goalsB ? "❌" : "⚖️");
+      const date = new Date();
+      date.setDate(date.getDate() - (5 - index) * 7);
+      history += `${result} ${date.toLocaleDateString()} vs ${opp.charAt(0).toUpperCase()+opp.slice(1)} : ${goalsA} - ${goalsB} (xG: ${(data.xg*0.8+Math.random()*0.4).toFixed(1)} - ${(oppData.xg*0.8+Math.random()*0.4).toFixed(1)})<br>`;
+    });
+    return history;
+  },
+
+  compareTeamsLocal(team1, team2) {
+    const d1 = TEAM_DB[team1];
+    const d2 = TEAM_DB[team2];
+    if (!d1 || !d2) return "❌ Une des équipes n'est pas dans ma base.";
+    const name1 = team1.charAt(0).toUpperCase() + team1.slice(1);
+    const name2 = team2.charAt(0).toUpperCase() + team2.slice(1);
+    let comp = `<strong>⚔️ Comparaison ${name1} vs ${name2}</strong><br>`;
+    comp += `📈 xG: ${d1.xg} vs ${d2.xg} (${d1.xg > d2.xg ? '✅' : '❌'})<br>`;
+    comp += `🛡️ xGA: ${d1.xga} vs ${d2.xga} (${d1.xga < d2.xga ? '✅' : '❌'})<br>`;
+    comp += `⚽ Buts: ${d1.buts} vs ${d2.buts} (${d1.buts > d2.buts ? '✅' : '❌'})<br>`;
+    comp += `🎯 Tirs: ${d1.tirs} vs ${d2.tirs} (${d1.tirs > d2.tirs ? '✅' : '❌'})<br>`;
+    comp += `📋 Possession: ${d1.poss}% vs ${d2.poss}% (${d1.poss > d2.poss ? '✅' : '❌'})<br>`;
+    comp += `🏅 PPG: ${d1.ppg} vs ${d2.ppg} (${d1.ppg > d2.ppg ? '✅' : '❌'})<br>`;
+    comp += `📈 Forme: ${d1.forme || 'N/A'} vs ${d2.forme || 'N/A'}<br>`;
+    const f1 = Math.round(d1.xg * 30 + (2 - Math.min(2, d1.xga)) * 20 + d1.ppg * 12 + d1.tirs * 2 + d1.poss * 0.2);
+    const f2 = Math.round(d2.xg * 30 + (2 - Math.min(2, d2.xga)) * 20 + d2.ppg * 12 + d2.tirs * 2 + d2.poss * 0.2);
+    comp += `💪 Force: ${f1} vs ${f2} (${f1 > f2 ? `${name1} favori` : (f2 > f1 ? `${name2} favori` : 'Équilibre')})`;
+    return comp;
   }
+};
 
-  async function exporterToutesDonnees() { let blob = new Blob([JSON.stringify({ historique, bankroll, equipes: equipesDB })], { type: "application/json" }); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "edge_pro_ai_full_backup.json"; a.click(); }
-  async function importerToutesDonnees() { let input = document.createElement("input"); input.type = "file"; input.accept = ".json"; input.onchange = async e => { let file = e.target.files[0]; if (!file) return; let text = await file.text(); let data = JSON.parse(text); if (data.historique) { historique = data.historique; for (let h of historique) await saveDB("historique", h); } if (data.bankroll) { bankroll = data.bankroll; await saveDB("config", { key: "bankroll", value: bankroll }); document.getElementById("bankroll").value = bankroll; } if (data.equipes) { equipesDB = data.equipes; for (let k in equipesDB) await saveDB("equipes", equipesDB[k]); } updateHeader(); afficherHistorique(); afficherCourbe(); afficherEquipes(); alert("✅ Importé !"); }; input.click(); }
-
-  init();
+// ============================================================
+// LANCEMENT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => App.init());
 </script>
 </body>
 </html>
