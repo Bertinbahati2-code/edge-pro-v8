@@ -3,292 +3,441 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>⚽ EDGE PRO V8 · ULTIMATE API</title>
+  <title>⚽ EDGE PRO V9 · ELITE</title>
   <style>
+    :root {
+      --bg: #030712;
+      --card: #0f172a;
+      --border: #1e293b;
+      --blue: #3b82f6;
+      --red: #ef4444;
+      --green: #22c55e;
+      --yellow: #f59e0b;
+      --cyan: #06b6d4;
+      --purple: #8b5cf6;
+      --text: #f1f5f9;
+      --sub: #94a3b8;
+      --radius: 12px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #020617; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; padding: 4px; display: flex; justify-content: center; }
-    .app { max-width: 900px; width: 100%; }
-    h1 { font-size: 1.2rem; font-weight: 700; text-align: center; background: linear-gradient(135deg, #00f2ff, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; }
-    .subtitle { text-align: center; color: #94a3b8; margin-bottom: 6px; font-size: 0.5rem; }
-    .card { background: #0f172a; border-radius: 8px; padding: 6px 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.7); margin-bottom: 6px; }
-    .card h2 { font-size: 0.65rem; margin-bottom: 4px; border-left: 2px solid #00f2ff; padding-left: 6px; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 3px; }
-    .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 3px; }
-    .stat-row { display: flex; flex-direction: column; margin-bottom: 4px; }
-    .stat-row label { font-size: 0.4rem; text-transform: uppercase; letter-spacing: 0.2px; color: #94a3b8; margin-bottom: 1px; font-weight: 600; }
-    input, select, textarea { background: #020617; border: 1px solid #334155; border-radius: 4px; padding: 4px 6px; color: #f1f5f9; font-weight: 500; outline: none; font-size: 0.5rem; }
-    input:focus, select:focus, textarea:focus { border-color: #00f2ff; }
-    textarea { resize: vertical; min-height: 35px; font-size: 0.45rem; }
-    button { width: 100%; background: linear-gradient(135deg, #00e0ff, #7c3aed); border: none; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 0.6rem; color: #0f172a; margin-top: 4px; cursor: pointer; }
-    button:hover { background: linear-gradient(135deg, #38f0ff, #8b5cf6); }
-    .btn-sm { padding: 3px 6px; font-size: 0.45rem; width: auto; display: inline-block; margin: 2px; border-radius: 4px; background: #1e293b; color: #e2e8f0; border: none; cursor: pointer; }
-    .btn-auto { background: #0f172a; color: #00f2ff; border: 1px solid #00f2ff; padding: 3px 6px; font-size: 0.4rem; border-radius: 4px; cursor: pointer; margin: 2px; }
-    .btn-auto:hover { background: #00f2ff20; }
-    .result-box { background: #0b1120; border-radius: 6px; padding: 8px; margin-top: 6px; }
-    .edge-pos { color: #4ade80; } .edge-neg { color: #f87171; }
-    .entry-ok { background: #14532d15; border: 2px solid #4ade80; border-radius: 6px; padding: 6px; margin: 4px 0; text-align: center; font-weight: 700; }
-    .entry-no { background: #1e293b; border-radius: 6px; padding: 6px; margin: 4px 0; text-align: center; opacity: 0.7; }
-    .hist-item { background: #1e293b; padding: 3px 5px; border-radius: 4px; margin: 2px 0; font-size: 0.4rem; }
-    .avertissement { font-size: 0.35rem; color: #64748b; margin-top: 4px; text-align: center; }
-    .team-left { border-left: 2px solid #3b82f6; padding-left: 4px; }
-    .team-right { border-left: 2px solid #ef4444; padding-left: 4px; }
-    .pari-attente { background: #1e293b; padding: 6px; border-radius: 6px; margin-bottom: 6px; font-size: 0.5rem; border-left: 3px solid #fbbf24; }
-    canvas { width: 100%; height: 150px; background: #0a0f1a; border-radius: 6px; margin-top: 6px; }
-    .badge-rank { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.5rem; font-weight: 700; }
-    .rank-ap { background: #4ade80; color: #000; } .rank-a { background: #22c55e; color: #000; }
-    .rank-b { background: #fbbf24; color: #000; } .rank-c { background: #f97316; color: #000; }
-    .rank-d { background: #ef4444; color: #fff; }
-    .loading { color: #fbbf24; animation: pulse 1s infinite; }
-    .auto-badge { background: #00f2ff20; color: #00f2ff; font-size: 0.35rem; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-left: 4px; }
-    .manuel-badge { background: #fbbf2420; color: #fbbf24; font-size: 0.35rem; padding: 1px 4px; border-radius: 3px; display: inline-block; margin-left: 4px; }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
-    @media (max-width: 600px) { .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr 1fr; } }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      padding: 12px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .app { max-width: 880px; width: 100%; }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+    .header .badge-row {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .pill {
+      font-size: 0.6rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .pill-auto { background: #06b6d420; color: var(--cyan); border: 1px solid #06b6d440; }
+    .pill-manuel { background: #f59e0b20; color: var(--yellow); border: 1px solid #f59e0b40; }
+
+    /* CARDS */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .card:hover { border-color: #334155; }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-header h2 { font-size: 0.75rem; font-weight: 700; color: var(--text); }
+    .card-header .icon { font-size: 1rem; }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; }
+
+    /* INPUTS */
+    .field { display: flex; flex-direction: column; margin-bottom: 8px; }
+    .field label {
+      font-size: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--sub);
+      margin-bottom: 3px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    input, select, textarea {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text);
+      font-weight: 500;
+      outline: none;
+      font-size: 0.55rem;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px #06b6d415;
+    }
+    textarea { resize: vertical; min-height: 45px; font-size: 0.5rem; }
+
+    /* BUTTONS */
+    .btn {
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.6rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      color: white;
+      box-shadow: 0 4px 16px #8b5cf640;
+      flex: 2;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px #8b5cf660; }
+    .btn-secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      flex: 1;
+    }
+    .btn-secondary:hover { background: #1e293b; }
+    .btn-auto {
+      background: #06b6d415;
+      color: var(--cyan);
+      border: 1px solid #06b6d440;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.45rem;
+      cursor: pointer;
+      margin-top: 4px;
+      width: 100%;
+      font-weight: 600;
+    }
+    .btn-auto:hover { background: #06b6d425; }
+
+    /* RESULT */
+    .result-box {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .vs-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+    .team-tag {
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .team-a { background: #3b82f620; color: var(--blue); border: 1px solid #3b82f640; }
+    .team-b { background: #ef444420; color: var(--red); border: 1px solid #ef444440; }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .stat-box {
+      background: #0a0f1a;
+      padding: 8px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-box .stat-val { font-size: 0.8rem; font-weight: 800; color: var(--text); }
+    .stat-box .stat-label { font-size: 0.4rem; color: var(--sub); text-transform: uppercase; }
+
+    .edge-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.55rem;
+    }
+    .edge-pos { background: #22c55e20; color: var(--green); }
+    .edge-neg { background: #ef444420; color: var(--red); }
+    .edge-warn { background: #f59e0b20; color: var(--yellow); }
+
+    .entry-card {
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.6rem;
+      margin-top: 8px;
+    }
+    .entry-ok { background: #22c55e15; border: 2px solid var(--green); color: var(--green); }
+    .entry-warn { background: #f59e0b15; border: 2px solid var(--yellow); color: var(--yellow); }
+    .entry-no { background: #ef444415; border: 2px solid var(--red); color: var(--red); }
+
+    .score-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 4px; }
+    .score-item {
+      background: #0a0f1a;
+      padding: 6px;
+      border-radius: 6px;
+      text-align: center;
+      font-size: 0.45rem;
+      font-weight: 600;
+    }
+
+    .rank-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.55rem;
+    }
+    .rank-ap { background: var(--green); color: #000; }
+    .rank-a { background: #4ade80; color: #000; }
+    .rank-b { background: var(--yellow); color: #000; }
+    .rank-c { background: #f97316; color: #000; }
+    .rank-d { background: var(--red); color: #fff; }
+
+    .stars { color: var(--yellow); font-size: 0.7rem; letter-spacing: 1px; }
+
+    canvas { width: 100%; height: 200px; background: #0a0f1a; border-radius: 10px; margin-top: 8px; }
+
+    .hist-item {
+      background: #0a0f1a;
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin: 3px 0;
+      font-size: 0.45rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .profit-pos { color: var(--green); font-weight: 700; }
+    .profit-neg { color: var(--red); font-weight: 700; }
+
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+
+    @media (max-width: 600px) {
+      .grid-2, .grid-3, .stat-grid, .score-grid { grid-template-columns: 1fr 1fr; }
+      .vs-badge { font-size: 0.7rem; }
+    }
   </style>
 </head>
 <body>
 <div class="app">
-  <h1>⚽ EDGE PRO V8 · ULTIMATE API</h1>
-  <div class="subtitle">Football-Data.org (Auto) + Saisie Manuelle · Classement · Scores</div>
-
-  <div id="pariEnAttente" class="pari-attente"></div>
+  <!-- HEADER -->
+  <div class="header">
+    <h1>⚽ EDGE PRO ELITE</h1>
+    <div class="badge-row">
+      <span class="pill pill-auto">🔄 AUTO (API)</span>
+      <span class="pill pill-manuel">✏️ MANUEL</span>
+    </div>
+  </div>
 
   <!-- MATCH -->
   <div class="card">
-    <h2>⚡ MATCH</h2>
+    <div class="card-header"><span class="icon">⚡</span><h2>MATCH</h2></div>
     <div class="grid-2">
-      <div class="team-left">
-        <div class="stat-row"><label>🟦 Équipe A</label><input id="teamA" value="" placeholder="Équipe A...">
-          <button class="btn-auto" onclick="autoRemplirStats('A')" style="width:auto;margin-top:2px;">🔄 AUTO-REMPLIR (API)</button>
-        </div>
+      <div style="border-left: 3px solid var(--blue); padding-left: 10px;">
+        <div class="field"><label>🟦 Équipe A</label><input id="teamA" list="teamsA" value="" placeholder="Arsenal..."><datalist id="teamsA"></datalist></div>
+        <button class="btn-auto" onclick="autoRemplirStats('A')">🔄 AUTO-REMPLIR (API)</button>
       </div>
-      <div class="team-right">
-        <div class="stat-row"><label>🟥 Équipe B</label><input id="teamB" value="" placeholder="Équipe B...">
-          <button class="btn-auto" onclick="autoRemplirStats('B')" style="width:auto;margin-top:2px;">🔄 AUTO-REMPLIR (API)</button>
-        </div>
+      <div style="border-left: 3px solid var(--red); padding-left: 10px;">
+        <div class="field"><label>🟥 Équipe B</label><input id="teamB" list="teamsB" value="" placeholder="Chelsea..."><datalist id="teamsB"></datalist></div>
+        <button class="btn-auto" onclick="autoRemplirStats('B')">🔄 AUTO-REMPLIR (API)</button>
       </div>
     </div>
-    <div class="grid-3" style="margin-top:4px;">
-      <div class="stat-row"><label>🏆 Championnat</label><select id="championnat"><option>Premier League</option><option>Liga</option><option>Serie A</option><option>Bundesliga</option><option>Ligue 1</option><option>Autre</option></select></div>
-      <div class="stat-row"><label>🏟️ Domicile</label><select id="domicile"><option value="A" selected>A</option><option value="B">B</option><option value="N">Neutre</option></select></div>
-      <div class="stat-row"><label>🎯 Marché</label><select id="pari_choisi" onchange="runEngine()"><option value="1">1 (A gagne)</option><option value="X">X (Nul)</option><option value="2">2 (B gagne)</option><option value="Over">Over 2.5</option><option value="Under">Under 2.5</option><option value="BTTS">BTTS Oui</option></select></div>
+    <div class="grid-3" style="margin-top:10px;">
+      <div class="field"><label>🏆 Championnat</label><select id="championnat"><option>Premier League</option><option>Liga</option><option>Serie A</option><option>Bundesliga</option><option>Ligue 1</option><option>Autre</option></select></div>
+      <div class="field"><label>🏟️ Domicile</label><select id="domicile"><option value="A" selected>A</option><option value="B">B</option><option value="N">Neutre</option></select></div>
+      <div class="field"><label>🎯 Marché</label><select id="pari_choisi" onchange="runEngine()"><option value="1">1 (A gagne)</option><option value="X">X (Nul)</option><option value="2">2 (B gagne)</option><option value="Over">Over 2.5</option><option value="Under">Under 2.5</option><option value="BTTS">BTTS Oui</option></select></div>
     </div>
-    <div class="grid-3" style="margin-top:4px;">
-      <div class="stat-row"><label>📈 Cote Prise</label><input id="cote_prise" value="2.20"></div>
-      <div class="stat-row"><label>📉 Cote Close (optionnel)</label><input id="cote_close" value="" placeholder="Après match"></div>
-      <div class="stat-row"><label>💰 Bankroll (€)</label><input id="bankroll" value="1000"></div>
+    <div class="grid-3" style="margin-top:6px;">
+      <div class="field"><label>📈 Cote Prise</label><input id="cote_prise" value="2.20"></div>
+      <div class="field"><label>📉 Cote Close</label><input id="cote_close" value="" placeholder="Optionnel"></div>
+      <div class="field"><label>💰 Bankroll (€)</label><input id="bankroll" value="1000"></div>
     </div>
   </div>
 
   <!-- ÉQUIPES -->
   <div class="grid-2">
-    <div class="card team-left">
-      <h2>🟦 <span id="nomA"></span></h2>
-      <div class="stat-row"><label>📊 xG<span class="manuel-badge">MANUEL</span></label><input id="a_xg" value="" placeholder="Ex: 1.88"></div>
-      <div class="stat-row"><label>📊 xGA<span class="manuel-badge">MANUEL</span></label><input id="a_xga" value="" placeholder="Ex: 1.02"></div>
-      <div class="stat-row"><label>📋 Classement<span class="auto-badge">AUTO</span></label><input id="a_classement" value="" placeholder="Auto-rempli par API"></div>
-      <div class="stat-row"><label>📊 Possession %<span class="manuel-badge">MANUEL</span></label><input id="a_possession" value="" placeholder="Ex: 54"></div>
-      <div class="stat-row"><label>⚽ 10 derniers scores<span class="auto-badge">AUTO</span></label><textarea id="a_scores" placeholder="Auto-rempli par API (modifiable)"></textarea></div>
-      <div class="stat-row"><label>🩼 Joueurs absents<span class="manuel-badge">MANUEL</span></label><input id="a_absences" value="" placeholder="Ex: Saka, Havertz"></div>
+    <div class="card" style="border-left: 3px solid var(--blue);">
+      <div class="card-header"><span class="icon">🟦</span><h2><span id="nomA"></span></h2></div>
+      <div class="field"><label>📊 xG <span class="pill pill-manuel">MANUEL</span></label><input id="a_xg" value="" placeholder="Ex: 1.88"></div>
+      <div class="field"><label>📊 xGA <span class="pill pill-manuel">MANUEL</span></label><input id="a_xga" value="" placeholder="Ex: 1.02"></div>
+      <div class="field"><label>📋 Classement <span class="pill pill-auto">AUTO</span></label><input id="a_classement" value="" placeholder="Auto-rempli"></div>
+      <div class="field"><label>📊 Possession % <span class="pill pill-manuel">MANUEL</span></label><input id="a_possession" value="" placeholder="Ex: 54"></div>
+      <div class="field"><label>⚽ 10 scores <span class="pill pill-auto">AUTO</span></label><textarea id="a_scores" placeholder="Auto-rempli par API"></textarea></div>
+      <div class="field"><label>🩼 Absents <span class="pill pill-manuel">MANUEL</span></label><input id="a_absences" value="" placeholder="Ex: Saka, Havertz"></div>
     </div>
-    <div class="card team-right">
-      <h2>🟥 <span id="nomB"></span></h2>
-      <div class="stat-row"><label>📊 xG<span class="manuel-badge">MANUEL</span></label><input id="b_xg" value="" placeholder="Ex: 1.52"></div>
-      <div class="stat-row"><label>📊 xGA<span class="manuel-badge">MANUEL</span></label><input id="b_xga" value="" placeholder="Ex: 1.33"></div>
-      <div class="stat-row"><label>📋 Classement<span class="auto-badge">AUTO</span></label><input id="b_classement" value="" placeholder="Auto-rempli par API"></div>
-      <div class="stat-row"><label>📊 Possession %<span class="manuel-badge">MANUEL</span></label><input id="b_possession" value="" placeholder="Ex: 48"></div>
-      <div class="stat-row"><label>⚽ 10 derniers scores<span class="auto-badge">AUTO</span></label><textarea id="b_scores" placeholder="Auto-rempli par API (modifiable)"></textarea></div>
-      <div class="stat-row"><label>🩼 Joueurs absents<span class="manuel-badge">MANUEL</span></label><input id="b_absences" value="" placeholder="Ex: Palmer, Sanchez"></div>
+    <div class="card" style="border-left: 3px solid var(--red);">
+      <div class="card-header"><span class="icon">🟥</span><h2><span id="nomB"></span></h2></div>
+      <div class="field"><label>📊 xG <span class="pill pill-manuel">MANUEL</span></label><input id="b_xg" value="" placeholder="Ex: 1.52"></div>
+      <div class="field"><label>📊 xGA <span class="pill pill-manuel">MANUEL</span></label><input id="b_xga" value="" placeholder="Ex: 1.33"></div>
+      <div class="field"><label>📋 Classement <span class="pill pill-auto">AUTO</span></label><input id="b_classement" value="" placeholder="Auto-rempli"></div>
+      <div class="field"><label>📊 Possession % <span class="pill pill-manuel">MANUEL</span></label><input id="b_possession" value="" placeholder="Ex: 48"></div>
+      <div class="field"><label>⚽ 10 scores <span class="pill pill-auto">AUTO</span></label><textarea id="b_scores" placeholder="Auto-rempli par API"></textarea></div>
+      <div class="field"><label>🩼 Absents <span class="pill pill-manuel">MANUEL</span></label><input id="b_absences" value="" placeholder="Ex: Palmer, Sanchez"></div>
     </div>
   </div>
 
   <!-- H2H -->
   <div class="card">
-    <h2>🤝 H2H - 5 derniers face à face<span class="manuel-badge">MANUEL</span></h2>
-    <div class="stat-row"><label>Scores exacts (A-B, A-B...)</label><textarea id="h2h_scores" placeholder="2-1, 1-1, 0-2, 3-1, 2-2" style="min-height:30px;"></textarea></div>
+    <div class="card-header"><span class="icon">🤝</span><h2>H2H - 5 derniers face à face <span class="pill pill-manuel">MANUEL</span></h2></div>
+    <div class="field"><label>Scores exacts (A-B, A-B...)</label><textarea id="h2h_scores" placeholder="2-1, 1-1, 0-2, 3-1, 2-2"></textarea></div>
   </div>
 
-  <div style="display:flex;gap:4px;flex-wrap:wrap;margin:4px 0;">
-    <button onclick="runEngine()" style="background:#7c3aed;flex:2;">🔮 ANALYSER</button>
-    <button onclick="sauvegarderAvantMatch()" class="btn-sm" style="flex:1;">💾 AVANT</button>
-    <button onclick="sauvegarderApresMatch()" class="btn-sm" style="flex:1;">📋 APRÈS</button>
-    <button onclick="exporterCSV()" class="btn-sm" style="flex:0.5;">📤</button>
+  <!-- BOUTONS -->
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="runEngine()">🔮 ANALYSER</button>
+    <button class="btn btn-secondary" onclick="sauvegarderAvantMatch()">💾 AVANT</button>
+    <button class="btn btn-secondary" onclick="sauvegarderApresMatch()">📋 APRÈS</button>
+    <button class="btn btn-secondary" onclick="exporterCSV()">📤 CSV</button>
   </div>
 
-  <div class="card"><h2>📋 APRÈS MATCH<span class="manuel-badge">MANUEL</span></h2>
+  <!-- APRÈS MATCH -->
+  <div class="card">
+    <div class="card-header"><span class="icon">📋</span><h2>APRÈS MATCH <span class="pill pill-manuel">MANUEL</span></h2></div>
     <div class="grid-3">
-      <div class="stat-row"><label>Résultat</label><select id="resultat_reel"><option value="">?</option><option value="1">1</option><option value="X">X</option><option value="2">2</option></select></div>
-      <div class="stat-row"><label>⚽ Buts A</label><input id="butsA_reels" placeholder="2"></div>
-      <div class="stat-row"><label>⚽ Buts B</label><input id="butsB_reels" placeholder="1"></div>
+      <div class="field"><label>Résultat</label><select id="resultat_reel"><option value="">?</option><option value="1">1</option><option value="X">X</option><option value="2">2</option></select></div>
+      <div class="field"><label>⚽ Buts A</label><input id="butsA_reels" placeholder="2"></div>
+      <div class="field"><label>⚽ Buts B</label><input id="butsB_reels" placeholder="1"></div>
     </div>
   </div>
 
   <div class="result-box" id="resultat"></div>
 
-  <div class="card"><h2>📈 COURBE DE PROGRESSION</h2><canvas id="graphBankroll" height="150"></canvas></div>
-  <div class="card"><h2>📊 HISTORIQUE</h2><div id="clvSummary" style="font-size:0.4rem;"></div><div id="alerteRisque" style="font-size:0.4rem;"></div><div id="historique"></div></div>
-  <div class="avertissement">⚠️ Outil d'aide à la décision uniquement. <span class="auto-badge">AUTO</span> = API | <span class="manuel-badge">MANUEL</span> = À remplir</div>
+  <div class="card">
+    <div class="card-header"><span class="icon">📈</span><h2>COURBE DE PROGRESSION</h2></div>
+    <canvas id="graphBankroll" height="200"></canvas>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="icon">📊</span><h2>HISTORIQUE</h2></div>
+    <div id="clvSummary" style="font-size:0.45rem;margin-bottom:6px;"></div>
+    <div id="backtestSummary" style="font-size:0.45rem;margin-bottom:6px;"></div>
+    <div id="alerteRisque" style="font-size:0.45rem;"></div>
+    <div id="historique"></div>
+  </div>
+
+  <div style="text-align:center;font-size:0.4rem;color:var(--sub);padding:8px;">
+    ⚠️ Outil d'aide à la décision uniquement. Pas de garantie de résultat.
+  </div>
 </div>
 
 <script>
-  // ========== CONFIGURATION API ==========
   const API_KEY = "f94167717c7a462889707f03a5b99963";
   const API_BASE = "https://api.football-data.org/v4";
   let cacheAPI = {};
+  const codesChampionnats = { "Premier League": "PL", "Liga": "PD", "Serie A": "SA", "Bundesliga": "BL1", "Ligue 1": "FL1" };
 
-  const codesChampionnats = {
-    "Premier League": "PL", "Liga": "PD", "Serie A": "SA", "Bundesliga": "BL1", "Ligue 1": "FL1"
-  };
-
-  // ========== FONCTIONS API ==========
   async function rechercherEquipe(nom) {
-    const cacheKey = `search_${nom}`;
-    if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 600000) return cacheAPI[cacheKey].data;
-    try {
-      const response = await fetch(`${API_BASE}/teams?search=${encodeURIComponent(nom)}&limit=3`, { headers: { "X-Auth-Token": API_KEY } });
-      const data = await response.json();
-      cacheAPI[cacheKey] = { data, time: Date.now() };
-      return data;
-    } catch (e) { return null; }
+    const ck = `search_${nom}`;
+    if (cacheAPI[ck] && Date.now() - cacheAPI[ck].time < 600000) return cacheAPI[ck].data;
+    try { const r = await fetch(`${API_BASE}/teams?search=${encodeURIComponent(nom)}&limit=3`, { headers: { "X-Auth-Token": API_KEY } }); const d = await r.json(); cacheAPI[ck] = { data: d, time: Date.now() }; return d; } catch (e) { return null; }
   }
-
-  async function getMatchsTermines(equipeId) {
-    const cacheKey = `matchs_${equipeId}`;
-    if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 300000) return cacheAPI[cacheKey].data;
-    try {
-      const response = await fetch(`${API_BASE}/teams/${equipeId}/matches?limit=10&status=FINISHED`, { headers: { "X-Auth-Token": API_KEY } });
-      const data = await response.json();
-      cacheAPI[cacheKey] = { data, time: Date.now() };
-      return data;
-    } catch (e) { return null; }
+  async function getMatchsTermines(id) {
+    const ck = `matchs_${id}`;
+    if (cacheAPI[ck] && Date.now() - cacheAPI[ck].time < 300000) return cacheAPI[ck].data;
+    try { const r = await fetch(`${API_BASE}/teams/${id}/matches?limit=10&status=FINISHED`, { headers: { "X-Auth-Token": API_KEY } }); const d = await r.json(); cacheAPI[ck] = { data: d, time: Date.now() }; return d; } catch (e) { return null; }
   }
-
-  async function getClassement(codeChamp) {
-    const cacheKey = `classement_${codeChamp}`;
-    if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 600000) return cacheAPI[cacheKey].data;
-    try {
-      const response = await fetch(`${API_BASE}/competitions/${codeChamp}/standings`, { headers: { "X-Auth-Token": API_KEY } });
-      const data = await response.json();
-      cacheAPI[cacheKey] = { data, time: Date.now() };
-      return data;
-    } catch (e) { return null; }
+  async function getClassement(code) {
+    const ck = `classement_${code}`;
+    if (cacheAPI[ck] && Date.now() - cacheAPI[ck].time < 600000) return cacheAPI[ck].data;
+    try { const r = await fetch(`${API_BASE}/competitions/${code}/standings`, { headers: { "X-Auth-Token": API_KEY } }); const d = await r.json(); cacheAPI[ck] = { data: d, time: Date.now() }; return d; } catch (e) { return null; }
   }
-
-  function trouverClassement(classementData, equipeId) {
-    if (!classementData || !classementData.standings) return null;
-    for (let standing of classementData.standings) {
-      for (let row of standing.table) {
-        if (row.team.id === equipeId) return { position: row.position };
-      }
-    }
-    return null;
-  }
-
-  function extraireStatsMatchs(data, equipeId) {
-    if (!data || !data.matches) return null;
-    let butsMarques = 0, butsEncaisses = 0, scoresTexte = [];
-    data.matches.forEach(match => {
-      const score = match.score.fullTime;
-      if (score.home === null || score.away === null) return;
-      if (match.homeTeam.id === equipeId) {
-        butsMarques += score.home; butsEncaisses += score.away;
-        scoresTexte.push(`${score.home}-${score.away}`);
-      } else {
-        butsMarques += score.away; butsEncaisses += score.home;
-        scoresTexte.push(`${score.away}-${score.home}`);
-      }
-    });
-    const nbMatchs = scoresTexte.length || 1;
-    return { scoresTexte: scoresTexte.join(", "), nbMatchs };
+  function trouverClassement(d, id) { if (!d?.standings) return null; for (let s of d.standings) for (let r of s.table) if (r.team.id === id) return { position: r.position }; return null; }
+  function extraireStatsMatchs(d, id) {
+    if (!d?.matches) return null; let bM = 0, bE = 0, tx = [];
+    d.matches.forEach(m => { const sc = m.score.fullTime; if (sc.home === null) return; if (m.homeTeam.id === id) { bM += sc.home; bE += sc.away; tx.push(`${sc.home}-${sc.away}`); } else { bM += sc.away; bE += sc.home; tx.push(`${sc.away}-${sc.home}`); } });
+    return { scoresTexte: tx.join(", "), nbMatchs: tx.length };
   }
 
   async function autoRemplirStats(prefix) {
-    const nomEquipe = document.getElementById(`team${prefix.toUpperCase()}`).value.trim();
-    if (!nomEquipe || nomEquipe.length < 3) { alert("Veuillez entrer un nom d'équipe (min 3 caractères)"); return; }
-    document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = `<span class="loading">${nomEquipe} ⏳</span>`;
-
-    const recherche = await rechercherEquipe(nomEquipe);
-    if (!recherche || !recherche.teams || recherche.teams.length === 0) {
-      document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = nomEquipe;
-      alert("Équipe non trouvée. Vérifiez le nom.");
-      return;
-    }
-    const equipe = recherche.teams[0];
-
-    // Scores
-    const matchs = await getMatchsTermines(equipe.id);
-    const stats = extraireStatsMatchs(matchs, equipe.id);
+    const nom = document.getElementById(`team${prefix.toUpperCase()}`).value.trim();
+    if (!nom || nom.length < 3) return;
+    document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = `<span style="color:#fbbf24;">${nom} ⏳</span>`;
+    const rech = await rechercherEquipe(nom);
+    if (!rech?.teams?.length) { document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = nom; return; }
+    const eq = rech.teams[0];
+    const matchs = await getMatchsTermines(eq.id);
+    const stats = extraireStatsMatchs(matchs, eq.id);
     if (stats) document.getElementById(`${prefix}_scores`).value = stats.scoresTexte;
-
-    // Classement
-    const championnat = document.getElementById("championnat").value;
-    const codeChamp = codesChampionnats[championnat];
-    if (codeChamp) {
-      const classementData = await getClassement(codeChamp);
-      const pos = trouverClassement(classementData, equipe.id);
-      if (pos) document.getElementById(`${prefix}_classement`).value = pos.position;
-    }
-
-    document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = nomEquipe;
+    const champ = document.getElementById("championnat").value;
+    const code = codesChampionnats[champ];
+    if (code) { const cl = await getClassement(code); const pos = trouverClassement(cl, eq.id); if (pos) document.getElementById(`${prefix}_classement`).value = pos.position; }
+    document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = nom;
+    const dl = document.getElementById(`teams${prefix.toUpperCase()}`);
+    if (dl && !dl.querySelector(`option[value="${nom}"]`)) { const opt = document.createElement("option"); opt.value = nom; dl.appendChild(opt); }
     runEngine();
-    alert(`✅ ${nomEquipe} : Scores et classement auto-remplis !\n⚠️ Remplissez xG, xGA et Possession manuellement.`);
   }
 
-  // ========== MOTEUR DE CALCUL ==========
   function norm(n) { return n.toLowerCase().trim(); }
-  let historique = JSON.parse(localStorage.getItem("edge_v8_histo") || "[]");
-  let clvStats = JSON.parse(localStorage.getItem("edge_v8_clv") || '{"positif":0,"negatif":0,"total":0}');
-
+  let historique = JSON.parse(localStorage.getItem("edge_v10_histo") || "[]");
+  let clvStats = JSON.parse(localStorage.getItem("edge_v10_clv") || '{"positif":0,"negatif":0,"total":0}');
   function g(id) { const v = document.getElementById(id)?.value; if (v === undefined) return 0; const n = Number(v); return isNaN(n) ? 0 : n; }
   function fact(n) { if (n < 0) return 0; if (n === 0 || n === 1) return 1; let r = 1; for (let i = 2; i <= n; i++) { r *= i; if (!isFinite(r)) return Number.MAX_VALUE; } return r; }
-
-  function analyserScores(texte) {
-    if (!texte || !texte.trim()) return { butsMarques: 0, butsEncaisses: 0, nbMatchs: 0 };
-    let scores = texte.split(',').map(s => s.trim()).filter(s => s.match(/^\d+-\d+$/));
-    if (scores.length === 0) return { butsMarques: 0, butsEncaisses: 0, nbMatchs: 0 };
-    let bM = 0, bE = 0;
-    scores.forEach(s => { let [b1, b2] = s.split('-').map(Number); bM += b1; bE += b2; });
-    return { butsMarques: bM / scores.length, butsEncaisses: bE / scores.length, nbMatchs: scores.length };
-  }
-
-  function analyserH2H(texte) {
-    if (!texte || !texte.trim()) return { butsA: 0, butsB: 0, nbMatchs: 0, victoiresA: 0 };
-    let scores = texte.split(',').map(s => s.trim()).filter(s => s.match(/^\d+-\d+$/));
-    if (scores.length === 0) return { butsA: 0, butsB: 0, nbMatchs: 0, victoiresA: 0 };
-    let bA = 0, bB = 0;
-    scores.forEach(s => { let [b1, b2] = s.split('-').map(Number); bA += b1; bB += b2; });
-    return { butsA: bA / scores.length, butsB: bB / scores.length, nbMatchs: scores.length, victoiresA: scores.filter(s => { let [b1, b2] = s.split('-').map(Number); return b1 > b2; }).length / scores.length };
-  }
+  function analyserScores(texte) { if (!texte?.trim()) return { butsMarques: 0, butsEncaisses: 0, nbMatchs: 0 }; let sc = texte.split(',').map(s => s.trim()).filter(s => s.match(/^\d+-\d+$/)); if (!sc.length) return { butsMarques: 0, butsEncaisses: 0, nbMatchs: 0 }; let bM = 0, bE = 0; sc.forEach(s => { let [b1, b2] = s.split('-').map(Number); bM += b1; bE += b2; }); return { butsMarques: bM / sc.length, butsEncaisses: bE / sc.length, nbMatchs: sc.length }; }
+  function analyserH2H(texte) { if (!texte?.trim()) return { butsA: 0, butsB: 0, nbMatchs: 0, victoiresA: 0 }; let sc = texte.split(',').map(s => s.trim()).filter(s => s.match(/^\d+-\d+$/)); if (!sc.length) return { butsA: 0, butsB: 0, nbMatchs: 0, victoiresA: 0 }; let bA = 0, bB = 0; sc.forEach(s => { let [b1, b2] = s.split('-').map(Number); bA += b1; bB += b2; }); return { butsA: bA / sc.length, butsB: bB / sc.length, nbMatchs: sc.length, victoiresA: sc.filter(s => { let [b1, b2] = s.split('-').map(Number); return b1 > b2; }).length / sc.length }; }
 
   function sauverProfil(prefix) {
-    const nomEquipe = norm(document.getElementById(`team${prefix.toUpperCase()}`)?.value || "");
-    if (!nomEquipe) return;
+    const nomEq = norm(document.getElementById(`team${prefix.toUpperCase()}`)?.value || ""); if (!nomEq) return;
     const data = { xg: g(`${prefix}_xg`), xga: g(`${prefix}_xga`), possession: g(`${prefix}_possession`), classement: g(`${prefix}_classement`), scores: document.getElementById(`${prefix}_scores`)?.value || "" };
-    localStorage.setItem(`equipe_${nomEquipe}`, JSON.stringify(data));
-  }
-
-  function chargerProfil(prefix) {
-    const nomEquipe = norm(document.getElementById(`team${prefix.toUpperCase()}`)?.value || "");
-    if (!nomEquipe) return;
-    const data = JSON.parse(localStorage.getItem(`equipe_${nomEquipe}`));
-    if (!data) return;
-    if (data.xg) document.getElementById(`${prefix}_xg`).value = data.xg;
-    if (data.xga) document.getElementById(`${prefix}_xga`).value = data.xga;
-    if (data.possession) document.getElementById(`${prefix}_possession`).value = data.possession;
-    if (data.classement) document.getElementById(`${prefix}_classement`).value = data.classement;
-    if (data.scores) document.getElementById(`${prefix}_scores`).value = data.scores;
+    localStorage.setItem(`equipe_${nomEq}`, JSON.stringify(data));
   }
 
   function getStars(score) { if (score >= 90) return '★★★★★'; if (score >= 80) return '★★★★☆'; if (score >= 70) return '★★★☆☆'; if (score >= 60) return '★★☆☆☆'; return '★☆☆☆☆'; }
-  function getRank(edge, signal, clv) { let score = edge * 800 + signal * 0.3 + (clv > 0 ? 15 : 0); if (score >= 85) return { label: 'A+', class: 'rank-ap' }; if (score >= 75) return { label: 'A', class: 'rank-a' }; if (score >= 60) return { label: 'B', class: 'rank-b' }; if (score >= 40) return { label: 'C', class: 'rank-c' }; return { label: 'D', class: 'rank-d' }; }
+  function getRank(edge, signal, clv) { let s = edge * 800 + signal * 0.3 + (clv > 0 ? 15 : 0); if (s >= 85) return { label: 'A+', class: 'rank-ap' }; if (s >= 75) return { label: 'A', class: 'rank-a' }; if (s >= 60) return { label: 'B', class: 'rank-b' }; if (s >= 40) return { label: 'C', class: 'rank-c' }; return { label: 'D', class: 'rank-d' }; }
 
   function runEngine() {
     sauverProfil('A'); sauverProfil('B');
     const teamA = norm(document.getElementById("teamA")?.value || "A"), teamB = norm(document.getElementById("teamB")?.value || "B");
     const dom = document.getElementById("domicile")?.value || "A", bankroll = g("bankroll") || 1000, pari = document.getElementById("pari_choisi")?.value || "1";
-    const cotePrise = g("cote_prise"); let coteClose = g("cote_close");
-    if (coteClose < 1.02) coteClose = cotePrise;
+    const cotePrise = g("cote_prise"); let coteClose = g("cote_close"); if (coteClose < 1.02) coteClose = cotePrise;
 
     let xgA = g("a_xg"), xgaA = g("a_xga"), xgB = g("b_xg"), xgaB = g("b_xga");
     let classementA = g("a_classement"), classementB = g("b_classement");
@@ -296,13 +445,9 @@
     let scoresA = analyserScores(document.getElementById("a_scores")?.value);
     let scoresB = analyserScores(document.getElementById("b_scores")?.value);
     let h2h = analyserH2H(document.getElementById("h2h_scores")?.value);
-
-    // Impact absences manuel
     let absencesA = document.getElementById("a_absences")?.value || "";
     let absencesB = document.getElementById("b_absences")?.value || "";
-    let impactAbsences = 1.0;
-    if (absencesA) impactAbsences *= 0.95;
-    if (absencesB) impactAbsences *= 0.95;
+    let impactAbsences = 1.0; if (absencesA) impactAbsences *= 0.95; if (absencesB) impactAbsences *= 0.95;
 
     let offA = (xgA * 0.25 + scoresA.butsMarques * 0.35 + h2h.butsA * 0.15 + scoresB.butsEncaisses * 0.25) * impactAbsences;
     let defA = (xgaA * 0.25 + scoresA.butsEncaisses * 0.35 + h2h.butsB * 0.15 + scoresB.butsMarques * 0.25) * impactAbsences;
@@ -332,14 +477,6 @@
     let totOU = ov25 + under25; ov25 /= totOU; under25 /= totOU;
     allScores.sort((a, b) => b.prob - a.prob);
 
-    let mcWins = 0, mcDraws = 0, mcLosses = 0, totalButs = 0;
-    for (let s = 0; s < 10000; s++) {
-      let gA = 0, gB = 0;
-      for (let i = 0; i < 90; i++) { if (Math.random() < lH / 90) gA++; if (Math.random() < lA / 90) gB++; }
-      if (gA > gB) mcWins++; else if (gA === gB) mcDraws++; else mcLosses++;
-      totalButs += gA + gB;
-    }
-
     let probMarche = 1 / coteClose;
     let edge1 = p1P - probMarche, edgeX = pXP - probMarche, edge2 = p2P - probMarche;
     let edgeOver = ov25 - probMarche, edgeUnder = under25 - probMarche, edgeBtts = btts - probMarche;
@@ -352,9 +489,10 @@
     let rank = getRank(edgeSel, signalConf, parseFloat(clvStats.total > 0 ? clvStats.positif / clvStats.total : 0));
 
     function kelly(prob, cote) { if (cote < 1.05 || prob <= 0 || prob >= 1) return 0; let v = prob * cote - 1; if (v <= 0) return 0; return Math.min(Math.max((v / (cote - 1)) * 0.10, 0.002), 0.01); }
-    let misePourcentage = kelly(probSel, cotePrise), miseEuro = misePourcentage * bankroll;
+    let misePct = kelly(probSel, cotePrise), miseEuro = misePct * bankroll;
     let edgeMin = cotePrise <= 2.50 ? 0.05 : (cotePrise <= 3.00 ? 0.06 : 0.08);
     let filtreOK = edgeSel > edgeMin && signalConf >= 60 && cotePrise >= 1.70 && cotePrise <= 3.50;
+    let filtreWarn = edgeSel > edgeMin * 0.7 && signalConf >= 50 && cotePrise >= 1.50 && cotePrise <= 4.00;
     let clvVal = (cotePrise > 1.02 && coteClose > 1.02 && coteClose !== cotePrise) ? (((1 / coteClose) - (1 / cotePrise)) * 100).toFixed(2) : "0";
 
     let raisons = [];
@@ -362,26 +500,39 @@
     if (signalConf < 60) raisons.push("Signal insuffisant");
     if (cotePrise < 1.70) raisons.push("Cote trop basse");
     if (cotePrise > 3.50) raisons.push("Cote trop haute");
-    if (dataQuality < 30) raisons.push("Manque de données");
 
-    let marches = [{ nom: "1", edge: edge1 }, { nom: "X", edge: edgeX }, { nom: "2", edge: edge2 }, { nom: "Over 2.5", edge: edgeOver }, { nom: "Under 2.5", edge: edgeUnder }, { nom: "BTTS Oui", edge: edgeBtts }];
-    let bestMarche = marches.sort((a, b) => b.edge - a.edge)[0];
+    let entryClass, entryText;
+    if (filtreOK) { entryClass = "entry-ok"; entryText = "✅ ENTREE VALUE"; }
+    else if (filtreWarn) { entryClass = "entry-warn"; entryText = "⚠️ PRUDENCE"; }
+    else { entryClass = "entry-no"; entryText = "⛔ PAS D'ENTRÉE"; }
 
-    let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <div><strong>${teamA}</strong> vs <strong>${teamB}</strong> <span class="badge-rank ${rank.class}">${rank.label}</span></div>
-      <div style="font-size:0.7rem;">${stars}</div></div>`;
-    html += `<div class="grid-2" style="margin-bottom:4px;"><div style="font-size:0.5rem;">⚔️ Att: ${noteOffA}/100 | 🛡️ Déf: ${noteDefA}/100</div><div style="font-size:0.5rem;text-align:right;">⚔️ Att: ${noteOffB}/100 | 🛡️ Déf: ${noteDefB}/100</div></div>`;
-    html += `<div style="font-size:0.5rem;">📊 1X2: ${(p1P * 100).toFixed(1)}% / ${(pXP * 100).toFixed(1)}% / ${(p2P * 100).toFixed(1)}% | O2.5: ${(ov25 * 100).toFixed(1)}% | BTTS: ${(btts * 100).toFixed(1)}%</div>`;
-    html += `<div style="font-size:0.5rem;">🎲 Monte Carlo: A:${(mcWins / 100).toFixed(1)}% N:${(mcDraws / 100).toFixed(1)}% B:${(mcLosses / 100).toFixed(1)}% | Buts moy: ${(totalButs / 10000).toFixed(2)}</div>`;
-    html += `<div style="margin-top:4px;"><strong>🎯 TOP 5 SCORES EXACTS</strong></div><div class="grid-5" style="font-size:0.45rem;">`;
-    allScores.slice(0, 5).forEach(s => html += `<div>${s.score}: ${(s.prob * 100).toFixed(1)}%</div>`);
+    let html = `<div class="vs-badge"><span class="team-tag team-a">${teamA}</span><span style="color:var(--sub);">VS</span><span class="team-tag team-b">${teamB}</span></div>`;
+    html += `<div style="text-align:center;margin-bottom:10px;"><span class="rank-badge ${rank.class}">${rank.label}</span> <span class="stars">${stars}</span></div>`;
+
+    html += `<div class="stat-grid">
+      <div class="stat-box"><div class="stat-val">${(p1P*100).toFixed(1)}%</div><div class="stat-label">${teamA} gagne</div></div>
+      <div class="stat-box"><div class="stat-val">${(pXP*100).toFixed(1)}%</div><div class="stat-label">Nul</div></div>
+      <div class="stat-box"><div class="stat-val">${(p2P*100).toFixed(1)}%</div><div class="stat-label">${teamB} gagne</div></div>
+    </div>`;
+
+    html += `<div class="stat-grid">
+      <div class="stat-box"><div class="stat-val">${(ov25*100).toFixed(1)}%</div><div class="stat-label">Over 2.5</div></div>
+      <div class="stat-box"><div class="stat-val">${(btts*100).toFixed(1)}%</div><div class="stat-label">BTTS Oui</div></div>
+      <div class="stat-box"><div class="stat-val">${miseEuro.toFixed(2)}€</div><div class="stat-label">Mise recommandée</div></div>
+    </div>`;
+
+    html += `<div style="text-align:center;margin-bottom:8px;">
+      <span class="edge-badge ${edgeSel > edgeMin ? 'edge-pos' : (edgeSel > edgeMin*0.7 ? 'edge-warn' : 'edge-neg')}">Edge: ${(edgeSel*100).toFixed(2)} pts</span>
+      <span style="margin-left:8px;font-size:0.5rem;">CLV: ${clvVal}%</span>
+    </div>`;
+
+    html += `<div style="font-weight:700;font-size:0.5rem;margin-bottom:4px;">🎯 TOP 5 SCORES EXACTS</div>`;
+    html += `<div class="score-grid">`;
+    allScores.slice(0, 5).forEach(s => html += `<div class="score-item">${s.score}<br>${(s.prob*100).toFixed(1)}%</div>`);
     html += `</div>`;
-    html += `<div style="margin-top:4px;"><strong>🔍 MEILLEURE OPPORTUNITÉ:</strong> ${bestMarche.nom} (Edge: ${(bestMarche.edge * 100).toFixed(2)} pts)</div>`;
-    html += `<div style="margin-top:6px;"><strong>📊 DÉCISION : ${pari}</strong></div>`;
-    html += `<div>Modèle: ${(probSel * 100).toFixed(1)}% | Marché: ${(probMarche * 100).toFixed(1)}% | Edge: <span class="${edgeSel > edgeMin ? 'edge-pos' : 'edge-neg'}">${(edgeSel * 100).toFixed(2)} pts</span></div>`;
-    html += `<div>💰 Mise: <strong>${miseEuro.toFixed(2)}€</strong> (${(misePourcentage * 100).toFixed(2)}%) | CLV: ${clvVal}%</div>`;
-    html += `<div class="${filtreOK ? 'entry-ok' : 'entry-no'}">${filtreOK ? '✅ ENTREE VALUE' : '⛔ PAS D ENTREE'}</div>`;
-    if (!filtreOK && raisons.length > 0) html += `<div style="font-size:0.4rem;color:#f87171;">❌ Raisons: ${raisons.join(', ')}</div>`;
+
+    html += `<div class="entry-card ${entryClass}">${entryText}</div>`;
+    if (!filtreOK && raisons.length > 0) html += `<div style="font-size:0.4rem;color:var(--red);text-align:center;margin-top:4px;">❌ ${raisons.join(' · ')}</div>`;
 
     document.getElementById("resultat").innerHTML = html;
     afficherCourbe(); afficherTout();
@@ -389,21 +540,23 @@
 
   function afficherCourbe() {
     let canvas = document.getElementById("graphBankroll"); if (!canvas) return;
-    let ctx = canvas.getContext("2d"); canvas.width = canvas.offsetWidth; canvas.height = 150;
-    let data = [], total = 0;
-    historique.forEach(h => { if (h.profit !== null) total += h.profit; data.push(total); });
+    let ctx = canvas.getContext("2d"); canvas.width = canvas.offsetWidth; canvas.height = 200;
+    let data = [], total = 0, pic = 0, drawdown = 0;
+    historique.forEach(h => { if (h.profit !== null) { total += h.profit; data.push(total); if (total > pic) pic = total; let dd = pic > 0 ? (pic - total) / pic * 100 : 0; if (dd > drawdown) drawdown = dd; } });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "#0a0f1a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (data.length < 2) { ctx.fillStyle = "#64748b"; ctx.font = "10px Inter"; ctx.textAlign = "center"; ctx.fillText("2 paris minimum", canvas.width / 2, 75); return; }
+    if (data.length < 2) { ctx.fillStyle = "#64748b"; ctx.font = "10px Inter"; ctx.textAlign = "center"; ctx.fillText("2 paris minimum", canvas.width / 2, 100); return; }
     let max = Math.max(...data, 0), min = Math.min(...data, 0), range = max - min || 1;
     let zeroY = canvas.height - ((0 - min) / range) * canvas.height;
-    ctx.strokeStyle = "#334155"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(0, zeroY); ctx.lineTo(canvas.width, zeroY); ctx.stroke(); ctx.setLineDash([]);
-    ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.strokeStyle = "#1e293b"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(0, zeroY); ctx.lineTo(canvas.width, zeroY); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2; ctx.beginPath();
     data.forEach((v, i) => { let x = (i / (data.length - 1)) * canvas.width, y = canvas.height - ((v - min) / range) * canvas.height; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
     ctx.stroke();
     let profitFinal = data[data.length - 1];
-    ctx.fillStyle = profitFinal >= 0 ? "#4ade80" : "#f87171"; ctx.font = "bold 9px Inter";
-    ctx.fillText(`${profitFinal >= 0 ? '+' : ''}${profitFinal.toFixed(2)}€`, canvas.width - 35, canvas.height - ((profitFinal - min) / range) * canvas.height - 8);
+    ctx.fillStyle = profitFinal >= 0 ? "#22c55e" : "#ef4444"; ctx.font = "bold 10px Inter";
+    ctx.fillText(`${profitFinal >= 0 ? '+' : ''}${profitFinal.toFixed(2)}€`, canvas.width - 45, canvas.height - ((profitFinal - min) / range) * canvas.height - 8);
+    ctx.fillStyle = "#ef4444"; ctx.font = "8px Inter"; ctx.textAlign = "left";
+    ctx.fillText(`Drawdown max: ${drawdown.toFixed(1)}%`, 8, 14);
   }
 
   function sauvegarderAvantMatch() {
@@ -411,7 +564,7 @@
     const edgeT = document.getElementById("resultat")?.innerText.match(/Edge.*?([0-9.-]+) pts/)?.[1];
     let clvVal = (cotePrise > 1.02 && coteClose > 1.02) ? (((1 / coteClose) - (1 / cotePrise)) * 100).toFixed(2) : "0";
     historique.push({ date: new Date().toISOString().slice(0, 10), match: `${norm(document.getElementById("teamA")?.value || "A")} vs ${norm(document.getElementById("teamB")?.value || "B")}`, pari, cote: cotePrise, close: coteClose, edge: edgeT ? parseFloat(edgeT) / 100 : 0, clv: clvVal, resultat: null, profit: null });
-    localStorage.setItem("edge_v8_histo", JSON.stringify(historique));
+    localStorage.setItem("edge_v10_histo", JSON.stringify(historique));
     afficherCourbe(); afficherTout(); alert("✅ Pari sauvegardé AVANT match.");
   }
 
@@ -430,27 +583,26 @@
     dernierPari.resultat = res; dernierPari.profit = gagne ? dernierPari.cote - 1 : -1;
     if (parseFloat(dernierPari.clv) > 0) clvStats.positif++; else if (parseFloat(dernierPari.clv) < 0) clvStats.negatif++;
     clvStats.total++;
-    localStorage.setItem("edge_v8_histo", JSON.stringify(historique));
-    localStorage.setItem("edge_v8_clv", JSON.stringify(clvStats));
+    localStorage.setItem("edge_v10_histo", JSON.stringify(historique));
+    localStorage.setItem("edge_v10_clv", JSON.stringify(clvStats));
     afficherCourbe(); afficherTout(); runEngine();
     alert(`✅ ${gagne ? 'GAGNÉ' : 'Perdu'} | Profit: ${dernierPari.profit > 0 ? '+' + dernierPari.profit.toFixed(2) : dernierPari.profit.toFixed(2)}€`);
   }
 
   function afficherTout() {
-    let divEnAttente = document.getElementById("pariEnAttente");
-    if (divEnAttente) { let p = [...historique].reverse().find(h => h.resultat === null); divEnAttente.innerHTML = p ? `<strong style="color:#fbbf24;">⏳ Pari en attente : ${p.match} (${p.pari} @ ${p.cote})</strong>` : ""; }
-    let div = document.getElementById("historique"), clvDiv = document.getElementById("clvSummary"), alerteDiv = document.getElementById("alerteRisque");
+    let clvDiv = document.getElementById("clvSummary"), backDiv = document.getElementById("backtestSummary"), alerteDiv = document.getElementById("alerteRisque"), div = document.getElementById("historique");
     let connus = historique.filter(h => h.resultat !== null);
-    if (clvDiv && clvStats.total > 0) { let taux = clvStats.total > 0 ? (clvStats.positif / clvStats.total * 100).toFixed(1) : 0; clvDiv.innerHTML = `📈 CLV: ${clvStats.total} paris | +:${clvStats.positif} (${taux}%) | ${clvStats.total >= 50 ? (taux > 52 ? '🟢 Avantage probable' : '🟡 Incertain') : '⏳ Min 50 paris'}`; }
+    if (clvDiv && clvStats.total > 0) { let taux = clvStats.total > 0 ? (clvStats.positif / clvStats.total * 100).toFixed(1) : 0; clvDiv.innerHTML = `<span style="background:#22c55e20;color:#22c55e;padding:3px 8px;border-radius:6px;font-weight:700;">📈 CLV: ${clvStats.total} paris | +${clvStats.positif} (${taux}%) | ${clvStats.total>=50?(taux>52?'🟢 Avantage':'🟡 Incertain'):'⏳ Min 50'}</span>`; }
+    if (backDiv && connus.length >= 10) { let err = connus.reduce((s, h) => s + ((h.edge || 0) - (h.profit > 0 ? 1 : 0)), 0) / connus.length; backDiv.innerHTML = `🔬 Backtesting (${connus.length}): Erreur ${(err*100).toFixed(1)}% | ${err>0.03?'⚠️ Optimiste':(err<-0.03?'⚠️ Pessimiste':'✅ Calibré')}`; }
     let profitTotal = connus.reduce((s, h) => s + (h.profit || 0), 0), roi = connus.length > 0 ? ((profitTotal / connus.length) * 100).toFixed(2) : "0";
     if (alerteDiv) { let dp = 0; for (let i = historique.length - 1; i >= 0; i--) { if (historique[i] && historique[i].profit < 0) dp++; else break; } alerteDiv.innerHTML = dp >= 5 ? `⚠️ ${dp} pertes consécutives ! Pause risque.` : (dp >= 3 ? `🟡 ${dp} pertes récentes.` : ""); }
     if (historique.length === 0) { div.innerHTML = "Aucun pari."; return; }
-    let html = `<div style="font-size:0.4rem;">📊 ${historique.length} paris | Profit: ${profitTotal.toFixed(2)}€ | ROI: ${roi}%</div>`;
-    historique.slice(-5).reverse().forEach(h => html += `<div class="hist-item">${h.date} ${h.match} ${h.pari} C:${h.cote} CLV:${h.clv}% P:${h.profit !== null ? (h.profit > 0 ? '+' + h.profit.toFixed(2) : h.profit.toFixed(2)) : '?'}€ R:${h.resultat || '?'}</div>`);
+    let html = `<div style="font-size:0.45rem;margin-bottom:6px;font-weight:600;">📊 ${historique.length} paris | Profit: <span style="color:${profitTotal>=0?'#22c55e':'#ef4444'}">${profitTotal.toFixed(2)}€</span> | ROI: ${roi}%</div>`;
+    historique.slice(-6).reverse().forEach(h => html += `<div class="hist-item"><span>${h.date} ${h.match} ${h.pari}</span><span>C:${h.cote} CLV:${h.clv}% <span class="${h.profit>0?'profit-pos':'profit-neg'}">${h.profit!==null?(h.profit>0?'+'+h.profit.toFixed(2):h.profit.toFixed(2)):'?'}€</span></span></div>`);
     div.innerHTML = html;
   }
 
-  function exporterCSV() { let csv = "date,match,pari,cote,close,edge,clv,resultat,profit\n"; historique.forEach(h => csv += `${h.date},${h.match},${h.pari},${h.cote},${h.close},${h.edge},${h.clv},${h.resultat || ""},${h.profit !== null ? h.profit : ""}\n`); let blob = new Blob([csv], { type: "text/csv" }); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "edge_v8_histo.csv"; a.click(); }
+  function exporterCSV() { let csv = "date,match,pari,cote,close,edge,clv,resultat,profit\n"; historique.forEach(h => csv += `${h.date},${h.match},${h.pari},${h.cote},${h.close},${h.edge},${h.clv},${h.resultat||""},${h.profit!==null?h.profit:""}\n`); let blob = new Blob([csv], { type: "text/csv" }); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "edge_v10_histo.csv"; a.click(); }
 
   window.addEventListener("DOMContentLoaded", () => { runEngine(); afficherCourbe(); afficherTout(); });
 </script>
