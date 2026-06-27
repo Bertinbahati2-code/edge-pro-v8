@@ -2,322 +2,421 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>⚽ EDGE PRO · IMPORT RAPIDE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>⚽ EDGE PRO AI · ULTIMATE</title>
   <style>
     :root {
-      --bg: #030712; --card: #0f172a; --border: #1e293b;
+      --bg: #0a0d14; --card: #111827; --border: #1f2937;
       --blue: #3b82f6; --red: #ef4444; --green: #22c55e; --yellow: #f59e0b;
-      --cyan: #06b6d4; --purple: #8b5cf6; --text: #f1f5f9; --sub: #94a3b8;
-      --radius: 10px; --shadow: 0 4px 16px rgba(0,0,0,0.4);
+      --cyan: #06b6d4; --purple: #8b5cf6; --text: #f1f5f9; --sub: #9ca3af;
+      --radius: 16px; --btn-radius: 12px; --shadow: 0 4px 20px rgba(0,0,0,0.5);
+      --nav-height: 60px; --safe-bottom: env(safe-area-inset-bottom, 10px);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 10px; display: flex; justify-content: center; min-height: 100vh; }
-    .app { max-width: 700px; width: 100%; }
-
-    .header { text-align: center; margin-bottom: 12px; }
-    .header h1 { font-size: 1.3rem; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    .card { background: var(--card); border-radius: var(--radius); padding: 12px 14px; box-shadow: var(--shadow); margin-bottom: 10px; border: 1px solid var(--border); }
-    .card h2 { font-size: 0.7rem; font-weight: 700; margin-bottom: 8px; border-left: 3px solid var(--cyan); padding-left: 8px; }
-
-    .field { display: flex; flex-direction: column; margin-bottom: 6px; }
-    .field label { font-size: 0.45rem; text-transform: uppercase; letter-spacing: 0.3px; color: var(--sub); margin-bottom: 2px; font-weight: 700; }
-    input, select, textarea { background: #020617; border: 1px solid var(--border); border-radius: 6px; padding: 7px 9px; color: var(--text); font-weight: 500; outline: none; font-size: 0.5rem; font-family: inherit; }
-    input:focus, select:focus, textarea:focus { border-color: var(--cyan); }
-    textarea { resize: vertical; min-height: 60px; font-size: 0.45rem; line-height: 1.3; }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-
-    .btn { padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.55rem; cursor: pointer; border: none; width: 100%; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; padding: 0; display: flex; justify-content: center; min-height: 100vh; font-size: 15px; -webkit-tap-highlight-color: transparent; user-select: none; }
+    .app { max-width: 520px; width: 100%; padding-bottom: calc(var(--nav-height) + var(--safe-bottom) + 20px); }
+    .header { background: linear-gradient(180deg, #111827 0%, #0a0d14 100%); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+    .header h1 { font-size: 1.2rem; font-weight: 800; background: linear-gradient(135deg, var(--cyan), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .balance-row { display: flex; gap: 12px; align-items: center; font-size: 0.7rem; }
+    .content { padding: 12px; overflow-y: auto; }
+    .card { background: var(--card); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .card h2 { font-size: 0.85rem; font-weight: 700; margin-bottom: 10px; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .field { display: flex; flex-direction: column; margin-bottom: 8px; }
+    .field label { font-size: 0.65rem; text-transform: uppercase; color: var(--sub); margin-bottom: 2px; font-weight: 600; }
+    input, select { background: #1a2233; border: 1px solid var(--border); border-radius: 8px; padding: 9px; color: var(--text); font-size: 0.8rem; width: 100%; }
+    .btn { padding: 11px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; border: none; width: 100%; }
     .btn-primary { background: linear-gradient(135deg, var(--cyan), var(--purple)); color: white; }
     .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
-    .btn-green { background: var(--green); color: #000; }
-
-    .result-box { background: var(--card); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-top: 10px; }
-    .vs-badge { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; font-size: 0.8rem; font-weight: 800; }
-    .team-tag { padding: 5px 12px; border-radius: 8px; font-size: 0.6rem; font-weight: 700; }
-    .team-a { background: #3b82f620; color: var(--blue); border: 1px solid #3b82f640; }
-    .team-b { background: #ef444420; color: var(--red); border: 1px solid #ef444440; }
-
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
-    .stat-box { background: #0a0f1a; padding: 6px; border-radius: 6px; text-align: center; }
-    .stat-box .big { font-size: 0.7rem; font-weight: 800; }
-    .stat-box .lbl { font-size: 0.35rem; color: var(--sub); text-transform: uppercase; }
-
-    .edge-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.5rem; }
-    .edge-pos { background: #22c55e20; color: var(--green); } .edge-neg { background: #ef444420; color: var(--red); }
-
-    .entry-card { padding: 10px; border-radius: 8px; text-align: center; font-weight: 700; font-size: 0.55rem; margin-top: 6px; }
-    .entry-ok { background: #22c55e15; border: 2px solid var(--green); color: var(--green); }
-    .entry-no { background: #ef444415; border: 2px solid var(--red); color: var(--red); }
-
-    .btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
-    .btn-row .btn { flex: 1; } .btn-row .btn:first-child { flex: 2; }
-
-    .info-box { background: #0a0f1a; border: 1px dashed var(--border); border-radius: 6px; padding: 8px; font-size: 0.4rem; color: var(--sub); margin-top: 6px; }
-    .extracted { background: #22c55e10; border: 1px solid #22c55e40; border-radius: 4px; padding: 4px 6px; font-size: 0.4rem; margin-top: 4px; }
+    .btn-sm { padding: 6px 12px; font-size: 0.65rem; width: auto; border-radius: 6px; }
+    .vs-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 10px; }
+    .team-block { text-align: center; flex: 1; }
+    .team-block .flag { font-size: 2.2rem; } .team-block .name { font-size: 0.8rem; font-weight: 700; margin-top: 3px; }
+    .vs-text { font-size: 0.9rem; font-weight: 800; color: var(--sub); }
+    .odds-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .odd-btn { flex: 1; background: #1a2233; border: 2px solid var(--border); border-radius: var(--btn-radius); padding: 10px 6px; text-align: center; cursor: pointer; transition: 0.2s; font-weight: 600; color: var(--text); }
+    .odd-btn .label { font-size: 0.65rem; color: var(--sub); } .odd-btn .value { font-size: 1.1rem; font-weight: 800; }
+    .odd-btn.value-bet { border-color: var(--green); background: rgba(34,197,94,0.15); }
+    .force-bar { height: 10px; background: #1f2937; border-radius: 5px; overflow: hidden; margin: 4px 0; display: flex; }
+    .force-fill-a { height: 100%; background: var(--blue); border-radius: 5px; transition: 0.5s; }
+    .force-fill-b { height: 100%; background: var(--red); border-radius: 5px; transition: 0.5s; }
+    .ai-badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; }
+    .ai-value { background: rgba(34,197,94,0.2); color: var(--green); }
+    .ai-no-value { background: rgba(239,68,68,0.2); color: var(--red); }
+    .info-line { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 3px 0; }
+    .info-line .val { font-weight: 600; }
+    .score-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 4px; margin-top: 6px; }
+    .score-item { background: #1a2233; padding: 6px; border-radius: 6px; text-align: center; font-size: 0.65rem; }
+    .mini-markets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; }
+    .mini-market { background: #1a2233; padding: 8px; border-radius: 8px; text-align: center; }
+    .mini-market .pct { font-size: 1rem; font-weight: 800; } .mini-market .lbl { font-size: 0.55rem; color: var(--sub); }
+    .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); max-width: 520px; width: 100%; background: #111827; border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 8px 0 var(--safe-bottom); z-index: 10; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.55rem; color: var(--sub); cursor: pointer; padding: 4px 6px; }
+    .nav-item .icon { font-size: 1.1rem; } .nav-item.active { color: var(--cyan); }
+    .page { display: none; } .page.active { display: block; }
+    .hist-item { display: flex; justify-content: space-between; padding: 6px; border-bottom: 1px solid var(--border); font-size: 0.7rem; }
+    .hist-item .win { color: var(--green); } .hist-item .lose { color: var(--red); }
+    canvas { width: 100%; height: 160px; background: #0a0d14; border-radius: 10px; margin-top: 8px; }
+    .explain-box { background: #1a2233; border-radius: 8px; padding: 8px; font-size: 0.65rem; line-height: 1.4; margin-top: 6px; }
+    .alert { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 8px; padding: 8px; font-size: 0.7rem; margin-top: 6px; }
   </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
-    <h1>⚽ EDGE PRO · IMPORT RAPIDE</h1>
-    <div style="color:var(--sub);font-size:0.45rem;">Collez les données du match → Analyse automatique</div>
+    <h1>⚽ EDGE PRO AI · ULTIMATE</h1>
+    <div class="balance-row"><span class="bal" id="headerBal">1000€</span><span class="roi" id="headerRoi">+0%</span></div>
   </div>
 
-  <!-- ZONE DE COLLAGE -->
-  <div class="card" style="border-left: 3px solid var(--yellow);">
-    <h2>📋 COLLEZ TOUT ICI (Sofascore, FlashScore, etc.)</h2>
-    <textarea id="data_brute" placeholder="Collez ici TOUTES les informations du match :
-- Noms des équipes
-- Cotes (1X2, Over/Under, BTTS)
-- Classement, forme, H2H
-- Scores récents
-- Joueurs absents
-- Toute autre donnée..."></textarea>
-    <button class="btn btn-green" onclick="extraireDonnees()" style="margin-top:6px;">🔍 EXTRAIRE ET ANALYSER</button>
-    <div id="extractionStatus" class="info-box" style="margin-top:4px;">
-      📌 Collez les données du match (noms, cotes, classement, scores, H2H...) puis cliquez sur Extraire.
+  <!-- PAGE ANALYSE -->
+  <div class="page active" id="page-analyse">
+    <div class="content">
+      <div class="card">
+        <h2>🏴 Match</h2>
+        <div class="vs-row">
+          <div class="team-block"><div class="flag">🏳</div><div class="name" id="teamNameA">-</div></div>
+          <div class="vs-text">VS</div>
+          <div class="team-block"><div class="flag">🏳</div><div class="name" id="teamNameB">-</div></div>
+        </div>
+        <div class="match-info" id="matchInfo">📍 - · 🏟 -</div>
+        <div class="field"><label>🟦 Équipe A</label><input id="teamA" placeholder="Ex: Panama" oninput="autoComplete('teamA');updateMatchDisplay()" autocomplete="off"></div>
+        <div class="field"><label>🟥 Équipe B</label><input id="teamB" placeholder="Ex: Angleterre" oninput="autoComplete('teamB');updateMatchDisplay()" autocomplete="off"></div>
+        <div class="odds-row">
+          <div class="odd-btn"><div class="label">1</div><div class="value" id="val1">-</div></div>
+          <div class="odd-btn"><div class="label">X</div><div class="value" id="valX">-</div></div>
+          <div class="odd-btn"><div class="label">2</div><div class="value" id="val2">-</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+          <div class="field"><label>Cote 1</label><input id="quickCote1" type="number" step="0.01" placeholder="0" oninput="updateCotesFromQuick()"></div>
+          <div class="field"><label>Cote X</label><input id="quickCoteX" type="number" step="0.01" placeholder="0" oninput="updateCotesFromQuick()"></div>
+          <div class="field"><label>Cote 2</label><input id="quickCote2" type="number" step="0.01" placeholder="0" oninput="updateCotesFromQuick()"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📊 Statistiques</h2>
+        <div id="profileInfo" style="font-size:0.6rem;color:var(--sub);margin-bottom:6px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <div class="field"><label>📈 xG A *</label><input id="a_xg" type="number" step="0.01" placeholder="0"></div><div class="field"><label>📈 xG B *</label><input id="b_xg" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>📉 xGA A</label><input id="a_xga" type="number" step="0.01" placeholder="0"></div><div class="field"><label>📉 xGA B</label><input id="b_xga" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>⚽ Buts/match A</label><input id="a_buts" type="number" step="0.01" placeholder="0"></div><div class="field"><label>⚽ Buts/match B</label><input id="b_buts" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>🎯 Tirs/match A</label><input id="a_tirs" type="number" step="0.01" placeholder="0"></div><div class="field"><label>🎯 Tirs/match B</label><input id="b_tirs" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>📋 Poss A%</label><input id="a_possession" type="number" step="0.01" placeholder="0"></div><div class="field"><label>📋 Poss B%</label><input id="b_possession" type="number" step="0.01" placeholder="0"></div>
+          <div class="field"><label>🏅 PPG A</label><input id="a_ppg" type="number" step="0.01" placeholder="0"></div><div class="field"><label>🏅 PPG B</label><input id="b_ppg" type="number" step="0.01" placeholder="0"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;">
+          <div class="field"><label>🏆 Championnat</label><select id="championnat"><option value="PL">Premier League</option><option value="Liga">Liga</option><option value="SA">Serie A</option><option value="BL">Bundesliga</option><option value="L1">Ligue 1</option><option value="INT" selected>International</option></select></div>
+          <div class="field"><label>🏟️ Stade</label><select id="domicile"><option value="A">A domicile</option><option value="B">B domicile</option><option value="N" selected>Neutre</option></select></div>
+        </div>
+        <button class="btn btn-primary" onclick="runUltimateAnalysis()" style="margin-top:10px;">🔍 ANALYSE ULTIME</button>
+      </div>
+
+      <div class="card" id="analysisCard">
+        <h2>🤖 EDGE PRO AI · RÉSULTAT</h2>
+        <div id="analysisContent"><div style="text-align:center;color:var(--sub);padding:20px;">Remplissez les stats et appuyez sur ANALYSE ULTIME</div></div>
+      </div>
     </div>
   </div>
 
-  <!-- RÉSULTATS EXTRAITS -->
-  <div class="card" id="carteExtraction" style="display:none; border-left: 3px solid var(--green);">
-    <h2>✅ DONNÉES EXTRAITES</h2>
-    <div id="donneesExtraits"></div>
-  </div>
-
-  <!-- CHAMPS MANUELS -->
-  <div class="card">
-    <h2>✏️ COMPLÉTEZ MANUELLEMENT</h2>
-    <div class="grid-2">
-      <div class="field"><label>📊 xG Équipe A</label><input id="a_xg" value="" placeholder="Ex: 1.50"></div>
-      <div class="field"><label>📊 xGA Équipe A</label><input id="a_xga" value="" placeholder="Ex: 1.20"></div>
-      <div class="field"><label>📊 xG Équipe B</label><input id="b_xg" value="" placeholder="Ex: 1.40"></div>
-      <div class="field"><label>📊 xGA Équipe B</label><input id="b_xga" value="" placeholder="Ex: 0.90"></div>
-    </div>
-    <div class="grid-2" style="margin-top:4px;">
-      <div class="field"><label>📊 Possession A %</label><input id="a_possession" value="" placeholder="Ex: 52"></div>
-      <div class="field"><label>📊 Possession B %</label><input id="b_possession" value="" placeholder="Ex: 48"></div>
+  <!-- PAGE AVANCÉ -->
+  <div class="page" id="page-avance">
+    <div class="content">
+      <div class="card"><h2>🩼 Impact joueurs</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><div class="field"><label>Absent offensif A (0-1)</label><input id="a_abs_off" type="number" min="0" max="1" step="0.1" value="0"></div><div class="field"><label>Absent offensif B (0-1)</label><input id="b_abs_off" type="number" min="0" max="1" step="0.1" value="0"></div><div class="field"><label>Absent défensif A (0-1)</label><input id="a_abs_def" type="number" min="0" max="1" step="0.1" value="0"></div><div class="field"><label>Absent défensif B (0-1)</label><input id="b_abs_def" type="number" min="0" max="1" step="0.1" value="0"></div></div></div>
+      <div class="card"><h2>📋 Forme & Contexte</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;"><div class="field"><label>Forme récente A (W/D/L)</label><input id="a_forme" placeholder="ex: WWDLW"></div><div class="field"><label>Forme récente B (W/D/L)</label><input id="b_forme" placeholder="ex: LLDWD"></div><div class="field"><label>⏱️ Repos A (jours)</label><input id="a_repos" type="number" value="5" placeholder="5"></div><div class="field"><label>⏱️ Repos B (jours)</label><input id="b_repos" type="number" value="5" placeholder="5"></div><div class="field"><label>⭐ Importance</label><select id="importance"><option value="1">Amical</option><option value="2" selected>Championnat</option><option value="3">Coupe</option><option value="4">Élimination directe</option></select></div><div class="field"><label>🎯 Enjeu</label><select id="enjeu"><option value="1">Sans enjeu</option><option value="2" selected>Normal</option><option value="3">Décisif</option></select></div></div><button class="btn btn-primary" onclick="runUltimateAnalysis()" style="margin-top:10px;">🔍 ANALYSER AVEC CONTEXTE</button></div>
     </div>
   </div>
 
-  <!-- BOUTONS -->
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="runEngine()">🔮 ANALYSER</button>
-    <button class="btn btn-secondary" onclick="sauvegarderAvantMatch()">💾 AVANT</button>
-    <button class="btn btn-secondary" onclick="sauvegarderApresMatch()">📋 APRÈS</button>
+  <!-- PAGE BANKROLL -->
+  <div class="page" id="page-bankroll">
+    <div class="content">
+      <div class="card"><h2>💰 Bankroll</h2><div class="field"><label>Capital (€)</label><input id="bankroll" value="1000"></div><button class="btn btn-primary" onclick="updateBankroll()">💾 SAUVEGARDER</button></div>
+      <div class="card"><h2>📈 Courbe</h2><canvas id="graphBankroll" height="160"></canvas></div>
+      <div class="card"><h2>📋 Historique</h2><div id="statsPro" style="font-size:0.65rem;margin-bottom:8px;"></div><div id="historiqueList"></div></div>
+    </div>
   </div>
 
-  <div class="result-box" id="resultat"></div>
+  <!-- PAGE ÉQUIPES -->
+  <div class="page" id="page-equipes">
+    <div class="content">
+      <div class="card"><h2>📋 Profils équipes</h2><div id="equipesList"></div></div>
+      <button class="btn btn-secondary" onclick="exporterToutesDonnees()" style="margin-top:8px;">📤 Export complet (JSON)</button>
+      <button class="btn btn-secondary" onclick="importerToutesDonnees()" style="margin-top:4px;">📥 Import complet (JSON)</button>
+    </div>
+  </div>
+
+  <!-- PAGE RÉGLAGES -->
+  <div class="page" id="page-reglages">
+    <div class="content">
+      <div class="card"><h2>📋 Après match</h2><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;"><div class="field"><label>Résultat</label><select id="resultat_reel"><option value="">?</option><option value="1">1</option><option value="X">X</option><option value="2">2</option></select></div><div class="field"><label>⚽ Buts A</label><input id="butsA_reels" placeholder="0"></div><div class="field"><label>⚽ Buts B</label><input id="butsB_reels" placeholder="0"></div></div><button class="btn btn-secondary" onclick="sauvegarderApresMatch()" style="margin-top:8px;">📋 ENREGISTRER</button></div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="nav-bar">
+    <div class="nav-item active" data-page="page-analyse" onclick="switchPage('page-analyse',this)"><span class="icon">🏠</span>Analyse</div>
+    <div class="nav-item" data-page="page-avance" onclick="switchPage('page-avance',this)"><span class="icon">📋</span>Avancé</div>
+    <div class="nav-item" data-page="page-bankroll" onclick="switchPage('page-bankroll',this)"><span class="icon">💰</span>Bank</div>
+    <div class="nav-item" data-page="page-equipes" onclick="switchPage('page-equipes',this)"><span class="icon">📊</span>Équipes</div>
+    <div class="nav-item" data-page="page-reglages" onclick="switchPage('page-reglages',this)"><span class="icon">⚙️</span>Réglages</div>
+  </div>
 </div>
 
 <script>
-  // Stockage global des données extraites
-  let dataExtraite = {};
+  // ================= INDEXEDDB =================
+  let db; const DB_NAME = "EdgeProAIUltimate"; const DB_VERSION = 1;
+  function openDB() { return new Promise((r, rej) => { const req = indexedDB.open(DB_NAME, DB_VERSION); req.onupgradeneeded = e => { const db = e.target.result; if (!db.objectStoreNames.contains("historique")) db.createObjectStore("historique", { keyPath: "id", autoIncrement: true }); if (!db.objectStoreNames.contains("equipes")) db.createObjectStore("equipes", { keyPath: "nom" }); if (!db.objectStoreNames.contains("config")) db.createObjectStore("config", { keyPath: "key" }); }; req.onsuccess = e => { db = e.target.result; r(db); }; req.onerror = () => rej(); }); }
+  async function saveDB(store, data) { if (!db) await openDB(); return new Promise((r, rej) => { const tx = db.transaction(store, "readwrite"); tx.objectStore(store).put(data); tx.oncomplete = r; tx.onerror = rej; }); }
+  async function getAll(store) { if (!db) await openDB(); return new Promise((r, rej) => { const tx = db.transaction(store, "readonly"); const req = tx.objectStore(store).getAll(); req.onsuccess = () => r(req.result); req.onerror = rej; }); }
 
-  function extraireDonnees() {
-    const texte = document.getElementById("data_brute").value;
-    if (!texte.trim()) {
-      document.getElementById("extractionStatus").innerHTML = "❌ Veuillez coller des données.";
-      return;
-    }
+  let historique = [], bankroll = 1000, lastAnalysisData = null, equipesDB = {};
 
-    // INIT
-    dataExtraite = {
-      teamA: "", teamB: "", cote1: "", coteX: "", cote2: "",
-      coteOver: "", coteUnder: "", coteBttsOui: "", coteBttsNon: "",
-      classementA: "", classementB: "", h2h: "",
-      scoresA: "", scoresB: "", absencesA: "", absencesB: "",
-      championnat: "", domicile: "A"
-    };
-
-    // NOMS D'ÉQUIPES (premier "vs" ou "face à" trouvé)
-    const matchVs = texte.match(/([A-Za-zÀ-ÿ\s]+?)\s+(vs|face à|contre|-\s+)\s+([A-Za-zÀ-ÿ\s]+)/i);
-    if (matchVs) {
-      dataExtraite.teamA = matchVs[1].trim();
-      dataExtraite.teamB = matchVs[3].trim();
-    }
-
-    // COTES 1X2
-    const cote1Match = texte.match(/(?:1|victoire\s+domicile)[\s\S]*?(\d+\.\d+)/i);
-    if (cote1Match) dataExtraite.cote1 = cote1Match[1];
-    
-    // Pattern plus général : chercher les 3 cotes consécutives
-    const cotesMatch = texte.match(/(\d+\.\d+)\s+(\d+\.\d+)\s+(\d+\.\d+)/);
-    if (cotesMatch && !dataExtraite.cote1) {
-      dataExtraite.cote1 = cotesMatch[1];
-      dataExtraite.coteX = cotesMatch[2];
-      dataExtraite.cote2 = cotesMatch[3];
-    }
-
-    // OVER/UNDER
-    const overMatch = texte.match(/Plus de\s+2\.5\s+(\d+\.\d+)/i);
-    const underMatch = texte.match(/Moins de\s+2\.5\s+(\d+\.\d+)/i);
-    if (overMatch) dataExtraite.coteOver = overMatch[1];
-    if (underMatch) dataExtraite.coteUnder = underMatch[1];
-
-    // BTTS
-    const bttsOui = texte.match(/Les deux équipes marquent\s+Oui\s+(\d+\.\d+)/i);
-    const bttsNon = texte.match(/Les deux équipes marquent\s+Non\s+(\d+\.\d+)/i);
-    if (bttsOui) dataExtraite.coteBttsOui = bttsOui[1];
-    if (bttsNon) dataExtraite.coteBttsNon = bttsNon[1];
-
-    // CLASSEMENT
-    if (dataExtraite.teamA) {
-      const posA = texte.match(new RegExp(`${dataExtraite.teamA}[\\s\\S]{0,50}?(\\d+)[eè]me?\\s`, 'i'));
-      if (posA) dataExtraite.classementA = posA[1];
-    }
-    if (dataExtraite.teamB) {
-      const posB = texte.match(new RegExp(`${dataExtraite.teamB}[\\s\\S]{0,50}?(\\d+)[eè]me?\\s`, 'i'));
-      if (posB) dataExtraite.classementB = posB[1];
-    }
-
-    // H2H
-    const h2hMatch = texte.match(/H2H[\s\S]{0,200}?(\d+-\d+[\s\S]{0,50}?(?:\d+-\d+)?)/i);
-    if (h2hMatch) dataExtraite.h2h = h2hMatch[1].replace(/\s+/g, ' ').trim();
-
-    // BLESSURES
-    const blessuresA = texte.match(new RegExp(`${dataExtraite.teamA}[\\s\\S]{0,300}?Bless[\\s\\S]{0,100}?:\\s*([\\s\\S]{0,100}?)(?:${dataExtraite.teamB}|$)`, 'i'));
-    if (blessuresA) dataExtraite.absencesA = blessuresA[1].trim();
-
-    // REMPLIR LES CHAMPS
-    if (dataExtraite.teamA) document.getElementById("teamA").value = dataExtraite.teamA;
-    if (dataExtraite.teamB) document.getElementById("teamB").value = dataExtraite.teamB;
-    if (dataExtraite.cote1) document.getElementById("cote_prise").value = dataExtraite.cote1;
-    if (dataExtraite.classementA) document.getElementById("a_classement").value = dataExtraite.classementA;
-    if (dataExtraite.classementB) document.getElementById("b_classement").value = dataExtraite.classementB;
-    if (dataExtraite.h2h) document.getElementById("h2h_scores").value = dataExtraite.h2h;
-    if (dataExtraite.absencesA) document.getElementById("a_absences").value = dataExtraite.absencesA;
-    if (dataExtraite.absencesB) document.getElementById("b_absences").value = dataExtraite.absencesB;
-
-    // AFFICHER LES DONNÉES EXTRAITES
-    document.getElementById("carteExtraction").style.display = "block";
-    document.getElementById("donneesExtraits").innerHTML = `
-      <div class="extracted">
-        <strong>Équipes :</strong> ${dataExtraite.teamA || '?'} vs ${dataExtraite.teamB || '?'}<br>
-        <strong>Cotes :</strong> 1:${dataExtraite.cote1||'?'} X:${dataExtraite.coteX||'?'} 2:${dataExtraite.cote2||'?'}<br>
-        <strong>Over 2.5 :</strong> ${dataExtraite.coteOver||'?'} | <strong>Under 2.5 :</strong> ${dataExtraite.coteUnder||'?'}<br>
-        <strong>BTTS Oui :</strong> ${dataExtraite.coteBttsOui||'?'} | <strong>BTTS Non :</strong> ${dataExtraite.coteBttsNon||'?'}<br>
-        <strong>Classement :</strong> A:${dataExtraite.classementA||'?'} B:${dataExtraite.classementB||'?'}<br>
-        <strong>H2H :</strong> ${dataExtraite.h2h||'Non trouvé'}<br>
-        <strong>Absences A :</strong> ${dataExtraite.absencesA||'Non trouvé'}<br>
-      </div>
-    `;
-
-    document.getElementById("extractionStatus").innerHTML = "✅ Données extraites ! Complétez xG et xGA manuellement, puis cliquez sur ANALYSER.";
-
-    // Lancer l'analyse
-    runEngine();
-  }
-
-  // ========== HIDDEN FIELDS (remplis par extraction) ==========
-  // Ajout des inputs cachés pour stocker les données extraites
-  if (!document.getElementById("teamA")) {
-    // Les champs existent déjà dans le HTML précédent
-  }
-
-  // ========== MOTEUR ==========
-  function norm(n) { return (n||"").toLowerCase().trim(); }
-  let historique = JSON.parse(localStorage.getItem("edge_import_histo") || "[]");
-  let clvStats = JSON.parse(localStorage.getItem("edge_import_clv") || '{"positif":0,"negatif":0,"total":0}');
-  function g(id) { const v = document.getElementById(id)?.value; if (v === undefined) return 0; const n = Number(v); return isNaN(n) ? 0 : n; }
+  function norm(n) { return (n || "").toLowerCase().trim(); }
+  function g(id) { const v = document.getElementById(id)?.value; if (v === undefined || v === '') return 0; const n = Number(v); return isNaN(n) ? 0 : n; }
   function fact(n) { if (n < 0) return 0; if (n === 0 || n === 1) return 1; let r = 1; for (let i = 2; i <= n; i++) { r *= i; if (!isFinite(r)) return Number.MAX_VALUE; } return r; }
-  function analyserScores(texte) { if (!texte?.trim()) return { butsMarques: 0, butsEncaisses: 0, nbMatchs: 0 }; let sc = texte.split(/[,;\s]+/).filter(s => s.match(/^\d+-\d+$/)); if (!sc.length) return { butsMarques: 0, butsEncaisses: 0, nbMatchs: 0 }; let bM = 0, bE = 0; sc.forEach(s => { let [b1, b2] = s.split('-').map(Number); bM += b1; bE += b2; }); return { butsMarques: bM / sc.length, butsEncaisses: bE / sc.length, nbMatchs: sc.length }; }
-  function analyserH2H(texte) { if (!texte?.trim()) return { butsA: 0, butsB: 0, nbMatchs: 0, victoiresA: 0 }; let sc = texte.split(/[,;\s]+/).filter(s => s.match(/^\d+-\d+$/)); if (!sc.length) return { butsA: 0, butsB: 0, nbMatchs: 0, victoiresA: 0 }; let bA = 0, bB = 0; sc.forEach(s => { let [b1, b2] = s.split('-').map(Number); bA += b1; bB += b2; }); return { butsA: bA / sc.length, butsB: bB / sc.length, nbMatchs: sc.length, victoiresA: sc.filter(s => { let [b1, b2] = s.split('-').map(Number); return b1 > b2; }).length / sc.length }; }
 
-  function runEngine() {
-    const teamA = norm(document.getElementById("teamA")?.value || dataExtraite.teamA || "A");
-    const teamB = norm(document.getElementById("teamB")?.value || dataExtraite.teamB || "B");
-    const dom = document.getElementById("domicile")?.value || dataExtraite.domicile || "A";
-    const bankroll = g("bankroll") || 1000;
-    const pari = document.getElementById("pari_choisi")?.value || "1";
-    const cotePrise = g("cote_prise") || parseFloat(dataExtraite.cote1) || 2.0;
-    let coteClose = g("cote_close"); if (coteClose < 1.02) coteClose = cotePrise;
+  function getCote1() { return g("quickCote1"); }
+  function getCoteX() { return g("quickCoteX"); }
+  function getCote2() { return g("quickCote2"); }
 
-    let xgA = g("a_xg"), xgaA = g("a_xga"), xgB = g("b_xg"), xgaB = g("b_xga");
-    let classementA = g("a_classement") || parseInt(dataExtraite.classementA) || 0;
-    let classementB = g("b_classement") || parseInt(dataExtraite.classementB) || 0;
-    let possessionA = g("a_possession"), possessionB = g("b_possession");
-    let scoresA = analyserScores(document.getElementById("a_scores")?.value || dataExtraite.scoresA || "");
-    let scoresB = analyserScores(document.getElementById("b_scores")?.value || dataExtraite.scoresB || "");
-    let h2h = analyserH2H(document.getElementById("h2h_scores")?.value || dataExtraite.h2h || "");
-    let absencesA = document.getElementById("a_absences")?.value || dataExtraite.absencesA || "";
-    let absencesB = document.getElementById("b_absences")?.value || dataExtraite.absencesB || "";
-    let impactAbsences = 1.0; if (absencesA) impactAbsences *= 0.95; if (absencesB) impactAbsences *= 0.95;
-
-    let offA = (xgA * 0.25 + scoresA.butsMarques * 0.35 + h2h.butsA * 0.15 + scoresB.butsEncaisses * 0.25) * impactAbsences;
-    let offB = (xgB * 0.25 + scoresB.butsMarques * 0.35 + h2h.butsB * 0.15 + scoresA.butsEncaisses * 0.25) * impactAbsences;
-    let classementFactor = 1.0; if (classementA > 0 && classementB > 0) classementFactor = 1.0 + (classementB - classementA) * 0.02;
-    let possessionFactor = 1.0; if (possessionA > 0 && possessionB > 0) possessionFactor = 1.0 + (possessionA - possessionB) * 0.005;
-    let h2hFactor = 1.0; if (h2h.nbMatchs > 0) h2hFactor = 1.0 + (h2h.victoiresA - 0.5) * 0.15;
-    let homeAdv = dom === 'A' ? 0.12 : (dom === 'B' ? -0.12 : 0);
-
-    let lH = Math.min(3.5, Math.max(0.3, offA * (1.0 + homeAdv) * classementFactor * possessionFactor * h2hFactor));
-    let lA = Math.min(3.5, Math.max(0.3, offB / (1.0 + homeAdv) / classementFactor / possessionFactor / h2hFactor));
-
-    let p1P = 0, pXP = 0, p2P = 0, ov25 = 0, under25 = 0, btts = 0;
-    for (let i = 0; i <= 5; i++) for (let j = 0; j <= 5; j++) {
-      let p = (Math.exp(-lH) * Math.pow(lH, i) / fact(i)) * (Math.exp(-lA) * Math.pow(lA, j) / fact(j));
-      if (i > j) p1P += p; else if (i === j) pXP += p; else p2P += p;
-      if (i + j > 2.5) ov25 += p; else under25 += p;
-      if (i > 0 && j > 0) btts += p;
-    }
-    let tP = p1P + pXP + p2P; p1P /= tP; pXP /= tP; p2P /= tP;
-    let totOU = ov25 + under25; ov25 /= totOU; under25 /= totOU;
-
-    let probMarche = 1 / coteClose;
-    let edge1 = p1P - probMarche, edgeOver = ov25 - probMarche, edgeBtts = btts - probMarche;
-    let edgeSel = pari === "1" ? edge1 : (pari === "Over" ? edgeOver : edgeBtts);
-    let probSel = pari === "1" ? p1P : (pari === "Over" ? ov25 : btts);
-
-    function kelly(prob, cote) { if (cote < 1.05 || prob <= 0 || prob >= 1) return 0; let v = prob * cote - 1; if (v <= 0) return 0; return Math.min(Math.max((v / (cote - 1)) * 0.10, 0.002), 0.01); }
-    let miseEuro = kelly(probSel, cotePrise) * bankroll;
-    let edgeMin = cotePrise <= 2.50 ? 0.05 : 0.06;
-    let filtreOK = edgeSel > edgeMin && cotePrise >= 1.60;
-
-    let html = `<div class="vs-badge"><span class="team-tag team-a">${teamA}</span><span style="color:var(--sub);">VS</span><span class="team-tag team-b">${teamB}</span></div>`;
-    html += `<div class="stat-grid">
-      <div class="stat-box"><div class="big">${(p1P*100).toFixed(1)}%</div><div class="lbl">${teamA}</div></div>
-      <div class="stat-box"><div class="big">${(pXP*100).toFixed(1)}%</div><div class="lbl">Nul</div></div>
-      <div class="stat-box"><div class="big">${(p2P*100).toFixed(1)}%</div><div class="lbl">${teamB}</div></div>
-    </div>`;
-    html += `<div class="stat-grid">
-      <div class="stat-box"><div class="big">${(ov25*100).toFixed(1)}%</div><div class="lbl">Over 2.5</div></div>
-      <div class="stat-box"><div class="big">${(btts*100).toFixed(1)}%</div><div class="lbl">BTTS Oui</div></div>
-      <div class="stat-box"><div class="big">${miseEuro.toFixed(2)}€</div><div class="lbl">Mise</div></div>
-    </div>`;
-    html += `<div style="text-align:center;">
-      <span class="edge-badge ${edgeSel > edgeMin ? 'edge-pos' : 'edge-neg'}">Edge: ${(edgeSel*100).toFixed(2)} pts</span>
-    </div>`;
-    html += `<div class="entry-card ${filtreOK ? 'entry-ok' : 'entry-no'}">${filtreOK ? '✅ ENTREE VALUE' : '⛔ PAS D ENTREE'}</div>`;
-
-    document.getElementById("resultat").innerHTML = html;
+  function updateCotesFromQuick() {
+    let v1 = getCote1(), vX = getCoteX(), v2 = getCote2();
+    document.getElementById("val1").textContent = v1 > 0 ? v1.toFixed(2) : '-';
+    document.getElementById("valX").textContent = vX > 0 ? vX.toFixed(2) : '-';
+    document.getElementById("val2").textContent = v2 > 0 ? v2.toFixed(2) : '-';
   }
 
-  function sauvegarderAvantMatch() { alert("✅ Pari sauvegardé."); }
-  function sauvegarderApresMatch() { alert("✅ Résultat enregistré."); }
+  function updateMatchDisplay() {
+    let teamA = document.getElementById("teamA")?.value || "-";
+    let teamB = document.getElementById("teamB")?.value || "-";
+    document.getElementById("teamNameA").textContent = teamA || "-";
+    document.getElementById("teamNameB").textContent = teamB || "-";
+    let champ = document.getElementById("championnat")?.value || "INT";
+    let stade = document.getElementById("domicile")?.value || "N";
+    let stadeText = stade === "N" ? "Neutre" : (stade === "A" ? teamA + " domicile" : teamB + " domicile");
+    document.getElementById("matchInfo").textContent = "📍 " + champ + " · 🏟 " + stadeText;
+  }
 
-  // Ajout des inputs cachés pour les champs manquants
-  document.addEventListener("DOMContentLoaded", () => {
-    if (!document.getElementById("teamA")) {
-      const hiddenFields = `
-        <input id="teamA" type="hidden"><input id="teamB" type="hidden">
-        <input id="a_classement" type="hidden"><input id="b_classement" type="hidden">
-        <input id="a_scores" type="hidden"><input id="b_scores" type="hidden">
-        <input id="a_absences" type="hidden"><input id="b_absences" type="hidden">
-        <input id="h2h_scores" type="hidden">
-        <select id="domicile" style="display:none;"><option value="A" selected></option></select>
-        <select id="pari_choisi" style="display:none;"><option value="1" selected></option></select>
-        <input id="bankroll" type="hidden" value="1000">
-        <input id="cote_prise" type="hidden" value="2.0">
-        <input id="cote_close" type="hidden" value="0">
-      `;
-      document.body.insertAdjacentHTML('beforeend', hiddenFields);
+  async function init() {
+    await openDB();
+    let hist = await getAll("historique"); historique = hist || [];
+    let eqs = await getAll("equipes"); equipesDB = {}; (eqs || []).forEach(e => { equipesDB[norm(e.nom)] = e; });
+    let cfg = await getAll("config"); let bc = cfg.find(c => c.key === "bankroll"); if (bc) bankroll = bc.value;
+    document.getElementById("bankroll").value = bankroll;
+    updateHeader(); afficherHistorique(); afficherCourbe(); updateMatchDisplay(); updateCotesFromQuick(); afficherEquipes();
+  }
+
+  function updateHeader() {
+    let connus = historique.filter(h => h.resultat != null);
+    let profit = connus.reduce((s, h) => s + (h.profit || 0), 0);
+    let roi = connus.length > 0 ? ((profit / connus.length) * 100).toFixed(1) : 0;
+    document.getElementById("headerBal").textContent = (bankroll + profit).toFixed(0) + "€";
+    document.getElementById("headerRoi").textContent = (roi >= 0 ? "+" : "") + roi + "%";
+  }
+
+  function switchPage(pageId, navItem) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    document.getElementById(pageId).classList.add("active");
+    if (navItem) navItem.classList.add("active");
+    if (pageId === "page-bankroll") { afficherHistorique(); afficherCourbe(); }
+    if (pageId === "page-analyse") { updateMatchDisplay(); updateCotesFromQuick(); }
+    if (pageId === "page-equipes") { afficherEquipes(); }
+  }
+
+  function autoComplete(prefix) {
+    let input = document.getElementById(prefix); let val = norm(input.value);
+    if (val.length < 2) return;
+    if (equipesDB[val]) chargerProfil(prefix, val);
+  }
+
+  function chargerProfil(prefix, nom) {
+    let eq = equipesDB[nom]; if (!eq) return;
+    let p = prefix === 'teamA' ? 'a_' : 'b_';
+    if (eq.xg) document.getElementById(p + 'xg').value = eq.xg; if (eq.xga) document.getElementById(p + 'xga').value = eq.xga;
+    if (eq.buts) document.getElementById(p + 'buts').value = eq.buts; if (eq.tirs) document.getElementById(p + 'tirs').value = eq.tirs;
+    if (eq.possession) document.getElementById(p + 'possession').value = eq.possession; if (eq.ppg) document.getElementById(p + 'ppg').value = eq.ppg;
+    document.getElementById("profileInfo").innerHTML = `✅ Profil chargé pour <strong>${eq.nom}</strong> · Force: ${eq.force || '?'}/100`;
+  }
+
+  function sauverProfil(prefix) {
+    let nom = norm(document.getElementById(prefix)?.value || ""); if (!nom || nom.length < 2) return;
+    let p = prefix === 'teamA' ? 'a_' : 'b_';
+    let eq = equipesDB[nom] || { nom: nom };
+    eq.xg = g(p + 'xg') || eq.xg || 0; eq.xga = g(p + 'xga') || eq.xga || 0;
+    eq.buts = g(p + 'buts') || eq.buts || 0; eq.tirs = g(p + 'tirs') || eq.tirs || 0;
+    eq.possession = g(p + 'possession') || eq.possession || 0; eq.ppg = g(p + 'ppg') || eq.ppg || 0;
+    eq.force = Math.round((eq.xg * 30 + (2 - Math.min(2, eq.xga)) * 20 + eq.ppg * 12 + eq.tirs * 2 + eq.possession * 0.2));
+    equipesDB[nom] = eq; saveDB("equipes", eq);
+  }
+
+  function afficherEquipes() {
+    let div = document.getElementById("equipesList"); if (!div) return;
+    let noms = Object.keys(equipesDB).sort();
+    if (noms.length === 0) { div.innerHTML = "<div style='color:var(--sub);'>Aucune équipe enregistrée.</div>"; return; }
+    div.innerHTML = noms.map(n => { let e = equipesDB[n]; return `<div style="display:flex;justify-content:space-between;padding:6px;border-bottom:1px solid var(--border);font-size:0.7rem;"><span>🏳 <strong>${e.nom}</strong></span><span>Force: ${e.force||'?'}/100 · xG: ${e.xg||'?'}</span></div>`; }).join('');
+  }
+
+  function formeToPoints(f) { if (!f) return 0; let pts = 0; for (let c of f.toUpperCase()) { if (c === 'W') pts += 3; else if (c === 'D') pts += 1; } return Math.min(pts, 15) / 15; }
+
+  function runUltimateAnalysis() {
+    updateMatchDisplay(); updateCotesFromQuick();
+    sauverProfil('teamA'); sauverProfil('teamB');
+    let c1 = getCote1(), cX = getCoteX(), c2 = getCote2();
+    const teamA = document.getElementById("teamA")?.value || "A", teamB = document.getElementById("teamB")?.value || "B";
+    let xgA = g("a_xg"), xgB = g("b_xg");
+    if (xgA <= 0 || xgB <= 0) { alert("⚠️ Veuillez entrer xG A et xG B"); return; }
+    let xgaA = g("a_xga"), xgaB = g("b_xga"), butsA = g("a_buts"), butsB = g("b_buts");
+    let tirsA = g("a_tirs"), tirsB = g("b_tirs"), possA = g("a_possession"), possB = g("b_possession");
+    let ppgA = g("a_ppg"), ppgB = g("b_ppg");
+    let absOffA = g("a_abs_off") || 0, absOffB = g("b_abs_off") || 0, absDefA = g("a_abs_def") || 0, absDefB = g("b_abs_def") || 0;
+    let formeA = document.getElementById("a_forme")?.value || "", formeB = document.getElementById("b_forme")?.value || "";
+    let reposA = g("a_repos") || 5, reposB = g("b_repos") || 5;
+    let importance = parseInt(document.getElementById("importance")?.value || 2), enjeu = parseInt(document.getElementById("enjeu")?.value || 2);
+    const dom = document.getElementById("domicile")?.value || "N", champ = document.getElementById("championnat")?.value || "INT";
+
+    const coeffChamp = { PL: 1.05, Liga: 1.04, SA: 1.03, BL: 1.04, L1: 1.02, INT: 1.0 };
+    const bonusChamp = coeffChamp[champ] || 1.0;
+    let homeAdv = dom === 'A' ? 0.12 : (dom === 'B' ? -0.12 : 0);
+    let impactA = 1 - absOffA * 0.15 - absDefA * 0.10, impactB = 1 - absOffB * 0.15 - absDefB * 0.10;
+    let formeFactorA = formeToPoints(formeA), formeFactorB = formeToPoints(formeB);
+    let fatigueA = Math.min(0.1, Math.max(0, (5 - reposA) * 0.02)), fatigueB = Math.min(0.1, Math.max(0, (5 - reposB) * 0.02));
+    let motivation = 1 + (importance - 2) * 0.03 + (enjeu - 2) * 0.02;
+
+    let forceA = Math.round(Math.min(100, (xgA * 30 + (2 - Math.min(2, xgaA)) * 20 + ppgA * 12 + tirsA * 2 + possA * 0.2 + formeFactorA * 18 + (dom === 'A' ? 8 : 0))));
+    let forceB = Math.round(Math.min(100, (xgB * 30 + (2 - Math.min(2, xgaB)) * 20 + ppgB * 12 + tirsB * 2 + possB * 0.2 + formeFactorB * 18 + (dom === 'B' ? 8 : 0))));
+
+    let offA = (xgA * 0.4 + butsA * 0.2 + tirsA * 0.02 + ppgA * 0.12 + possA * 0.01 + formeFactorA * 0.12) * impactA * bonusChamp * motivation * (1 - fatigueA);
+    let offB = (xgB * 0.4 + butsB * 0.2 + tirsB * 0.02 + ppgB * 0.12 + possB * 0.01 + formeFactorB * 0.12) * impactB * bonusChamp * motivation * (1 - fatigueB);
+    let defA = Math.max(0.2, 1.5 - xgaA * 0.5 + absDefA * 0.2), defB = Math.max(0.2, 1.5 - xgaB * 0.5 + absDefB * 0.2);
+    let lambdaA = offA * defB * (1 + homeAdv), lambdaB = offB * defA * (1 - homeAdv);
+    lambdaA = Math.min(8, Math.max(0.2, lambdaA)); lambdaB = Math.min(8, Math.max(0.2, lambdaB));
+
+    let p1 = 0, pX = 0, p2 = 0, ov25 = 0, btts = 0, ov15 = 0, un35 = 0, ov35 = 0;
+    let scoreProbs = [];
+    for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
+      let p = (Math.exp(-lambdaA) * Math.pow(lambdaA, i) / fact(i)) * (Math.exp(-lambdaB) * Math.pow(lambdaB, j) / fact(j));
+      scoreProbs.push({ s: `${i}-${j}`, p, i, j });
+      if (i > j) p1 += p; else if (i === j) pX += p; else p2 += p;
+      if (i + j > 2.5) ov25 += p; if (i > 0 && j > 0) btts += p;
+      if (i + j > 1.5) ov15 += p; if (i + j > 3.5) ov35 += p; if (i + j < 3.5) un35 += p;
     }
-  });
+    let tP = p1 + pX + p2; p1 /= tP; pX /= tP; p2 /= tP;
+    scoreProbs.sort((a, b) => b.p - a.p);
+    let topScores = scoreProbs.filter(s => ['0-0','1-0','0-1','1-1','2-0','0-2','2-1','1-2','2-2','3-1','1-3','3-0','0-3'].includes(s.s)).slice(0, 6);
+
+    // Monte Carlo 10k
+    let mc1 = 0, mcX = 0, mc2 = 0, mcOver = 0, mcBtts = 0, totalButsMC = 0;
+    for (let s = 0; s < 10000; s++) {
+      let gA = 0, gB = 0, L1 = Math.exp(-lambdaA), L2 = Math.exp(-lambdaB), pA = 1, pB = 1;
+      while (pA > L1) { gA++; pA *= Math.random(); } while (pB > L2) { gB++; pB *= Math.random(); }
+      gA--; gB--; if (gA > gB) mc1++; else if (gA === gB) mcX++; else mc2++;
+      if (gA + gB > 2.5) mcOver++; if (gA > 0 && gB > 0) mcBtts++; totalButsMC += gA + gB;
+    }
+    mc1 /= 10000; mcX /= 10000; mc2 /= 10000; mcOver /= 10000; mcBtts /= 10000;
+
+    let aCotes = c1 > 0 && cX > 0 && c2 > 0;
+    let ev1 = aCotes ? p1 * c1 - 1 : null, evX = aCotes ? pX * cX - 1 : null, ev2 = aCotes ? p2 * c2 - 1 : null;
+    let marches = aCotes ? [{ n: "1 (" + teamA + ")", ev: ev1, p: p1, c: c1 }, { n: "X", ev: evX, p: pX, c: cX }, { n: "2 (" + teamB + ")", ev: ev2, p: p2, c: c2 }].sort((a, b) => b.ev - a.ev) : [];
+    let best = aCotes ? marches[0] : { n: "1", p: p1 };
+
+    let confiance = Math.round(Math.min(100, 25 + (Math.abs(xgA - xgB) * 20) + (Math.abs(xgaA - xgaB) * 12) + (Math.abs(formeFactorA - formeFactorB) * 25) + (possA + possB) * 0.05));
+    let risqueScore = Math.round(Math.min(100, 50 - confiance * 0.3 + (1 - Math.abs(homeAdv)) * 20 + (aCotes ? Math.abs(best.ev) * 200 : 20)));
+    let edgeScore = Math.round(forceA * 0.3 + (best.ev > 0 ? Math.min(100, best.ev * 200) : 0) * 0.25 + confiance * 0.2 + Math.abs(forceA - forceB) * 0.15);
+
+    let piege = aCotes && best.ev < -0.03 && best.p > 0.6;
+    let filtreOK = aCotes && best.ev > 0.05 && confiance >= 60 && risqueScore < 70;
+    let kelly = filtreOK ? Math.max(0, (best.p * best.c - 1) / (best.c - 1)) * 0.25 : 0;
+    let mise = Math.min(bankroll * 0.02, Math.max(1, kelly * bankroll));
+
+    let explications = [];
+    if (Math.abs(xgA - xgB) > 0.5) explications.push("Différence xG importante");
+    if (Math.abs(xgaA - xgaB) > 0.4) explications.push("Écart défensif significatif");
+    if (formeFactorA > formeFactorB + 0.3) explications.push(teamA + " en meilleure forme");
+    if (formeFactorB > formeFactorA + 0.3) explications.push(teamB + " en meilleure forme");
+    if (aCotes && best.ev > 0.05) explications.push("Cote intéressante");
+    if (dom !== 'N') explications.push("Avantage domicile");
+    if (absOffA > 0.3 || absOffB > 0.3 || absDefA > 0.3 || absDefB > 0.3) explications.push("Absences impactantes");
+
+    let btns = document.querySelectorAll(".odd-btn"); btns.forEach(b => b.classList.remove("value-bet"));
+    if (aCotes) { if (btns[0] && ev1 > 0.05) btns[0].classList.add("value-bet"); if (btns[2] && ev2 > 0.05) btns[2].classList.add("value-bet"); }
+
+    let html = `<div class="vs-row"><div class="team-block"><div class="flag">🏳</div><div class="name">${teamA}</div></div><div class="vs-text">VS</div><div class="team-block"><div class="flag">🏳</div><div class="name">${teamB}</div></div></div>`;
+    html += `<div><strong>💪 FORCE</strong> <span style="color:var(--blue)">${teamA} ${forceA}/100</span> vs <span style="color:var(--red)">${teamB} ${forceB}/100</span></div>`;
+    html += `<div class="force-bar"><div class="force-fill-a" style="width:${forceA}%;"></div><div class="force-fill-b" style="width:${forceB}%;"></div></div>`;
+    html += `<div style="margin-top:8px;"><strong>📊 PRÉDICTION</strong></div>`;
+    html += `<div class="info-line"><span>1</span><span class="val">${(p1*100).toFixed(1)}%</span></div><div class="info-line"><span>X</span><span class="val">${(pX*100).toFixed(1)}%</span></div><div class="info-line"><span>2</span><span class="val">${(p2*100).toFixed(1)}%</span></div>`;
+    html += `<div style="margin-top:8px;"><strong>🎲 MONTE CARLO 10k</strong></div>`;
+    html += `<div class="info-line"><span>1</span><span class="val">${(mc1*100).toFixed(1)}%</span></div><div class="info-line"><span>X</span><span class="val">${(mcX*100).toFixed(1)}%</span></div><div class="info-line"><span>2</span><span class="val">${(mc2*100).toFixed(1)}%</span></div>`;
+    html += `<div style="margin-top:8px;"><strong>🎯 TOP SCORES</strong></div><div class="score-grid">`;
+    topScores.forEach(s => html += `<div class="score-item"><div>${s.s}</div><div style="font-size:0.55rem;">${(s.p*100).toFixed(1)}%</div></div>`);
+    html += `</div><div style="margin-top:8px;"><strong>📈 MARCHÉS</strong></div><div class="mini-markets">`;
+    html += `<div class="mini-market"><div class="pct">${(ov25*100).toFixed(0)}%</div><div class="lbl">Over 2.5</div></div>`;
+    html += `<div class="mini-market"><div class="pct">${(btts*100).toFixed(0)}%</div><div class="lbl">BTTS</div></div>`;
+    html += `<div class="mini-market"><div class="pct">${(ov15*100).toFixed(0)}%</div><div class="lbl">Over 1.5</div></div>`;
+    html += `<div class="mini-market"><div class="pct">${(un35*100).toFixed(0)}%</div><div class="lbl">Under 3.5</div></div>`;
+    html += `<div class="mini-market"><div class="pct">${(ov35*100).toFixed(0)}%</div><div class="lbl">Over 3.5</div></div>`;
+    html += `<div class="mini-market"><div class="pct">${((1-btts)*100).toFixed(0)}%</div><div class="lbl">BTTS Non</div></div></div>`;
+
+    if (aCotes) {
+      html += `<div style="margin-top:8px;"><strong>💰 VALUE</strong></div>`;
+      html += `<div class="info-line"><span>Conseil</span><span class="val">${best.n} @ ${best.c.toFixed(2)}</span></div>`;
+      html += `<div class="info-line"><span>EV</span><span class="val ${best.ev>0?'pos':'neg'}">${(best.ev*100).toFixed(1)}%</span></div>`;
+      html += `<div class="info-line"><span>Cote juste</span><span class="val">${(1/best.p).toFixed(2)}</span></div>`;
+      if (piege) html += `<div class="alert">⚠️ Piège favori : EV négatif malgré probabilité élevée.</div>`;
+    }
+    html += `<div class="info-line"><span>🤖 Confiance</span><span class="val">${confiance}/100</span></div>`;
+    html += `<div class="info-line"><span>⚠️ Risque</span><span class="val ${risqueScore<40?'pos':(risqueScore<65?'':'neg')}">${risqueScore}/100</span></div>`;
+    html += `<div class="info-line"><span>🏆 Edge Score</span><span class="val">${edgeScore}/100</span></div>`;
+    html += `<div class="explain-box"><strong>🧠 Pourquoi ?</strong> ${explications.length?explications.join(' · '):'Analyse standard.'}</div>`;
+
+    let signalLabel = filtreOK ? '✅ SIGNAL VALIDÉ' : (aCotes && best.ev < 0.05 ? '❌ PAS DE VALUE' : (confiance < 60 ? '⚠️ CONFIANCE FAIBLE' : '⚠️ RISQUE ÉLEVÉ'));
+    html += `<div style="text-align:center;margin-top:8px;"><span class="ai-badge ${filtreOK?'ai-value':'ai-no-value'}">${signalLabel}</span></div>`;
+    if (filtreOK) html += `<div style="text-align:center;font-size:0.8rem;">💰 Mise conseillée: <strong>${mise.toFixed(2)}€</strong></div>`;
+
+    document.getElementById("analysisContent").innerHTML = html;
+    lastAnalysisData = { forceA, forceB, p1, pX, p2, teamA, teamB, best, filtreOK, mise, confiance, topScores, lambdaA, lambdaB, risqueScore, edgeScore };
+    updateHeader();
+  }
+
+  async function sauvegarderApresMatch() {
+    const res = document.getElementById("resultat_reel")?.value; if (!res) { alert("❌ Sélectionnez un résultat"); return; }
+    if (!lastAnalysisData) { alert("❌ Analysez d'abord"); return; }
+    let gagne = (res === "1") || (res === "2"); let cote = res === "1" ? getCote1() : (res === "2" ? getCote2() : getCoteX()); if (cote <= 0) cote = 2;
+    let mise = lastAnalysisData.mise || 1; let profit = gagne ? cote * mise - mise : -mise;
+    let entry = { date: new Date().toLocaleDateString(), match: `${lastAnalysisData.teamA} vs ${lastAnalysisData.teamB}`, pari: res, cote, mise, profit, probIA: res==="1"?lastAnalysisData.p1:(res==="2"?lastAnalysisData.p2:lastAnalysisData.pX), resultat: res };
+    historique.push(entry); await saveDB("historique", entry);
+    bankroll += profit; document.getElementById("bankroll").value = bankroll.toFixed(0); await saveDB("config", { key: "bankroll", value: bankroll });
+    updateHeader(); afficherHistorique(); afficherCourbe();
+    alert(`✅ ${gagne?'GAGNÉ':'Perdu'} | ${profit>0?'+':''}${profit.toFixed(2)}€`);
+  }
+
+  function updateBankroll() { bankroll = parseFloat(document.getElementById("bankroll").value) || 1000; saveDB("config", { key: "bankroll", value: bankroll }); updateHeader(); alert("✅ Bankroll mise à jour"); }
+
+  function afficherHistorique() {
+    let div = document.getElementById("historiqueList"); if (!div) return;
+    let connus = historique.filter(h => h.resultat != null);
+    let profit = connus.reduce((s, h) => s + (h.profit || 0), 0);
+    let wr = connus.length > 0 ? (connus.filter(h => h.profit > 0).length / connus.length * 100).toFixed(1) : 0;
+    document.getElementById("statsPro").innerHTML = `📊 ${connus.length} paris · Win: ${wr}% · Profit: <span style="color:${profit>=0?'#22c55e':'#ef4444'}">${profit.toFixed(1)}€</span>`;
+    if (connus.length === 0) { div.innerHTML = '<div style="color:var(--sub);">Aucun pari.</div>'; return; }
+    div.innerHTML = connus.slice(-8).reverse().map(h => `<div class="hist-item"><span>${h.date} · ${h.match} · ${h.pari}</span><span class="${h.profit>0?'win':'lose'}">${h.profit>0?'+':''}${h.profit?.toFixed(2)||'0'}€</span></div>`).join('');
+  }
+
+  function afficherCourbe() {
+    let canvas = document.getElementById("graphBankroll"); if (!canvas) return;
+    let ctx = canvas.getContext("2d"); canvas.width = canvas.offsetWidth; canvas.height = 160;
+    let data = [], total = bankroll; historique.forEach(h => { if (h.profit != null) { total += h.profit; data.push(total); } });
+    ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#0a0d14"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    if (data.length < 2) { ctx.fillStyle = "#9ca3af"; ctx.font = "11px Inter"; ctx.textAlign = "center"; ctx.fillText("2 paris minimum", canvas.width / 2, 80); return; }
+    let max = Math.max(...data, bankroll), min = Math.min(...data, bankroll * 0.5), range = max - min || 1;
+    ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2; ctx.beginPath();
+    data.forEach((v, i) => { let x = (i / (data.length - 1)) * canvas.width, y = canvas.height - ((v - min) / range) * canvas.height; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+    ctx.stroke();
+  }
+
+  async function exporterToutesDonnees() { let blob = new Blob([JSON.stringify({ historique, bankroll, equipes: equipesDB })], { type: "application/json" }); let a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "edge_pro_ai_full_backup.json"; a.click(); }
+  async function importerToutesDonnees() { let input = document.createElement("input"); input.type = "file"; input.accept = ".json"; input.onchange = async e => { let file = e.target.files[0]; if (!file) return; let text = await file.text(); let data = JSON.parse(text); if (data.historique) { historique = data.historique; for (let h of historique) await saveDB("historique", h); } if (data.bankroll) { bankroll = data.bankroll; await saveDB("config", { key: "bankroll", value: bankroll }); document.getElementById("bankroll").value = bankroll; } if (data.equipes) { equipesDB = data.equipes; for (let k in equipesDB) await saveDB("equipes", equipesDB[k]); } updateHeader(); afficherHistorique(); afficherCourbe(); afficherEquipes(); alert("✅ Importé !"); }; input.click(); }
+
+  init();
 </script>
 </body>
 </html>
