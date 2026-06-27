@@ -1,1 +1,199 @@
+// ⚽ CONFIGURATION API FOOTBALL-DATA.ORG (GRATUIT)
+const API_KEY = "VOTRE_CLE_API_ICI"; // ← Remplacez par votre clé
+const API_BASE = "https://api.football-data.org/v4";
 
+// Cache pour limiter les appels (10 req/min max)
+let cacheAPI = {};
+
+// 🟦 Récupérer le classement d'un championnat
+async function getClassement(championnatCode) {
+  const cacheKey = `classement_${championnatCode}`;
+  if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 600000) {
+    return cacheAPI[cacheKey].data;
+  }
+  
+  try {
+    const response = await fetch(`${API_BASE}/competitions/${championnatCode}/standings`, {
+      headers: { "X-Auth-Token": API_KEY }
+    });
+    const data = await response.json();
+    cacheAPI[cacheKey] = { data, time: Date.now() };
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+// 🟦 Récupérer les matchs terminés d'une équipe (SCORES)
+async function getMatchsTermines(equipeId) {
+  const cacheKey = `matchs_${equipeId}`;
+  if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 300000) {
+    return cacheAPI[cacheKey].data;
+  }
+  
+  try {
+    // Récupérer les 10 derniers matchs terminés
+    const response = await fetch(
+      `${API_BASE}/teams/${equipeId}/matches?limit=10&status=FINISHED`,
+      { headers: { "X-Auth-Token": API_KEY } }
+    );
+    const data = await response.json();
+    cacheAPI[cacheKey] = { data, time: Date.now() };
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+// 🟦 Récupérer les matchs à venir (FIXTURES)
+async function getMatchsAVenir(equipeId) {
+  const cacheKey = `fixtures_${equipeId}`;
+  if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 300000) {
+    return cacheAPI[cacheKey].data;
+  }
+  
+  try {
+    const response = await fetch(
+      `${API_BASE}/teams/${equipeId}/matches?limit=5&status=SCHEDULED`,
+      { headers: { "X-Auth-Token": API_KEY } }
+    );
+    const data = await response.json();
+    cacheAPI[cacheKey] = { data, time: Date.now() };
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+// 🟦 Chercher une équipe par nom
+async function rechercherEquipe(nom) {
+  const cacheKey = `search_${nom}`;
+  if (cacheAPI[cacheKey] && Date.now() - cacheAPI[cacheKey].time < 600000) {
+    return cacheAPI[cacheKey].data;
+  }
+  
+  try {
+    const response = await fetch(
+      `${API_BASE}/teams?search=${encodeURIComponent(nom)}&limit=5`,
+      { headers: { "X-Auth-Token": API_KEY } }
+    );
+    const data = await response.json();
+    cacheAPI[cacheKey] = { data, time: Date.now() };
+    return data;
+  } catch (error) {
+    return null;
+  }
+}
+
+// 🟦 Trouver le classement d'une équipe dans un championnat
+function trouverClassement(classementData, equipeId) {
+  if (!classementData || !classementData.standings) return null;
+  
+  for (let standing of classementData.standings) {
+    for (let row of standing.table) {
+      if (row.team.id === equipeId) {
+        return {
+          position: row.position,
+          points: row.points,
+          joues: row.playedGames,
+          gagnes: row.won,
+          nuls: row.draw,
+          perdus: row.lost,
+          butsPour: row.goalsFor,
+          butsContre: row.goalsAgainst
+        };
+      }
+    }
+  }
+  return null;
+}
+
+// 🟦 Extraire les stats des 10 derniers matchs
+function extraireStatsMatchs(data, equipeId) {
+  if (!data || !data.matches) return null;
+  
+  let butsMarques = 0, butsEncaisses = 0, victoires = 0, nuls = 0, defaites = 0;
+  let scoresTexte = [];
+  
+  data.matches.forEach(match => {
+    const score = match.score.fullTime;
+    if (score.home === null || score.away === null) return;
+    
+    if (match.homeTeam.id === equipeId) {
+      butsMarques += score.home;
+      butsEncaisses += score.away;
+      if (score.home > score.away) victoires++;
+      else if (score.home === score.away) nuls++;
+      else defaites++;
+      scoresTexte.push(`${score.home}-${score.away}`);
+    } else {
+      butsMarques += score.away;
+      butsEncaisses += score.home;
+      if (score.away > score.home) victoires++;
+      else if (score.away === score.home) nuls++;
+      else defaites++;
+      scoresTexte.push(`${score.away}-${score.home}`);
+    }
+  });
+  
+  const nbMatchs = scoresTexte.length || 1;
+  return {
+    butsMarques: (butsMarques / nbMatchs).toFixed(2),
+    butsEncaisses: (butsEncaisses / nbMatchs).toFixed(2),
+    victoires, nuls, defaites,
+    scoresTexte: scoresTexte.join(", "),
+    forme: Math.round((victoires * 3 + nuls) / (nbMatchs * 3) * 10)
+  };
+}
+
+// 🟦 Codes championnats Football-Data.org
+const codesChampionnats = {
+  "Premier League": "PL",
+  "Liga": "PD",
+  "Serie A": "SA",
+  "Bundesliga": "BL1",
+  "Ligue 1": "FL1"
+};
+
+// 🟦 FONCTION PRINCIPALE : Auto-remplir TOUT
+async function autoRemplirStats(prefix) {
+  const nomEquipe = document.getElementById(`team${prefix.toUpperCase()}`).value.trim();
+  if (!nomEquipe || nomEquipe.length < 3) return;
+  
+  document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = `${nomEquipe} ⏳`;
+  
+  // 1. Rechercher l'équipe
+  const recherche = await rechercherEquipe(nomEquipe);
+  if (!recherche || !recherche.teams || recherche.teams.length === 0) {
+    document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = nomEquipe;
+    return;
+  }
+  
+  const equipe = recherche.teams[0];
+  
+  // 2. Récupérer les matchs terminés (SCORES)
+  const matchs = await getMatchsTermines(equipe.id);
+  const stats = extraireStatsMatchs(matchs, equipe.id);
+  
+  if (stats) {
+    document.getElementById(`${prefix}_scores`).value = stats.scoresTexte;
+  }
+  
+  // 3. Récupérer le classement (LEAGUE TABLE)
+  const championnat = document.getElementById("championnat").value;
+  const codeChamp = codesChampionnats[championnat];
+  
+  if (codeChamp) {
+    const classementData = await getClassement(codeChamp);
+    const pos = trouverClassement(classementData, equipe.id);
+    
+    if (pos) {
+      document.getElementById(`${prefix}_classement`).value = pos.position;
+    }
+  }
+  
+  document.getElementById(`nom${prefix.toUpperCase()}`).innerHTML = nomEquipe;
+  
+  // 4. Lancer l'analyse
+  runEngine();
+}
