@@ -1,1 +1,677 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>⚽ EDGE PRO AI v8.0 · PRO</title>
+  <style>
+    :root {
+      --bg:#0a0d14;--card:#141b2b;--border:#1f2937;--text:#f1f5f9;--sub:#94a3b8;
+      --cyan:#06b6d4;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;--yellow:#eab308;
+      --purple:#8b5cf6;--orange:#f97316;--radius:14px;--safe:env(safe-area-inset-bottom,8px);
+      --gold:#f59e0b;--premium:linear-gradient(135deg,#1a1a2e,#16213e);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;display:flex;justify-content:center;min-height:100vh}
+    .app{max-width:560px;width:100%;padding:10px;padding-bottom:100px}
+    .header{background:var(--card);padding:12px 16px;border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;border:1px solid var(--border);margin-bottom:8px;position:sticky;top:8px;z-index:10;backdrop-filter:blur(10px)}
+    .header h1{font-size:0.9rem;font-weight:800;background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .version-badge{font-size:0.5rem;padding:3px 8px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;font-weight:700}
+    .card{background:var(--card);border-radius:var(--radius);padding:12px;margin-bottom:8px;border:1px solid var(--border)}
+    .card.premium{background:var(--premium);border:2px solid var(--gold)}
+    h2{font-size:0.78rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    h3{font-size:0.7rem;font-weight:700;margin:8px 0 6px;color:var(--cyan)}
+    .field{margin-bottom:6px;position:relative}
+    .field label{display:block;font-size:0.5rem;text-transform:uppercase;color:var(--sub);font-weight:600;margin-bottom:2px}
+    input,select,textarea{width:100%;padding:8px 10px;background:#1a2233;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;transition:border-color 0.2s}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan)}
+    textarea{resize:vertical;min-height:60px;font-family:monospace;font-size:0.65rem}
+    .btn{padding:10px 12px;border:none;border-radius:8px;font-weight:700;font-size:0.72rem;cursor:pointer;width:100%;margin:3px 0;color:#fff;transition:all 0.2s}
+    .btn:disabled{opacity:0.5;cursor:not-allowed}
+    .btn-accent{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#000}
+    .btn-accent:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(234,179,8,.3)}
+    .btn-success{background:linear-gradient(135deg,var(--green),#10b981)}
+    .btn-danger{background:linear-gradient(135deg,var(--red),#dc2626)}
+    .btn-secondary{background:#1a2233;border:1px solid var(--border)}
+    .btn-premium{background:linear-gradient(135deg,var(--gold),#d97706);color:#000}
+    .btn-small{padding:5px 8px;font-size:0.6rem;width:auto}
+    .row{display:flex;gap:5px;flex-wrap:wrap}
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+    .three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+    .four-col{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px}
+    .badge{display:inline-block;padding:2px 6px;border-radius:10px;font-size:0.5rem;font-weight:700}
+    .badge-green{background:rgba(34,197,94,.2);color:var(--green)}
+    .badge-blue{background:rgba(59,130,246,.2);color:var(--blue)}
+    .badge-yellow{background:rgba(234,179,8,.2);color:var(--yellow)}
+    .badge-red{background:rgba(239,68,68,.2);color:var(--red)}
+    .badge-purple{background:rgba(139,92,246,.2);color:var(--purple)}
+    .badge-gold{background:rgba(245,158,11,.2);color:var(--gold)}
+    .nav-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:560px;width:100%;background:var(--card);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:4px 0 var(--safe);z-index:20;overflow-x:auto;gap:2px}
+    .nav-item{display:flex;flex-direction:column;align-items:center;font-size:0.4rem;color:var(--sub);cursor:pointer;padding:3px 2px;border:none;background:transparent;min-width:44px;transition:color 0.2s}
+    .nav-item .icon{font-size:0.9rem}
+    .nav-item.active{color:var(--cyan)}
+    .page{display:none}
+    .page.active{display:block}
+    .suggestions{background:#1a2233;border-radius:8px;margin-top:2px;max-height:160px;overflow-y:auto;display:none;border:1px solid var(--border);position:absolute;z-index:5;width:100%}
+    .suggestions div{padding:8px 10px;cursor:pointer;font-size:0.7rem;border-bottom:1px solid var(--border)}
+    .suggestions div:hover{background:var(--border)}
+    .result-box{background:#1a2233;border-radius:8px;padding:10px;margin:5px 0}
+    .stat-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(31,41,55,.5);font-size:0.65rem}
+    .stat-row:last-child{border-bottom:none}
+    .stat-value{font-weight:700}
+    .confidence-bar{height:6px;background:#1f2937;border-radius:3px;overflow:hidden;margin:4px 0}
+    .confidence-fill{height:100%;border-radius:3px;transition:width 0.5s}
+    .confidence-fill.high{background:linear-gradient(90deg,var(--green),#10b981)}
+    .confidence-fill.medium{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+    .confidence-fill.low{background:linear-gradient(90deg,var(--orange),var(--red))}
+    .final-pick-box{background:linear-gradient(135deg,#0a0f1a,#111827);border:3px solid var(--green);border-radius:var(--radius);padding:16px;margin:10px 0;text-align:center;animation:glowPick 2s infinite}
+    .final-pick-box.hot{border-color:var(--gold);animation:glowHot 1.5s infinite}
+    .final-pick-box.no-value{border-color:var(--red);animation:none;opacity:0.8}
+    @keyframes glowPick{0%,100%{box-shadow:0 0 12px rgba(34,197,94,.4)}50%{box-shadow:0 0 24px rgba(34,197,94,.8)}}
+    @keyframes glowHot{0%,100%{box-shadow:0 0 16px rgba(245,158,11,.5)}50%{box-shadow:0 0 32px rgba(245,158,11,.9)}}
+    .pick-label{font-size:0.5rem;text-transform:uppercase;letter-spacing:2px;color:var(--sub)}
+    .pick-market{font-size:1.1rem;font-weight:900;margin:3px 0}
+    .pick-selection{font-size:1.6rem;font-weight:900;margin:4px 0}
+    .pick-odd{font-size:0.9rem;color:var(--yellow)}
+    .pick-edge{font-size:0.6rem;color:var(--green);margin-top:3px}
+    .compare-table{width:100%;border-collapse:collapse;font-size:0.5rem;margin:6px 0}
+    .compare-table th{background:#0d1117;padding:5px 3px;text-align:center;color:var(--sub);font-size:0.45rem;text-transform:uppercase}
+    .compare-table td{padding:5px 3px;text-align:center;border-bottom:1px solid var(--border)}
+    .compare-table .value-row{background:rgba(34,197,94,.1)}
+    .import-summary{background:#0d1117;border-radius:8px;padding:10px;margin:6px 0;border:1px solid var(--border)}
+    .import-summary .line{padding:3px 0;font-size:0.65rem;display:flex;justify-content:space-between}
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid #1f2937;border-top-color:var(--cyan);border-radius:50%;animation:spin .6s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);padding:8px 16px;border-radius:16px;font-size:0.7rem;z-index:30;border:1px solid var(--border);animation:fadeInOut 2.5s}
+    @keyframes fadeInOut{0%{opacity:0;transform:translateX(-50%) translateY(8px)}10%{opacity:1}90%{opacity:1}100%{opacity:0}}
+    .section-title{font-size:0.55rem;text-transform:uppercase;letter-spacing:1px;color:var(--cyan);margin:8px 0 4px;padding-bottom:2px;border-bottom:1px solid var(--border)}
+    .kelly-box{background:rgba(139,92,246,.1);border:1px solid var(--purple);border-radius:6px;padding:6px;margin:4px 0;font-size:0.6rem}
+    .rating{color:var(--gold);letter-spacing:2px}
+    .slider{width:100%;accent-color:var(--cyan)}
+    .chart-bar{height:20px;background:linear-gradient(90deg,var(--cyan),var(--purple));border-radius:4px;transition:width 0.5s;margin:2px 0}
+    .mini-chart{display:flex;align-items:flex-end;gap:2px;height:40px}
+    .mini-chart div{flex:1;background:var(--cyan);border-radius:2px 2px 0 0;min-width:3px}
+    .tag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.45rem;margin:1px;background:rgba(59,130,246,.2);color:var(--blue)}
+    .h2h-card{background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.3);border-radius:8px;padding:8px;margin:6px 0}
+    .explanation-box{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:8px;margin:8px 0;font-size:0.55rem}
+    .explanation-box .reason{padding:2px 0;color:var(--green)}
+    .error-report{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:6px;margin:4px 0;font-size:0.5rem;max-height:150px;overflow-y:auto}
+    .import-log{background:#0d1117;border-radius:8px;padding:8px;margin:4px 0;font-size:0.5rem;max-height:200px;overflow-y:auto}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:6px">
+      <h1>⚽ EDGE PRO AI</h1>
+      <span class="version-badge">v8.0</span>
+    </div>
+    <div style="font-size:0.45rem;color:var(--sub);text-align:right">
+      <div>🗄️<span id="hdrDB">0</span> · ⚽<span id="hdrMatches">0</span></div>
+    </div>
+  </div>
 
+  <!-- PAGE 1: ANALYSE -->
+  <div class="page active" id="pg-analyse">
+    <div class="card">
+      <h2>🏴 Analyse de match</h2>
+      <div class="row">
+        <div class="field" style="position:relative;flex:1">
+          <label>Domicile</label>
+          <input id="teamA" placeholder="Liverpool" oninput="App.suggest('teamA')" autocomplete="off">
+          <div class="suggestions" id="suggestA"></div>
+        </div>
+        <div class="field" style="position:relative;flex:1">
+          <label>Extérieur</label>
+          <input id="teamB" placeholder="Arsenal" oninput="App.suggest('teamB')" autocomplete="off">
+          <div class="suggestions" id="suggestB"></div>
+        </div>
+      </div>
+      <div class="field"><label>🏆 Championnat</label><select id="leagueSelect"></select></div>
+      <div class="section-title">📊 Cotes</div>
+      <div class="three-col">
+        <div class="field"><label>1</label><input id="c1" type="number" step="0.01" placeholder="2.50"></div>
+        <div class="field"><label>X</label><input id="cX" type="number" step="0.01" placeholder="3.40"></div>
+        <div class="field"><label>2</label><input id="c2" type="number" step="0.01" placeholder="2.80"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>BTTS OUI</label><input id="cbttsY" type="number" step="0.01" placeholder="1.80"></div>
+        <div class="field"><label>Over 2.5</label><input id="cover" type="number" step="0.01" placeholder="1.90"></div>
+      </div>
+      <button class="btn btn-accent" id="btnAnalyze" onclick="App.analyzeMatch()">🚀 ANALYSE COMPLÈTE</button>
+    </div>
+    <div id="analysisOutput"></div>
+  </div>
+
+  <!-- PAGE 2: CALIBRATION MATCH -->
+  <div class="page" id="pg-calibration-match">
+    <div class="card">
+      <h2>🧠 Calibration Match</h2>
+      <div class="two-col">
+        <div class="field"><label>Équipe Domicile</label><input id="calTeamA" placeholder="Sélectionnée auto"></div>
+        <div class="field"><label>Équipe Extérieur</label><input id="calTeamB" placeholder="Sélectionnée auto"></div>
+      </div>
+      <div class="section-title">🏥 Domicile</div>
+      <div class="two-col">
+        <div class="field"><label>Blessures</label><select id="calInjA"><option value="0">Aucun absent</option><option value="1">1 titulaire</option><option value="2">2 titulaires</option><option value="3">Plusieurs titulaires</option></select></div>
+        <div class="field"><label>Suspensions</label><select id="calSuspA"><option value="0">Non</option><option value="1">Oui</option></select></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Fatigue (0-100)</label><input id="calFatigueA" type="range" min="0" max="100" value="20" class="slider"><span style="font-size:0.5rem" id="calFatigueAVal">20</span></div>
+        <div class="field"><label>Rotation (0-100)</label><input id="calRotA" type="range" min="0" max="100" value="10" class="slider"><span style="font-size:0.5rem" id="calRotAVal">10</span></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Motivation</label><select id="calMotA"><option value="1">Très faible</option><option value="2">Faible</option><option value="3" selected>Normale</option><option value="4">Forte</option><option value="5">Très forte</option></select></div>
+        <div class="field"><label>Importance</label><select id="calImpA"><option value="1">Amical</option><option value="2" selected>Championnat</option><option value="3">Coupe</option><option value="4">Qualification</option><option value="5">Finale</option></select></div>
+      </div>
+      <div class="section-title">🏥 Extérieur</div>
+      <div class="two-col">
+        <div class="field"><label>Blessures</label><select id="calInjB"><option value="0">Aucun absent</option><option value="1">1 titulaire</option><option value="2">2 titulaires</option><option value="3">Plusieurs titulaires</option></select></div>
+        <div class="field"><label>Suspensions</label><select id="calSuspB"><option value="0">Non</option><option value="1">Oui</option></select></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Fatigue (0-100)</label><input id="calFatigueB" type="range" min="0" max="100" value="20" class="slider"><span style="font-size:0.5rem" id="calFatigueBVal">20</span></div>
+        <div class="field"><label>Rotation (0-100)</label><input id="calRotB" type="range" min="0" max="100" value="10" class="slider"><span style="font-size:0.5rem" id="calRotBVal">10</span></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Motivation</label><select id="calMotB"><option value="1">Très faible</option><option value="2">Faible</option><option value="3" selected>Normale</option><option value="4">Forte</option><option value="5">Très forte</option></select></div>
+        <div class="field"><label>Importance</label><select id="calImpB"><option value="1">Amical</option><option value="2" selected>Championnat</option><option value="3">Coupe</option><option value="4">Qualification</option><option value="5">Finale</option></select></div>
+      </div>
+      <div class="section-title">🌤️ Conditions</div>
+      <div class="two-col">
+        <div class="field"><label>Météo</label><select id="calWeather"><option value="0">Soleil</option><option value="1">Nuages</option><option value="2">Pluie</option><option value="3">Neige</option><option value="4">Vent fort</option></select></div>
+        <div class="field"><label>Pelouse</label><select id="calPitch"><option value="0">Excellent</option><option value="1">Bon</option><option value="2">Moyen</option><option value="3">Mauvais</option></select></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Jours repos Domicile</label><input id="calRestA" type="number" min="0" max="10" value="4"></div>
+        <div class="field"><label>Jours repos Extérieur</label><input id="calRestB" type="number" min="0" max="10" value="4"></div>
+      </div>
+      <button class="btn btn-premium" onclick="App.applyCalibration()">🧠 APPLIQUER CALIBRATION</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3: CALIBRATION ÉQUIPE -->
+  <div class="page" id="pg-calibration-team">
+    <div class="card">
+      <h2>⚙ Calibration Équipe</h2>
+      <div class="field" style="position:relative">
+        <label>Équipe</label>
+        <input id="calTeamSearch" placeholder="Rechercher..." oninput="App.suggestCalTeam()" autocomplete="off">
+        <div class="suggestions" id="suggestCalTeam"></div>
+      </div>
+      <div id="calTeamForm"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 4: STATISTIQUES -->
+  <div class="page" id="pg-stats">
+    <div class="card">
+      <h2>📊 Statistiques</h2>
+      <div class="field" style="position:relative">
+        <input id="statsSearch" placeholder="Rechercher une équipe..." oninput="App.searchStats()" autocomplete="off">
+        <div class="suggestions" id="suggestStats"></div>
+      </div>
+      <div id="statsDetail"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 5: BASE DE DONNÉES -->
+  <div class="page" id="pg-base">
+    <div class="card">
+      <h2>📂 Import</h2>
+      <input type="file" id="fileInput" style="display:none" accept=".csv,.txt,.tsv,.json,.xlsx" onchange="App.importMassive(event)" multiple>
+      <button class="btn btn-accent" onclick="document.getElementById('fileInput').click()">📥 IMPORTER CSV/JSON</button>
+      <button class="btn btn-secondary" onclick="App.exportDatabase()">📤 EXPORTER JSON</button>
+      <button class="btn btn-secondary" onclick="App.importJSON()">📥 IMPORTER JSON (Fusion)</button>
+      <div id="importStatus"></div>
+      <div class="section-title">📋 Journal d'importation</div>
+      <div id="importLog" class="import-log">Aucun import récent.</div>
+      <button class="btn btn-small btn-secondary" onclick="App.clearImportLog()" style="margin-top:4px">🗑️ Effacer journal</button>
+    </div>
+    <div class="card">
+      <h2>🗄️ Base (<span id="dbCount">0</span> éq. · <span id="dbMatchCount">0</span> matchs)</h2>
+      <div class="row">
+        <input id="dbSearch" placeholder="🔍 Rechercher..." oninput="App.searchDB()" style="flex:2">
+        <button class="btn btn-secondary btn-small" onclick="App.searchDB()" style="flex:1">🔍</button>
+      </div>
+      <div id="dbResults" style="max-height:350px;overflow-y:auto;margin-top:6px"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 6: HISTORIQUE -->
+  <div class="page" id="pg-history">
+    <div class="card">
+      <h2>📈 Historique</h2>
+      <div id="historyStats" style="font-size:0.55rem;margin-bottom:6px"></div>
+      <div id="historyContent" style="max-height:450px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 7: PARAMÈTRES -->
+  <div class="page" id="pg-settings">
+    <div class="card">
+      <h2>⚙️ Paramètres</h2>
+      <div class="section-title">Pondérations</div>
+      <div class="two-col">
+        <div class="field"><label>Elo</label><input id="setElo" type="number" step="0.01" value="0.20"></div>
+        <div class="field"><label>Dixon-Coles</label><input id="setDC" type="number" step="0.01" value="0.25"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Monte Carlo</label><input id="setMC" type="number" step="0.01" value="0.22"></div>
+        <div class="field"><label>Momentum</label><input id="setMom" type="number" step="0.01" value="0.10"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>H2H</label><input id="setH2H" type="number" step="0.01" value="0.08"></div>
+        <div class="field"><label>xG Model</label><input id="setXG" type="number" step="0.01" value="0.15"></div>
+      </div>
+      <div class="section-title">Seuils</div>
+      <div class="two-col">
+        <div class="field"><label>Value Bet (%)</label><input id="setValueTh" type="number" step="0.1" value="3"></div>
+        <div class="field"><label>Confiance min (%)</label><input id="setConfMin" type="number" step="1" value="50"></div>
+      </div>
+      <div class="two-col">
+        <div class="field"><label>Simulations</label><input id="setSims" type="number" step="1000" value="10000"></div>
+        <div class="field"><label>Kelly fraction</label><input id="setKelly" type="number" step="0.1" value="0.5"></div>
+      </div>
+      <button class="btn btn-success" onclick="App.saveSettings()">💾 SAUVEGARDER</button>
+      <button class="btn btn-danger" onclick="App.resetDatabase()">🗑️ RÉINITIALISER</button>
+    </div>
+  </div>
+
+  <!-- PAGE 8: CHAMPIONNATS -->
+  <div class="page" id="pg-leagues">
+    <div class="card">
+      <h2>🏆 Championnats</h2>
+      <button class="btn btn-accent" onclick="App.showAddLeagueForm()">➕ Ajouter une ligue</button>
+      <button class="btn btn-secondary" onclick="App.exportLeagues()">📤 Exporter ligues</button>
+      <button class="btn btn-secondary" onclick="App.importLeagues()">📥 Importer ligues</button>
+      <div id="addLeagueForm" style="display:none"></div>
+      <div id="leaguesList"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 9: RAPPORTS -->
+  <div class="page" id="pg-reports">
+    <div class="card">
+      <h2>📋 Rapport global</h2>
+      <div id="globalReport"></div>
+    </div>
+  </div>
+
+  <!-- PAGE 10: DASHBOARD -->
+  <div class="page" id="pg-dashboard">
+    <div class="card">
+      <h2>📊 Tableau de bord</h2>
+      <div id="dashboardContent"></div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="nav-bar">
+    <button class="nav-item active" data-page="pg-analyse" onclick="App.nav('pg-analyse',this)"><span class="icon">🏠</span>Analyse</button>
+    <button class="nav-item" data-page="pg-calibration-match" onclick="App.nav('pg-calibration-match',this)"><span class="icon">🧠</span>Cal. Match</button>
+    <button class="nav-item" data-page="pg-calibration-team" onclick="App.nav('pg-calibration-team',this)"><span class="icon">⚙</span>Cal. Équipe</button>
+    <button class="nav-item" data-page="pg-stats" onclick="App.nav('pg-stats',this)"><span class="icon">📊</span>Stats</button>
+    <button class="nav-item" data-page="pg-base" onclick="App.nav('pg-base',this)"><span class="icon">🗄️</span>Base</button>
+    <button class="nav-item" data-page="pg-history" onclick="App.nav('pg-history',this);App.showHistory()"><span class="icon">📈</span>Historique</button>
+    <button class="nav-item" data-page="pg-settings" onclick="App.nav('pg-settings',this);App.loadSettings()"><span class="icon">⚙️</span>Réglages</button>
+    <button class="nav-item" data-page="pg-leagues" onclick="App.nav('pg-leagues',this);App.showLeagues()"><span class="icon">🏆</span>Ligues</button>
+    <button class="nav-item" data-page="pg-reports" onclick="App.nav('pg-reports',this);App.showReport()"><span class="icon">📋</span>Rapports</button>
+    <button class="nav-item" data-page="pg-dashboard" onclick="App.nav('pg-dashboard',this);App.showDashboard()"><span class="icon">📊</span>Dashboard</button>
+  </div>
+</div>
+
+<script>
+// ==================== CONSTANTES ====================
+const VERSION="8.0.0";
+const TEAM_ALIASES={liverpool:["liverpool fc","reds","lfc"],arsenal:["arsenal fc","gunners"],"manchester city":["man city","city","mcfc"],"manchester united":["man united","man utd","mufc"],chelsea:["chelsea fc","blues"],tottenham:["tottenham hotspur","spurs"],newcastle:["newcastle united","magpies"],"aston villa":["aston villa fc","villa"],"west ham":["west ham united","hammers"],brighton:["brighton & hove albion","seagulls"],"real madrid":["real madrid cf","rmcf"],barcelona:["fc barcelona","barca","fcb"],"atletico madrid":["atletico","atm"],sevilla:["sevilla fc"],valencia:["valencia cf"],juventus:["juve","juventus fc"],"inter milan":["inter","internazionale"],"ac milan":["milan","rossoneri"],napoli:["napoli","ssc napoli"],roma:["as roma","roma"],lazio:["lazio","ss lazio"],"bayern munich":["bayern","fc bayern"],"borussia dortmund":["dortmund","bvb"],"rb leipzig":["leipzig","rbl"],"bayer leverkusen":["leverkusen","bayer"],psg:["paris sg","paris saint-germain"],marseille:["om","olympique marseille"],lyon:["ol","olympique lyonnais"],monaco:["as monaco"],lille:["lille","los","losc"],ajax:["ajax amsterdam"],psv:["psv eindhoven"],feyenoord:["feyenoord"],benfica:["sl benfica"],porto:["fc porto"],sporting:["sporting cp","sporting lisbonne"],celtic:["celtic fc","celtic glasgow"],rangers:["rangers fc","glasgow rangers"],galatasaray:["galatasaray sk","gs"],fenerbahce:["fenerbahçe","fb"]};
+const TEAM_LEAGUE={liverpool:"PremierLeague",arsenal:"PremierLeague","manchester city":"PremierLeague","manchester united":"PremierLeague",chelsea:"PremierLeague",tottenham:"PremierLeague",newcastle:"PremierLeague","aston villa":"PremierLeague","west ham":"PremierLeague",brighton:"PremierLeague","real madrid":"LaLiga",barcelona:"LaLiga","atletico madrid":"LaLiga",sevilla:"LaLiga",valencia:"LaLiga",juventus:"SerieA","inter milan":"SerieA","ac milan":"SerieA",napoli:"SerieA",roma:"SerieA",lazio:"SerieA","bayern munich":"Bundesliga","borussia dortmund":"Bundesliga","rb leipzig":"Bundesliga","bayer leverkusen":"Bundesliga",psg:"Ligue1",marseille:"Ligue1",lyon:"Ligue1",monaco:"Ligue1",lille:"Ligue1",ajax:"Eredivisie",psv:"Eredivisie",feyenoord:"Eredivisie",benfica:"PrimeiraLiga",porto:"PrimeiraLiga",sporting:"PrimeiraLiga",celtic:"Premiership",rangers:"Premiership",galatasaray:"SuperLig",fenerbahce:"SuperLig"};
+const DEFAULT_LEAGUES={PremierLeague:{name:"Premier League",country:"England",goal_rate:2.85,home_goal_rate:1.65,away_goal_rate:1.20,avg_xg_home:1.60,avg_xg_away:1.25,btts:55,over25:55,home_adv:42,importance:5,cards:3.5,corners:10.5,reliability:95,matches_used:0},LaLiga:{name:"La Liga",country:"Spain",goal_rate:2.65,home_goal_rate:1.55,away_goal_rate:1.10,avg_xg_home:1.55,avg_xg_away:1.20,btts:58,over25:52,home_adv:38,importance:5,cards:4.5,corners:9.5,reliability:95,matches_used:0},SerieA:{name:"Serie A",country:"Italy",goal_rate:2.55,home_goal_rate:1.40,away_goal_rate:1.15,avg_xg_home:1.45,avg_xg_away:1.15,btts:52,over25:48,home_adv:40,importance:5,cards:4.0,corners:10.0,reliability:95,matches_used:0},Bundesliga:{name:"Bundesliga",country:"Germany",goal_rate:3.10,home_goal_rate:1.80,away_goal_rate:1.30,avg_xg_home:1.70,avg_xg_away:1.35,btts:60,over25:58,home_adv:35,importance:5,cards:3.0,corners:9.8,reliability:95,matches_used:0},Ligue1:{name:"Ligue 1",country:"France",goal_rate:2.70,home_goal_rate:1.50,away_goal_rate:1.20,avg_xg_home:1.50,avg_xg_away:1.25,btts:54,over25:50,home_adv:37,importance:4,cards:3.8,corners:9.2,reliability:90,matches_used:0},Eredivisie:{name:"Eredivisie",country:"Netherlands",goal_rate:3.15,home_goal_rate:1.80,away_goal_rate:1.35,avg_xg_home:1.70,avg_xg_away:1.30,btts:62,over25:60,home_adv:45,importance:3,cards:2.8,corners:10.0,reliability:85,matches_used:0},PrimeiraLiga:{name:"Primeira Liga",country:"Portugal",goal_rate:2.60,home_goal_rate:1.50,away_goal_rate:1.10,avg_xg_home:1.50,avg_xg_away:1.15,btts:53,over25:50,home_adv:43,importance:4,cards:4.2,corners:10.3,reliability:85,matches_used:0},Premiership:{name:"Premiership",country:"Scotland",goal_rate:2.70,home_goal_rate:1.60,away_goal_rate:1.10,avg_xg_home:1.55,avg_xg_away:1.15,btts:54,over25:52,home_adv:41,importance:3,cards:3.5,corners:10.5,reliability:80,matches_used:0},SuperLig:{name:"Süper Lig",country:"Turkey",goal_rate:2.75,home_goal_rate:1.55,away_goal_rate:1.20,avg_xg_home:1.50,avg_xg_away:1.20,btts:55,over25:52,home_adv:44,importance:4,cards:4.8,corners:9.0,reliability:80,matches_used:0},Default:{name:"Inconnu",country:"?",goal_rate:2.70,home_goal_rate:1.50,away_goal_rate:1.20,avg_xg_home:1.50,avg_xg_away:1.25,btts:55,over25:52,home_adv:40,importance:2,cards:3.5,corners:10.0,reliability:50,matches_used:0}};
+
+// ==================== UTILITAIRES ====================
+const clean=s=>(s||'').normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]/g,'').trim();
+const now=()=>new Date().toISOString();
+const formatDate=d=>{const dt=new Date(d);if(isNaN(dt.getTime()))return d;return dt.toLocaleDateString('fr-FR',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});};
+function resolveAlias(n){if(!n||typeof n!=='string')return'';const cn=clean(n);if(cn.length<2)return cn;for(const[m,a]of Object.entries(TEAM_ALIASES)){if(cn===clean(m))return m;if(a.some(x=>clean(x)===cn))return m;}for(const[m,a]of Object.entries(TEAM_ALIASES)){if(cn.includes(clean(m))||clean(m).includes(cn))return m;for(const x of a){if(cn.includes(clean(x))||clean(x).includes(cn))return m;}}return cn;}
+function showToast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);}
+function getRating(v,max=5){const s=Math.round((v/100)*max);return'★'.repeat(s)+'☆'.repeat(max-s);}
+
+// ==================== NOUVEAU : Parseur de Date Intelligent ====================
+const DateParser = {
+  patterns: [
+    { regex: /^(\d{4})-(\d{2})-(\d{2})$/, format: 'YYYY-MM-DD' },
+    { regex: /^(\d{2})\/(\d{2})\/(\d{4})$/, format: 'DD/MM/YYYY' },
+    { regex: /^(\d{2})\/(\d{2})\/(\d{2})$/, format: 'DD/MM/YY' },
+    { regex: /^(\d{4})\/(\d{2})\/(\d{2})$/, format: 'YYYY/MM/DD' },
+    { regex: /^(\d{2})\.(\d{2})\.(\d{4})$/, format: 'DD.MM.YYYY' },
+    { regex: /^(\d{2})-(\d{2})-(\d{4})$/, format: 'DD-MM-YYYY' },
+    { regex: /^(\d{2}) (\w+) (\d{4})$/, format: 'DD MMM YYYY' },
+    { regex: /^(\w+) (\d{2}), (\d{4})$/, format: 'MMM DD, YYYY' }
+  ],
+  monthNames: ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec',
+               'janv','févr','fevr','mars','avr','mai','juin','juil','août','aout','sept','oct','nov','déc','dec'],
+  monthValues: [0,1,2,3,4,5,6,7,8,9,10,11, 0,1,1,2,3,4,5,6,7,7,8,9,10,11,11],
+
+  parse(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const trimmed = dateStr.trim();
+    if (trimmed.length < 6) return null;
+
+    for (const pattern of this.patterns) {
+      const match = trimmed.match(pattern.regex);
+      if (match) {
+        try {
+          if (pattern.format === 'DD MMM YYYY' || pattern.format === 'MMM DD, YYYY') {
+            let day, month, year;
+            if (pattern.format === 'DD MMM YYYY') {
+              day = parseInt(match[1]);
+              month = this.parseMonth(match[2]);
+              year = parseInt(match[3]);
+            } else {
+              month = this.parseMonth(match[1]);
+              day = parseInt(match[2]);
+              year = parseInt(match[3]);
+            }
+            if (month === -1 || isNaN(day) || isNaN(year)) return null;
+            const d = new Date(year, month, day);
+            if (d.getFullYear() === year && d.getMonth() === month && d.getDate() === day) {
+              return d.toISOString().split('T')[0];
+            }
+          } else {
+            let parts = match.slice(1).map(Number);
+            let year, month, day;
+            if (pattern.format.startsWith('YYYY')) {
+              [year, month, day] = parts;
+            } else if (pattern.format.startsWith('DD')) {
+              [day, month, year] = parts;
+              if (year < 100) year += year < 50 ? 2000 : 1900;
+            }
+            if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+            if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+            const d = new Date(year, month - 1, day);
+            if (d.getFullYear() === year && d.getMonth() === month - 1 && d.getDate() === day) {
+              return d.toISOString().split('T')[0];
+            }
+          }
+        } catch (e) { continue; }
+      }
+    }
+
+    const nativeDate = new Date(trimmed);
+    if (!isNaN(nativeDate.getTime()) && nativeDate.getFullYear() > 1900 && nativeDate.getFullYear() < 2100) {
+      return nativeDate.toISOString().split('T')[0];
+    }
+
+    return null;
+  },
+
+  parseMonth(str) {
+    if (!str) return -1;
+    const lower = str.toLowerCase().substring(0, 4);
+    const idx = this.monthNames.findIndex(m => m === lower || m.startsWith(lower));
+    if (idx !== -1) return this.monthValues[idx];
+    const num = parseInt(str);
+    if (!isNaN(num) && num >= 1 && num <= 12) return num - 1;
+    return -1;
+  },
+
+  detectColumn(headers) {
+    const lowerHeaders = headers.map((h, i) => ({ index: i, name: h.toLowerCase().trim() }));
+    const dateKeywords = ['date', 'matchdate', 'utcdate', 'kickoff', 'match_date', 'game_date', 'eventdate',
+                          'date_utc', 'timestamp', 'datetime', 'date_time', 'played_on', 'match_day',
+                          'fixture_date', 'start_date', 'game_date_utc'];
+    
+    for (const kw of dateKeywords) {
+      const found = lowerHeaders.find(h => h.name === kw || h.name.replace(/[^a-z0-9]/g, '') === kw.replace(/[^a-z0-9]/g, ''));
+      if (found) return found.index;
+    }
+    for (const kw of dateKeywords) {
+      const found = lowerHeaders.find(h => h.name.includes(kw));
+      if (found) return found.index;
+    }
+    return -1;
+  }
+};
+
+// ==================== BASE DE DONNÉES ====================
+const DB={
+  _db:null,V:22,_cache:{teams:null,analyses:null,leagues:null,settings:null,lastFetch:{}},
+  async open(){if(this._db)return this._db;return new Promise((r,rej)=>{const req=indexedDB.open("EdgeProV22",this.V);req.onupgradeneeded=e=>{const db=e.target.result;['teams','analyses','settings','leagues'].forEach(s=>{if(!db.objectStoreNames.contains(s))db.createObjectStore(s,{keyPath:s==='teams'?'name':s==='settings'?'key':s==='leagues'?'id':'id',autoIncrement:s==='analyses'});});};req.onsuccess=e=>{this._db=e.target.result;r(this._db);};req.onerror=()=>rej(new Error('IndexedDB'));});},
+  async saveTeam(t){this._cache.teams=null;await this.open();return new Promise(r=>{const tx=this._db.transaction('teams','readwrite');tx.objectStore('teams').put(t);tx.oncomplete=()=>r(t);});},
+  async getTeam(n){await this.open();return new Promise(r=>{const req=this._db.transaction('teams').objectStore('teams').get(n);req.onsuccess=()=>r(req.result||null);});},
+  async getAllTeams(){if(this._cache.teams&&Date.now()-this._cache.lastFetch.teams<5000)return this._cache.teams;await this.open();return new Promise(r=>{const req=this._db.transaction('teams').objectStore('teams').getAll();req.onsuccess=()=>{this._cache.teams=req.result||[];this._cache.lastFetch.teams=Date.now();r(this._cache.teams);};});},
+  async countTeams(){await this.open();return new Promise(r=>{this._db.transaction('teams').objectStore('teams').count().onsuccess=e=>r(e.target.result);});},
+  async saveAnalysis(d){this._cache.analyses=null;await this.open();return new Promise(r=>{const tx=this._db.transaction('analyses','readwrite');const o={...d,date:now(),id:Date.now()+Math.random().toString(36)};tx.objectStore('analyses').add(o);tx.oncomplete=()=>r(o);});},
+  async getAllAnalyses(){if(this._cache.analyses&&Date.now()-this._cache.lastFetch.analyses<5000)return this._cache.analyses;await this.open();return new Promise(r=>{const req=this._db.transaction('analyses').objectStore('analyses').getAll();req.onsuccess=()=>{this._cache.analyses=req.result||[];this._cache.lastFetch.analyses=Date.now();r(this._cache.analyses);};});},
+  async saveSetting(key,val){this._cache.settings=null;await this.open();return new Promise(r=>{const tx=this._db.transaction('settings','readwrite');tx.objectStore('settings').put({key,value:val});tx.oncomplete=()=>r();});},
+  async getSetting(key){await this.open();return new Promise(r=>{const req=this._db.transaction('settings').objectStore('settings').get(key);req.onsuccess=()=>r(req.result?.value??null);});},
+  async getAllSettings(){if(this._cache.settings)return this._cache.settings;await this.open();return new Promise(r=>{const req=this._db.transaction('settings').objectStore('settings').getAll();req.onsuccess=()=>{const m={};req.result.forEach(s=>m[s.key]=s.value);this._cache.settings=m;r(m);};});},
+  async saveLeague(lg){this._cache.leagues=null;await this.open();return new Promise(r=>{const tx=this._db.transaction('leagues','readwrite');tx.objectStore('leagues').put(lg);tx.oncomplete=()=>r(lg);});},
+  async getLeague(id){await this.open();return new Promise(r=>{const req=this._db.transaction('leagues').objectStore('leagues').get(id);req.onsuccess=()=>r(req.result||null);});},
+  async getAllLeagues(){if(this._cache.leagues)return this._cache.leagues;await this.open();return new Promise(r=>{const req=this._db.transaction('leagues').objectStore('leagues').getAll();req.onsuccess=()=>{this._cache.leagues=req.result||[];r(this._cache.leagues);};});},
+  async deleteLeague(id){this._cache.leagues=null;await this.open();return new Promise(r=>{const tx=this._db.transaction('leagues','readwrite');tx.objectStore('leagues').delete(id);tx.oncomplete=()=>r();});},
+  async deleteDatabase(){this._cache={teams:null,analyses:null,leagues:null,settings:null,lastFetch:{}};return new Promise(r=>{const req=indexedDB.deleteDatabase("EdgeProV22");req.onsuccess=()=>{this._db=null;r();};});},
+  clearCache(){this._cache={teams:null,analyses:null,leagues:null,settings:null,lastFetch:{}};}
+};
+
+// ==================== STATS CALCULATOR ====================
+const StatsCalculator={
+  computeFromMatches(m){if(!m?.length)return null;let tg=0,ta=0,w=0,d=0,l=0,bt=0,o25=0,hg=0,ha=0,hm=0,hw=0,hd=0,hl=0,hbt=0,ho25=0,ag=0,aa=0,am=0,aw=0,ad=0,al=0,abt=0,ao25=0;const rf=[],all=[];m.forEach(x=>{const sc=typeof x==='string'?x:(x.score||'');const p=sc.split('-');if(p.length!==2)return;const s=parseInt(p[0]),c=parseInt(p[1]);if(isNaN(s)||isNaN(c))return;tg+=s;ta+=c;if(s>c){w++;rf.push('W')}else if(s===c){d++;rf.push('D')}else{l++;rf.push('L')}if(s>0&&c>0)bt++;if(s+c>2.5)o25++;all.push({gf:s,ga:c});if(x.venue==='home'){hg+=s;ha+=c;hm++;if(s>c)hw++;else if(s===c)hd++;else hl++;if(s>0&&c>0)hbt++;if(s+c>2.5)ho25++}else{ag+=s;aa+=c;am++;if(s>c)aw++;else if(s===c)ad++;else al++;if(s>0&&c>0)abt++;if(s+c>2.5)ao25++}});const t=m.length;const streakW=this._streak(rf,'W'),streakU=this._streak(rf.filter(x=>x!=='L'),'W');return{stats:{xg:+(tg/t).toFixed(2),xga:+(ta/t).toFixed(2),ppg:+((w*3+d)/t).toFixed(2),form:rf.slice(0,5).join(''),btts:+((bt/t)*100).toFixed(1),over25:+((o25/t)*100).toFixed(1),total_matches:t,elo:1500,wins:w,draws:d,losses:l,cleanSheets:all.filter(x=>x.ga===0).length,failedToScore:all.filter(x=>x.gf===0).length,avgGoals:+(tg/t).toFixed(2),avgConceded:+(ta/t).toFixed(2),streakW,streakU,form10:rf.slice(0,10).join(''),form20:rf.slice(0,20).join('')},homeStats:hm>0?{xg:+((hg/hm)).toFixed(2),xga:+((ha/hm)).toFixed(2),ppg:+(((hw*3+hd)/hm)).toFixed(2),btts:+((hbt/hm)*100).toFixed(1),over25:+((ho25/hm)*100).toFixed(1),matches:hm,wins:hw,draws:hd,losses:hl}:{xg:1.5,xga:1.2,ppg:1.5,btts:55,over25:52,matches:0},awayStats:am>0?{xg:+((ag/am)).toFixed(2),xga:+((aa/am)).toFixed(2),ppg:+(((aw*3+ad)/am)).toFixed(2),btts:+((abt/am)*100).toFixed(1),over25:+((ao25/am)*100).toFixed(1),matches:am,wins:aw,draws:ad,losses:al}:{xg:1.2,xga:1.5,ppg:1.0,btts:55,over25:52,matches:0}};},
+  _streak(rf,type){let s=0;for(const r of rf){if(r===type)s++;else break;}return s;},
+  sampleSizeFactor(n){if(n<10)return 0.3;if(n<20)return 0.5;if(n<30)return 0.7;if(n<60)return 0.85;return 1.0;},
+  momentumScore(l5){if(!l5?.length)return 0.33;let ms=0,w=0;const weights=[0.35,0.25,0.2,0.12,0.08];l5.slice(0,5).forEach((r,i)=>{const sc=typeof r==='string'?r:(r.score||'');const p=sc.split('-');if(p.length===2){const s=parseInt(p[0]),c=parseInt(p[1]);if(!isNaN(s)&&!isNaN(c)){const gd=s-c;ms+=((s>c?1:s===c?0.5:0)*weights[i])+(gd*0.02);w+=weights[i];}}});return Math.min(0.7,Math.max(0.15,ms/(w||1)));},
+  dataReliability(n,recency){let s=0;if(n<10)s=1;else if(n<20)s=2;else if(n<30)s=3;else if(n<60)s=4;else s=5;if(recency<7)s=Math.min(5,s+1);if(recency>30)s=Math.max(1,s-1);return s;}
+};
+
+// ==================== ELO ENGINE ====================
+const EloEngine={
+  K:32,expected(rA,rB,h){return 1/(1+Math.pow(10,(rB-(rA+h))/400));},
+  update(rA,rB,score,homeAdv=40,oppElo=1500){const e=this.expected(rA,rB,homeAdv);const s=score>0.5?1:score<0.5?0:0.5;const qOpp=Math.abs(rA-oppElo)/400;const weight=1+qOpp*0.3;return Math.round(rA+this.K*weight*(s-e));}
+};
+
+// ==================== DIXON-COLES ENGINE ====================
+const DixonColesEngine={
+  fact(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;},
+  poisson(l,k){if(l<=0)return k===0?1:0;return Math.exp(-l)*Math.pow(l,k)/this.fact(k);},
+  rho:0.001,tau(lA,lB,i,j){if(i===0&&j===0)return 1-this.rho;if(i===0&&j===1)return 1+this.rho;if(i===1&&j===0)return 1+this.rho;if(i===1&&j===1)return 1-this.rho;return 1;},
+  analyze(lA,lB,maxG=8){let p1=0,pX=0,p2=0,total=0;const scores=[];for(let i=0;i<=maxG;i++){for(let j=0;j<=maxG;j++){const p=this.poisson(lA,i)*this.poisson(lB,j)*this.tau(lA,lB,i,j);total+=p;if(i>j)p1+=p;else if(i===j)pX+=p;else p2+=p;scores.push({score:`${i}-${j}`,prob:p,home:i,away:j});}}return total>0?{p1:p1/total,pX:pX/total,p2:p2/total,scores:scores.sort((a,b)=>b.prob-a.prob).slice(0,15)}:{p1:0.4,pX:0.3,p2:0.3,scores:[]};}
+};
+
+// ==================== MONTE CARLO ENGINE ====================
+const MonteCarloEngine={
+  simulate(lA,lB,n,ma,mb,homeAdv,calibration={}){let wa=0,d=0,wb=0;const injFactorA=1-(calibration.injuriesA||0)*0.08;const injFactorB=1-(calibration.injuriesB||0)*0.08;const fatFactorA=1-(calibration.fatigueA||0)*0.003;const fatFactorB=1-(calibration.fatigueB||0)*0.003;const motFactorA=0.9+(calibration.motivationA||3)*0.04;const motFactorB=0.9+(calibration.motivationB||3)*0.04;const lAadj=lA*injFactorA*fatFactorA*motFactorA+(ma-0.33)*0.8;const lBadj=lB*injFactorB*fatFactorB*motFactorB+(mb-0.33)*0.8;for(let i=0;i<n;i++){let ga=0,gb=0;let pA=Math.random();while(pA>Math.exp(-Math.max(0.2,lAadj))){ga++;pA*=Math.random();}let pB=Math.random();while(pB>Math.exp(-Math.max(0.2,lBadj))){gb++;pB*=Math.random();}if(ga>gb)wa++;else if(ga===gb)d++;else wb++;}return{p1:wa/n,pX:d/n,p2:wb/n};}
+};
+
+// ==================== H2H ENGINE ====================
+const H2HEngine={
+  getH2H(teamA,teamB,allMatches){const h2h=allMatches.filter(m=>m.opponent===teamB||m.opponent===teamA);if(h2h.length<3)return null;let w=0,d=0,l=0,bt=0,o25=0;const scores=[];h2h.forEach(m=>{const p=m.score.split('-');const s=parseInt(p[0]),c=parseInt(p[1]);if(s>c)w++;else if(s===c)d++;else l++;if(s>0&&c>0)bt++;if(s+c>2.5)o25++;scores.push(m.score);});const t=h2h.length;const scoreFreq={};scores.forEach(s=>scoreFreq[s]=(scoreFreq[s]||0)+1);const mostFreq=Object.entries(scoreFreq).sort((a,b)=>b[1]-a[1])[0];return{matches:t,wins:w,draws:d,losses:l,winRate:+(w/t).toFixed(2),bttsRate:+((bt/t)*100).toFixed(1),over25Rate:+((o25/t)*100).toFixed(1),avgGoals:+((scores.reduce((sum,s)=>{const[p]=s.split('-');return sum+parseInt(p)+parseInt(s.split('-')[1]);},0))/t).toFixed(2),mostFreqScore:mostFreq?mostFreq[0]:'?',mostFreqCount:mostFreq?mostFreq[1]:0,scores:h2h.slice(0,20)};},
+  getH2HProbs(teamA,teamB,cache){const h2h=this.getH2H(teamA,teamB,cache);if(!h2h||h2h.matches<5)return null;return{p1:h2h.winRate,pX:+(h2h.matches-h2h.wins-h2h.losses)/h2h.matches,p2:+(h2h.losses/h2h.matches),btts:h2h.bttsRate/100,over25:h2h.over25Rate/100};}
+};
+
+// ==================== VALUE BET ENGINE v8 ====================
+const ValueBetEngine={
+  async analyze(tA,tB,allOdds,settings,leagueKey,calibration){
+    const c=LEAGUES_CONFIG[leagueKey]||LEAGUES_CONFIG['Default'];
+    const homeAdv=c.home_adv||40;
+    const sims=settings.sims||10000;
+    const valTh=(settings.value_th||3)/100;
+
+    const hStats=tA?.homeStats||{},aStats=tB?.awayStats||{};
+    const hxg=hStats.xg||c.avg_xg_home,hxga=hStats.xga||c.avg_xg_away;
+    const axg=aStats.xg||c.avg_xg_away,axga=aStats.xga||c.avg_xg_home;
+
+    let lA=Math.max(0.5,(hxg/c.avg_xg_home)*(axga/c.avg_xg_home)*c.home_goal_rate);
+    let lB=Math.max(0.5,(axg/c.avg_xg_away)*(hxga/c.avg_xg_away)*c.away_goal_rate);
+
+    if(calibration){
+      const injA=1-(calibration.injuriesA||0)*0.08;const injB=1-(calibration.injuriesB||0)*0.08;
+      const fatA=1-(calibration.fatigueA||0)*0.003;const fatB=1-(calibration.fatigueB||0)*0.003;
+      const motA=0.9+(calibration.motivationA||3)*0.04;const motB=0.9+(calibration.motivationB||3)*0.04;
+      const weatherFactor=[1,0.98,0.95,0.90,0.92][calibration.weather||0];
+      const pitchFactor=[1,0.98,0.95,0.90][calibration.pitch||0];
+      const restA=Math.min(1,0.92+(calibration.restA||4)*0.02);
+      const restB=Math.min(1,0.92+(calibration.restB||4)*0.02);
+      lA*=injA*fatA*motA*weatherFactor*pitchFactor*restA;
+      lB*=injB*fatB*motB*weatherFactor*pitchFactor*restB;
+    }
+
+    const dc=DixonColesEngine.analyze(lA,lB,8);
+    const eloExp=EloEngine.expected(tA?.stats?.elo||1500,tB?.stats?.elo||1500,homeAdv);
+    const mA=StatsCalculator.momentumScore(tA?.last5||[]),mB=StatsCalculator.momentumScore(tB?.last5||[]);
+    const mc=MonteCarloEngine.simulate(lA,lB,sims,mA,mB,homeAdv,calibration||{});
+
+    const h2hProbs=H2HEngine.getH2HProbs(tA?.name,tB?.name,tA?.allMatches||[]);
+    const h2hP1=h2hProbs?.p1||0.33,h2hPX=h2hProbs?.pX||0.34,h2hP2=h2hProbs?.p2||0.33;
+
+    const xgP1=hxg/(hxg+axg+0.01),xgP2=axg/(hxg+axg+0.01),xgPX=Math.max(0.15,1-xgP1-xgP2);
+
+    const sfA=StatsCalculator.sampleSizeFactor(tA?.homeStats?.matches||0),sfB=StatsCalculator.sampleSizeFactor(tB?.awayStats?.matches||0);
+    const sf=Math.min(sfA,sfB);
+
+    const w=settings;
+    let p1=(eloExp*w.elo)+(dc.p1*w.dc)+(mc.p1*w.mc)+(mA*w.momentum)+(h2hP1*w.h2h)+(xgP1*w.xg);
+    let p2=((1-eloExp)*w.elo)+(dc.p2*w.dc)+(mc.p2*w.mc)+(mB*w.momentum)+(h2hP2*w.h2h)+(xgP2*w.xg);
+    let pX=1-(p1+p2);
+    const total=p1+pX+p2;p1/=total;pX/=total;p2/=total;
+
+    const opps=[];
+    if(allOdds.c1)opps.push({market:'1X2',selection:'1',prob:p1,odd:allOdds.c1,label:'Victoire Domicile'});
+    if(allOdds.cX)opps.push({market:'1X2',selection:'X',prob:pX,odd:allOdds.cX,label:'Match Nul'});
+    if(allOdds.c2)opps.push({market:'1X2',selection:'2',prob:p2,odd:allOdds.c2,label:'Victoire Extérieur'});
+
+    let bttsP=0,overP=0;dc.scores.forEach(s=>{if(s.home>0&&s.away>0)bttsP+=s.prob;if(s.home+s.away>2.5)overP+=s.prob;});
+    if(allOdds.cbttsY)opps.push({market:'BTTS',selection:'OUI',prob:bttsP,odd:allOdds.cbttsY,label:'Les 2 marquent'});
+    if(allOdds.cover)opps.push({market:'Over/Under 2.5',selection:'OVER',prob:overP,odd:allOdds.cover,label:'Plus de 2.5 buts'});
+
+    opps.forEach(o=>{o.fairOdd=1/o.prob;o.edge=(o.prob*o.odd)-1;o.edgePercent=o.edge*100;o.isValue=o.edge>valTh;o.ev=o.edge;o.kelly=o.edge/(o.odd-1);o.halfKelly=o.kelly/2;o.quarterKelly=o.kelly/4;o.rating=o.edgePercent>8?5:o.edgePercent>5?4:o.edgePercent>3?3:o.edgePercent>1?2:o.edgePercent>0?1:0;});
+    opps.sort((a,b)=>b.edge-a.edge);
+
+    const modelAgreement=1-(Math.abs(dc.p1-mc.p1)+Math.abs(dc.p1-h2hP1)+Math.abs(mc.p1-xgP1))/3;
+    const hasData=tA?.allMatches?.length>5&&tB?.allMatches?.length>5;
+    let confidence=Math.round(Math.min(95,45+(Math.abs(opps[0]?.edge||0)*100)+(hasData?15:0)+(modelAgreement*10)));
+    const trapScore=Math.round(Math.min(100,(1-modelAgreement)*50+(opps[0]?.edge<0.05?30:0)));
+    const dominanceIndex=Math.round(((tA?.stats?.elo||1500)-(tB?.stats?.elo||1500))/10+50);
+    const riskLevel=confidence<45?'Élevé':confidence<65?'Moyen':'Faible';
+    const reliabilityA=StatsCalculator.dataReliability(tA?.allMatches?.length||0,5),reliabilityB=StatsCalculator.dataReliability(tB?.allMatches?.length||0,5);
+
+    return{probs:{p1,pX,p2},btts:bttsP,over25:overP,scores:dc.scores,confidence,trapScore,dominanceIndex,riskLevel,opportunities:opps,bestPick:opps[0],hasValue:opps[0]?.isValue&&confidence>=(settings.conf_min||50),leagueConfig:c,lambdaA:lA,lambdaB:lB,hasData,modelAgreement,reliabilityA,reliabilityB,statsA:{home_xg:hxg,home_xga:hxga,home_ppg:hStats.ppg,home_btts:hStats.btts,home_over25:hStats.over25},statsB:{away_xg:axg,away_xga:axga,away_ppg:aStats.ppg,away_btts:aStats.btts,away_over25:aStats.over25},dc_p1:dc.p1,mc_p1:mc.p1,xg_p1:xgP1,elo_p1:eloExp,h2h_p1:h2hP1,momentumA:mA,momentumB:mB,h2hAdvantage:h2hP1>0.4};
+  }
+};
+
+// ==================== DATA MANAGER ====================
+const DataManager={
+  async smartImport(file){const st=document.getElementById('importStatus');try{const txt=await file.text();const lines=txt.split(/\r?\n/).filter(l=>l.trim());if(lines.length<2){st.innerHTML='❌ Fichier vide';return{added:0,updated:0,newMatches:0};}const seps=[',',';','\t','|'];let bs=',',mf=0;for(const s of seps){const fc=lines[0].split(s).length;if(fc>mf){mf=fc;bs=s;}}const hdrs=lines[0].split(bs).map(h=>h.trim().replace(/^["']|["']$/g,'').toLowerCase());const cm=this._detectColumns(hdrs);const td=new Map();let skipped=0;for(let i=1;i<lines.length;i++){if(!lines[i].trim())continue;const v=lines[i].split(bs).map(x=>x.trim().replace(/^["']|["']$/g,''));const rawHome=v[cm.homeTeam]||'',rawAway=v[cm.awayTeam]||'';const hg=parseInt(v[cm.homeGoals]),ag=parseInt(v[cm.awayGoals]);if(!rawHome||!rawAway||isNaN(hg)||isNaN(ag)){skipped++;continue;}const ht=resolveAlias(rawHome),at=resolveAlias(rawAway);if(!ht||!at){skipped++;continue;}if(!td.has(ht))td.set(ht,{name:ht,displayName:rawHome,matches:[]});if(!td.has(at))td.set(at,{name:at,displayName:rawAway,matches:[]});td.get(ht).matches.push({score:`${hg}-${ag}`,venue:'home',opponent:at,opponentRaw:rawAway});td.get(at).matches.push({score:`${ag}-${hg}`,venue:'away',opponent:ht,opponentRaw:rawHome});}let ac=0,uc=0,totalNewMatches=0;for(const[tn,tdd]of td){const comp=StatsCalculator.computeFromMatches(tdd.matches);if(!comp)continue;const et=await DB.getTeam(tn);if(et){const merged=this._merge(et,tdd,comp);const newM=merged.allMatches.length-(et.allMatches?.length||0);totalNewMatches+=Math.max(0,newM);await DB.saveTeam(merged);uc++;}else{await DB.saveTeam({name:tn,displayName:tdd.displayName,stats:{...comp.stats,elo:1500},homeStats:comp.homeStats,awayStats:comp.awayStats,last5:tdd.matches.slice(0,5).map(m=>m.score),last10:tdd.matches.slice(0,10).map(m=>m.score),last20:tdd.matches.slice(0,20).map(m=>m.score),allMatches:tdd.matches.slice(0,1000),updatedAt:now(),version:1});ac++;totalNewMatches+=tdd.matches.length;}}App._teamsCache=await DB.getAllTeams();const totalMatches=App._teamsCache.reduce((sum,t)=>sum+(t.allMatches?.length||0),0);await App._updateCounts();st.innerHTML=`<div class="import-summary"><div class="line"><span>📁 Fichier</span><span style="color:var(--cyan)">${file.name}</span></div><div class="line"><span>➕ Nouvelles équipes</span><span style="color:var(--green)">${ac}</span></div><div class="line"><span>🔄 Équipes mises à jour</span><span style="color:var(--yellow)">${uc}</span></div><div class="line"><span>⚽ Nouveaux matchs ajoutés</span><span style="color:var(--cyan)">${totalNewMatches}</span></div><div class="line"><span>🗑️ Lignes ignorées</span><span style="color:var(--sub)">${skipped}</span></div><div class="line" style="border-top:1px solid var(--border);padding-top:4px"><span>📊 Total matchs base</span><span style="color:var(--green);font-weight:700">${totalMatches}</span></div><div class="line"><span>🗄️ Total équipes base</span><span style="color:var(--green);font-weight:700">${App._teamsCache.length}</span></div></div>`;return{added:ac,updated:uc,newMatches:totalNewMatches};}catch(e){st.innerHTML=`❌ Erreur: ${e.message}`;return{added:0,updated:0,newMatches:0};}},
+  _detectColumns(h){const m={homeTeam:-1,awayTeam:-1,homeGoals:-1,awayGoals:-1};for(let i=0;i<h.length;i++){const l=h[i].toLowerCase().trim();if(l==='hometeam'||l==='home_team'||l==='team_a'||l==='home')m.homeTeam=i;if(l==='awayteam'||l==='away_team'||l==='team_b'||l==='away')m.awayTeam=i;if(l==='fthg'||l==='home_goals'||l==='hg'||l==='home_score')m.homeGoals=i;if(l==='ftag'||l==='away_goals'||l==='ag'||l==='away_score')m.awayGoals=i;}if(m.homeTeam===-1&&h.length>=4)m.homeTeam=0;if(m.awayTeam===-1&&h.length>=4)m.awayTeam=1;if(m.homeGoals===-1&&h.length>=4)m.homeGoals=2;if(m.awayGoals===-1&&h.length>=4)m.awayGoals=3;return m;},
+  _merge(et,nd,cs){const es=new Set((et.allMatches||[]).map(m=>`${m.opponent}_${m.score}_${m.venue}`));const nm=(nd.matches||[]).filter(m=>!es.has(`${m.opponent}_${m.score}_${m.venue}`));const am=[...(et.allMatches||[]),...nm].slice(0,1000);const fs=StatsCalculator.computeFromMatches(am);if(!fs)return et;const oldElo=et.stats?.elo||1500;const wins=am.filter(m=>{const p=m.score.split('-');return parseInt(p[0])>parseInt(p[1]);}).length;const draws=am.filter(m=>{const p=m.score.split('-');return parseInt(p[0])===parseInt(p[1]);}).length;const newElo=Math.round(oldElo+32*(wins+draws*0.5-am.length*0.4)/Math.max(1,am.length));return{...et,displayName:et.displayName||nd.displayName,stats:{...fs.stats,elo:newElo,wins,draws,losses:am.length-wins-draws},homeStats:fs.homeStats,awayStats:fs.awayStats,last5:am.slice(0,5).map(m=>m.score),last10:am.slice(0,10).map(m=>m.score),last20:am.slice(0,20).map(m=>m.score),allMatches:am,updatedAt:now(),version:(et.version||0)+1};}
+};
+
+// ==================== APPLICATION ====================
+const App={
+  _teamsCache:[],_leaguesCache:{...DEFAULT_LEAGUES},_currentAnalysis:null,_calibration:{},_settings:{elo:0.20,dc:0.25,mc:0.22,momentum:0.10,h2h:0.08,xg:0.15,value_th:3,conf_min:50,sims:10000,kelly_fraction:0.5},
+
+  async init(){console.log('🚀 EDGE PRO v8.0');await DB.open();this._teamsCache=await DB.getAllTeams();const savedLeagues=await DB.getAllLeagues();if(savedLeagues.length>0){savedLeagues.forEach(l=>this._leaguesCache[l.id]=l);}await this._loadSettings();this._populateLeagueSelect();await this._updateCounts();this._setupSliders();},
+
+  _setupSliders(){['calFatigueA','calRotA','calFatigueB','calRotB'].forEach(id=>{const el=document.getElementById(id);const span=document.getElementById(id+'Val');if(el&&span){el.addEventListener('input',()=>span.textContent=el.value);}});},
+
+  async _loadSettings(){const s=await DB.getAllSettings();if(Object.keys(s).length>0)this._settings={...this._settings,...s};},
+  _populateLeagueSelect(){const sel=document.getElementById('leagueSelect');if(!sel)return;let opts='<option value="">-- Auto-détection --</option>';Object.entries(this._leaguesCache).forEach(([k,v])=>{if(k!=='Default')opts+=`<option value="${k}">${v.name} (${v.country}) · ${v.goal_rate} b/m</option>`;});sel.innerHTML=opts;},
+  getSelectedLeague(){const sel=document.getElementById('leagueSelect');const a=resolveAlias(document.getElementById('teamA')?.value||'');const b=resolveAlias(document.getElementById('teamB')?.value||'');const la=TEAM_LEAGUE[a],lb=TEAM_LEAGUE[b];if(sel.value&&this._leaguesCache[sel.value])return sel.value;if(la&&lb&&la===lb)return la;return la||lb||'Default';},
+
+  nav(pid,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));const page=document.getElementById(pid);if(page)page.classList.add('active');if(btn)btn.classList.add('active');if(pid==='pg-calibration-match')this._populateCalibrationMatch();},
+
+  suggest(fid){const inp=document.getElementById(fid);const sd=document.getElementById(fid==='teamA'?'suggestA':'suggestB');const q=clean(inp?.value||'');if(q.length<2){sd.style.display='none';return;}const matches=this._teamsCache.filter(t=>clean(t.name).includes(q)||clean(t.displayName||'').includes(q)).slice(0,8);sd.innerHTML=matches.length?matches.map(t=>`<div onclick="App.selectTeam('${fid}','${t.displayName||t.name}')">${t.displayName||t.name} <span style="color:var(--sub);font-size:0.55rem">(${t.allMatches?.length||0}M)</span></div>`).join(''):'';sd.style.display=matches.length?'block':'none';},
+  selectTeam(fid,name){document.getElementById(fid).value=name;document.getElementById(fid==='teamA'?'suggestA':'suggestB').style.display='none';},
+  _findTeam(q){if(!q)return null;const k=clean(q);let found=this._teamsCache.find(t=>clean(t.name)===k);if(found)return found;found=this._teamsCache.find(t=>clean(t.displayName||'')===k);if(found)return found;const resolved=resolveAlias(q);if(resolved&&resolved!==k)found=this._teamsCache.find(t=>clean(t.name)===clean(resolved));return found||null;},
+
+  _populateCalibrationMatch(){const na=document.getElementById('teamA')?.value?.trim()||'';const nb=document.getElementById('teamB')?.value?.trim()||'';document.getElementById('calTeamA').value=na||'Équipe A';document.getElementById('calTeamB').value=nb||'Équipe B';},
+
+  applyCalibration(){this._calibration={injuriesA:parseInt(document.getElementById('calInjA').value)||0,injuriesB:parseInt(document.getElementById('calInjB').value)||0,suspensionsA:parseInt(document.getElementById('calSuspA').value)||0,suspensionsB:parseInt(document.getElementById('calSuspB').value)||0,fatigueA:parseInt(document.getElementById('calFatigueA').value)||0,fatigueB:parseInt(document.getElementById('calFatigueB').value)||0,rotationA:parseInt(document.getElementById('calRotA').value)||0,rotationB:parseInt(document.getElementById('calRotB').value)||0,motivationA:parseInt(document.getElementById('calMotA').value)||3,motivationB:parseInt(document.getElementById('calMotB').value)||3,importanceA:parseInt(document.getElementById('calImpA').value)||2,importanceB:parseInt(document.getElementById('calImpB').value)||2,weather:parseInt(document.getElementById('calWeather').value)||0,pitch:parseInt(document.getElementById('calPitch').value)||0,restA:parseInt(document.getElementById('calRestA').value)||4,restB:parseInt(document.getElementById('calRestB').value)||4};showToast('✅ Calibration appliquée');this.nav('pg-analyse',document.querySelector('[data-page="pg-analyse"]'));},
+
+  suggestCalTeam(){const q=clean(document.getElementById('calTeamSearch')?.value||'');const sd=document.getElementById('suggestCalTeam');if(q.length<2){sd.style.display='none';return;}const matches=this._teamsCache.filter(t=>clean(t.name).includes(q)||clean(t.displayName||'').includes(q)).slice(0,8);sd.innerHTML=matches.map(t=>`<div onclick="App.loadCalTeam('${t.name}')">${t.displayName||t.name}</div>`).join('');sd.style.display=matches.length?'block':'none';},
+  async loadCalTeam(name){document.getElementById('suggestCalTeam').style.display='none';const t=this._teamsCache.find(x=>x.name===name);if(!t)return;document.getElementById('calTeamForm').innerHTML=`<div class="card"><h3>${t.displayName||t.name}</h3><div class="two-col"><div class="field"><label>Elo</label><input id="calElo" type="number" value="${t.stats?.elo||1500}"></div><div class="field"><label>Force off. dom.</label><input id="calOffH" type="number" step="0.01" value="${t.homeStats?.xg||1.5}"></div></div><div class="two-col"><div class="field"><label>Force déf. dom.</label><input id="calDefH" type="number" step="0.01" value="${t.homeStats?.xga||1.2}"></div><div class="field"><label>Force off. ext.</label><input id="calOffA" type="number" step="0.01" value="${t.awayStats?.xg||1.2}"></div></div><div class="two-col"><div class="field"><label>Force déf. ext.</label><input id="calDefA" type="number" step="0.01" value="${t.awayStats?.xga||1.5}"></div><div class="field"><label>Coeff offensif</label><input id="calCoefOff" type="number" step="0.01" value="1.00"></div></div><button class="btn btn-success" onclick="App.saveCalTeam('${name}')">💾 Sauvegarder</button></div>`;},
+  async saveCalTeam(name){const t=this._teamsCache.find(x=>x.name===name);if(!t)return;t.stats.elo=parseInt(document.getElementById('calElo').value)||1500;t.homeStats.xg=parseFloat(document.getElementById('calOffH').value)||1.5;t.homeStats.xga=parseFloat(document.getElementById('calDefH').value)||1.2;t.awayStats.xg=parseFloat(document.getElementById('calOffA').value)||1.2;t.awayStats.xga=parseFloat(document.getElementById('calDefA').value)||1.5;t.coeffOff=parseFloat(document.getElementById('calCoefOff').value)||1;await DB.saveTeam(t);DB.clearCache();this._teamsCache=await DB.getAllTeams();showToast('✅ Équipe calibrée');},
+
+  async analyzeMatch(){
+    const btn=document.getElementById('btnAnalyze');if(!btn)return;btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Analyse...';
+    try{
+      const na=document.getElementById('teamA')?.value?.trim()||'Équipe A',nb=document.getElementById('teamB')?.value?.trim()||'Équipe B';
+      const allOdds={c1:parseFloat(document.getElementById('c1')?.value)||0,cX:parseFloat(document.getElementById('cX')?.value)||0,c2:parseFloat(document.getElementById('c2')?.value)||0,cbttsY:parseFloat(document.getElementById('cbttsY')?.value)||0,cover:parseFloat(document.getElementById('cover')?.value)||0};
+      const tA=this._findTeam(na),tB=this._findTeam(nb);
+      const leagueKey=this.getSelectedLeague();
+      const r=await ValueBetEngine.analyze(tA||{name:clean(na),homeStats:{}},tB||{name:clean(nb),awayStats:{}},allOdds,this._settings,leagueKey,this._calibration);
+
+      const bp=r.bestPick,lc=r.leagueConfig;
+      const isHot=bp&&bp.isValue&&r.confidence>=70,isValue=bp&&bp.isValue&&r.confidence>=this._settings.conf_min;
+
+      let h2hHTML='';if(tA&&tB){const h2h=H2HEngine.getH2H(tA.name,tB.name,tA.allMatches||[]);if(h2h&&h2h.matches>=2){h2hHTML=`<div class="h2h-card"><h3 style="font-size:0.6rem">📜 H2H (${h2h.matches} matchs)</h3><div class="three-col" style="text-align:center"><div><span style="color:var(--green)">${h2h.wins}V</span></div><div><span style="color:var(--yellow)">${h2h.draws}N</span></div><div><span style="color:var(--red)">${h2h.losses}D</span></div></div><div style="font-size:0.5rem;color:var(--sub)">BTTS:${h2h.bttsRate}% · O2.5:${h2h.over25Rate}% · Score freq:${h2h.mostFreqScore} (${h2h.mostFreqCount}x)</div></div>`;}}
+
+      const compareRows=r.opportunities.slice(0,8).map((o,i)=>{const ec=o.edgePercent>5?'#22c55e':(o.edgePercent>2?'#eab308':(o.edgePercent>0?'#f97316':'#ef4444'));return`<tr class="${i===0?'value-row':''}"><td>${o.market}</td><td style="font-weight:700">${o.selection}</td><td>${(o.prob*100).toFixed(1)}%</td><td style="color:var(--yellow)">${o.odd.toFixed(2)}</td><td style="color:${ec};font-weight:700">${o.edgePercent>0?'+':''}${o.edgePercent.toFixed(1)}%</td><td>${getRating(o.rating*20,5)}</td></tr>`;}).join('');
+
+      const scoresHTML=r.scores.slice(0,12).map(s=>`<div class="stat-row"><span>${s.score}</span><span style="color:var(--cyan)">${(s.prob*100).toFixed(1)}%</span><div class="chart-bar" style="width:${(s.prob*100)}%"></div></div>`).join('');
+
+      const riskColor=r.riskLevel==='Faible'?'var(--green)':r.riskLevel==='Moyen'?'var(--yellow)':'var(--red)';
+
+      let recHTML=isHot?`<div class="final-pick-box hot"><div class="pick-label">🔥 HOT PICK · ${lc.name}</div><div class="pick-market">${bp.market}</div><div class="pick-selection" style="color:var(--gold)">${bp.selection}</div><div class="pick-odd">@ ${bp.odd.toFixed(2)}</div><div class="pick-edge">Edge: +${bp.edgePercent.toFixed(1)}% · EV: +${bp.ev.toFixed(3)} · ⭐${getRating(bp.rating*20,5)}</div></div>`:isValue?`<div class="final-pick-box"><div class="pick-label">🟢 VALUE BET · ${lc.name}</div><div class="pick-market">${bp.market}</div><div class="pick-selection" style="color:var(--green)">${bp.selection}</div><div class="pick-odd">@ ${bp.odd.toFixed(2)}</div><div class="pick-edge">Edge: +${bp.edgePercent.toFixed(1)}% · EV: +${bp.ev.toFixed(3)} · ⭐${getRating(bp.rating*20,5)}</div></div>`:`<div class="final-pick-box no-value"><div style="font-size:1.2rem;font-weight:900;color:var(--red)">🔴 PAS DE VALUE</div></div>`;
+
+      document.getElementById('analysisOutput').innerHTML=`
+        ${r.hasData?`<div class="data-ok">✅ Données: ${na} (${r.statsA.home_xg}xG dom.) · ${nb} (${r.statsB.away_xg}xG ext.)</div>`:`<div class="data-warn">⚠️ Données limitées · ${lc.name}</div>`}
+        ${recHTML}
+        ${bp?`<div class="kelly-box"><strong>💰 Kelly:</strong> Full: ${(bp.kelly*100).toFixed(1)}% · Half: ${(bp.halfKelly*100).toFixed(1)}% · Quarter: ${(bp.quarterKelly*100).toFixed(1)}%</div>`:''}
+        <div class="card"><h3>📊 Rapport · ${lc.name}</h3>
+          <div class="stat-row"><span>Probabilités</span><span><span class="badge badge-blue">1:${(r.probs.p1*100).toFixed(1)}%</span> <span class="badge badge-yellow">X:${(r.probs.pX*100).toFixed(1)}%</span> <span class="badge badge-red">2:${(r.probs.p2*100).toFixed(1)}%</span></span></div>
+          <div class="stat-row"><span>Confiance</span><span style="color:var(--cyan);font-weight:700">${r.confidence}%</span></div>
+          <div class="stat-row"><span>Risque</span><span style="color:${riskColor};font-weight:700">${r.riskLevel}</span></div>
+          <div class="stat-row"><span>Trap Score</span><span>${r.trapScore}/100</span></div>
+          <div class="stat-row"><span>Accord modèles</span><span>${(r.modelAgreement*100).toFixed(0)}%</span></div>
+          <div class="stat-row"><span>Fiabilité A</span><span>${getRating(r.reliabilityA*20,5)}</span></div>
+          <div class="stat-row"><span>Fiabilité B</span><span>${getRating(r.reliabilityB*20,5)}</span></div>
+        </div>
+        ${h2hHTML}
+        <div class="card"><h3>⚽ Scores probables</h3>${scoresHTML}</div>
+        <div class="card"><h3>📈 Marchés</h3><table class="compare-table"><thead><tr><th>Marché</th><th>Pari</th><th>Prob.</th><th>Cote</th><th>Edge</th><th>Note</th></tr></thead><tbody>${compareRows}</tbody></table></div>
+      `;
+      await DB.saveAnalysis({nameA:na,nameB:nb,league:leagueKey,probs:r.probs,confiance:r.confidence,pickMarket:bp?.market,pickSelection:bp?.selection,pickOdd:bp?.odd,pickEdge:bp?.edgePercent,mode:'pro',edgeValue:bp?.edge,rating:bp?.rating});
+      this._calibration={};await this._updateCounts();
+    }catch(e){console.error(e);showToast('❌ Erreur');}
+    finally{btn.disabled=false;btn.textContent='🚀 ANALYSE COMPLÈTE';}
+  },
+
+  async importMassive(ev){const files=ev.target.files;if(!files?.length)return;const st=document.getElementById('importStatus');st.innerHTML='';let ta=0,tu=0,tm=0;for(const f of files){const r=await DataManager.smartImport(f);ta+=r.added||0;tu+=r.updated||0;tm+=r.newMatches||0;}this._teamsCache=await DB.getAllTeams();await this._updateCounts();ev.target.value='';},
+  async exportDatabase(){const teams=await DB.getAllTeams();const analyses=await DB.getAllAnalyses();const settings=await DB.getAllSettings();const leagues=await DB.getAllLeagues();const data={version:VERSION,exportDate:now(),teams,analyses,settings,leagues};const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`edgepro_v8_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url);showToast('✅ Exporté');},
+  async importJSON(){const input=document.createElement('input');input.type='file';input.accept='.json';input.onchange=async e=>{try{const txt=await e.target.files[0].text();const data=JSON.parse(txt);if(data.teams)for(const t of data.teams)await DB.saveTeam(t);if(data.settings)for(const[k,v]of Object.entries(data.settings))await DB.saveSetting(k,v);if(data.leagues)for(const l of data.leagues)await DB.saveLeague(l);DB.clearCache();this._teamsCache=await DB.getAllTeams();await this._loadSettings();this._populateLeagueSelect();await this._updateCounts();showToast(`✅ Importé: ${data.teams?.length||0} équipes, ${data.leagues?.length||0} ligues`);}catch(err){showToast('❌ Fichier invalide');}};input.click();},
+
+  async showLeagues(){const leagues=await DB.getAllLeagues();const allLeagues=leagues.length>0?leagues:Object.entries(DEFAULT_LEAGUES).filter(([k])=>k!=='Default').map(([k,v])=>({id:k,...v}));document.getElementById('leaguesList').innerHTML=allLeagues.map(l=>`<div class="stat-row"><span><b>${l.name}</b> (${l.country})</span><span>${l.goal_rate} b/m</span></div><div style="font-size:0.5rem;color:var(--sub);padding:2px 0">BTTS:${l.btts}% · O2.5:${l.over25}% · HomeAdv:${l.home_adv} · Fiabilité:${l.reliability}%</div><div style="display:flex;gap:4px;margin-bottom:6px"><button class="btn btn-small btn-secondary" onclick="App.editLeague('${l.id}')">✏️</button><button class="btn btn-small btn-danger" onclick="App.deleteLeague('${l.id}')">🗑️</button><button class="btn btn-small btn-success" onclick="App.calcLeague('${l.id}')">🔄 Calcul auto</button></div>`).join('');},
+  showAddLeagueForm(){document.getElementById('addLeagueForm').innerHTML=`<div class="card"><h3>➕ Nouvelle ligue</h3><div class="two-col"><div class="field"><label>ID</label><input id="newLgId" placeholder="ex: MyLeague"></div><div class="field"><label>Nom</label><input id="newLgName" placeholder="Nom"></div></div><div class="two-col"><div class="field"><label>Pays</label><input id="newLgCountry" placeholder="Pays"></div><div class="field"><label>Goal Rate</label><input id="newLgGR" type="number" step="0.01" value="2.70"></div></div><div class="two-col"><div class="field"><label>Home Goal Rate</label><input id="newLgHGR" type="number" step="0.01" value="1.50"></div><div class="field"><label>Away Goal Rate</label><input id="newLgAGR" type="number" step="0.01" value="1.20"></div></div><div class="two-col"><div class="field"><label>xG Home</label><input id="newLgXGH" type="number" step="0.01" value="1.50"></div><div class="field"><label>xG Away</label><input id="newLgXGA" type="number" step="0.01" value="1.25"></div></div><div class="two-col"><div class="field"><label>BTTS %</label><input id="newLgBTTS" type="number" value="55"></div><div class="field"><label>Over 2.5 %</label><input id="newLgO25" type="number" value="52"></div></div><div class="two-col"><div class="field"><label>Home Adv Elo</label><input id="newLgHA" type="number" value="40"></div><div class="field"><label>Importance (1-5)</label><input id="newLgImp" type="number" value="3"></div></div><button class="btn btn-accent" onclick="App.saveNewLeague()">💾 Sauvegarder</button></div>`;document.getElementById('addLeagueForm').style.display='block';},
+  async saveNewLeague(){const lg={id:document.getElementById('newLgId').value,name:document.getElementById('newLgName').value,country:document.getElementById('newLgCountry').value,goal_rate:parseFloat(document.getElementById('newLgGR').value),home_goal_rate:parseFloat(document.getElementById('newLgHGR').value),away_goal_rate:parseFloat(document.getElementById('newLgAGR').value),avg_xg_home:parseFloat(document.getElementById('newLgXGH').value),avg_xg_away:parseFloat(document.getElementById('newLgXGA').value),btts:parseInt(document.getElementById('newLgBTTS').value),over25:parseInt(document.getElementById('newLgO25').value),home_adv:parseInt(document.getElementById('newLgHA').value),importance:parseInt(document.getElementById('newLgImp').value),reliability:80,matches_used:0,cards:3.5,corners:10.0};await DB.saveLeague(lg);this._leaguesCache[lg.id]=lg;this._populateLeagueSelect();document.getElementById('addLeagueForm').style.display='none';this.showLeagues();showToast('✅ Ligue ajoutée');},
+  async editLeague(id){const lg=this._leaguesCache[id]||await DB.getLeague(id);if(!lg)return;document.getElementById('addLeagueForm').innerHTML=`<div class="card"><h3>✏️ Modifier ${lg.name}</h3><div class="two-col"><div class="field"><label>Goal Rate</label><input id="editLgGR" type="number" step="0.01" value="${lg.goal_rate}"></div><div class="field"><label>Home Goal Rate</label><input id="editLgHGR" type="number" step="0.01" value="${lg.home_goal_rate}"></div></div><div class="two-col"><div class="field"><label>BTTS %</label><input id="editLgBTTS" type="number" value="${lg.btts}"></div><div class="field"><label>Over 2.5 %</label><input id="editLgO25" type="number" value="${lg.over25}"></div></div><div class="two-col"><div class="field"><label>Home Adv</label><input id="editLgHA" type="number" value="${lg.home_adv}"></div><div class="field"><label>Fiabilité</label><input id="editLgRel" type="number" value="${lg.reliability}"></div></div><button class="btn btn-success" onclick="App.saveEditLeague('${id}')">💾 Mettre à jour</button></div>`;document.getElementById('addLeagueForm').style.display='block';},
+  async saveEditLeague(id){const lg=this._leaguesCache[id]||await DB.getLeague(id);if(!lg)return;lg.goal_rate=parseFloat(document.getElementById('editLgGR').value);lg.home_goal_rate=parseFloat(document.getElementById('editLgHGR').value);lg.btts=parseInt(document.getElementById('editLgBTTS').value);lg.over25=parseInt(document.getElementById('editLgO25').value);lg.home_adv=parseInt(document.getElementById('editLgHA').value);lg.reliability=parseInt(document.getElementById('editLgRel').value);await DB.saveLeague(lg);this._leaguesCache[id]=lg;document.getElementById('addLeagueForm').style.display='none';this.showLeagues();showToast('✅ Ligue mise à jour');},
+  async deleteLeague(id){if(confirm('Supprimer cette ligue ?')){await DB.deleteLeague(id);delete this._leaguesCache[id];this._populateLeagueSelect();this.showLeagues();showToast('🗑️ Ligue supprimée');}},
+  async calcLeague(id){const lg=this._leaguesCache[id]||await DB.getLeague(id);if(!lg)return;const teams=this._teamsCache.filter(t=>TEAM_LEAGUE[t.name]===id||TEAM_LEAGUE[resolveAlias(t.name)]===id);if(teams.length===0){showToast('❌ Aucune équipe pour cette ligue');return;}let totalGoals=0,totalHome=0,totalAway=0,bt=0,o25=0,totalMatches=0;teams.forEach(t=>{(t.allMatches||[]).forEach(m=>{const p=m.score.split('-');const s=parseInt(p[0]),c=parseInt(p[1]);if(isNaN(s)||isNaN(c))return;totalGoals+=s+c;totalMatches++;if(m.venue==='home')totalHome+=s+c;else totalAway+=s+c;if(s>0&&c>0)bt++;if(s+c>2.5)o25++;});});if(totalMatches===0){showToast('❌ Aucun match trouvé');return;}lg.goal_rate=+(totalGoals/totalMatches).toFixed(2);lg.btts=+((bt/totalMatches)*100).toFixed(0);lg.over25=+((o25/totalMatches)*100).toFixed(0);lg.matches_used=totalMatches;await DB.saveLeague(lg);this._leaguesCache[id]=lg;this._populateLeagueSelect();this.showLeagues();showToast(`✅ Recalculé (${totalMatches} matchs)`);},
+  async exportLeagues(){const leagues=await DB.getAllLeagues();const blob=new Blob([JSON.stringify(leagues.length>0?leagues:Object.values(this._leaguesCache).filter(l=>l.id!=='Default'),null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='edgepro_leagues.json';a.click();URL.revokeObjectURL(url);showToast('✅ Ligues exportées');},
+  importLeagues(){const input=document.createElement('input');input.type='file';input.accept='.json';input.onchange=async e=>{try{const txt=await e.target.files[0].text();const leagues=JSON.parse(txt);for(const l of leagues){await DB.saveLeague(l);this._leaguesCache[l.id]=l;}DB.clearCache();this._populateLeagueSelect();this.showLeagues();showToast(`✅ ${leagues.length} ligues importées`);}catch(err){showToast('❌ Fichier invalide');}};input.click();},
+
+  async searchDB(){const q=clean(document.getElementById('dbSearch')?.value||'');const r=q?this._teamsCache.filter(t=>clean(t.name).includes(q)||clean(t.displayName||'').includes(q)):this._teamsCache.slice(0,30);document.getElementById('dbResults').innerHTML=r.map(t=>`<div style="padding:6px;border-bottom:1px solid var(--border)"><b>${t.displayName||t.name}</b><div style="font-size:0.55rem;color:var(--sub)">xG:${t.stats?.xg||'?'} · xGA:${t.stats?.xga||'?'} · ${t.allMatches?.length||0}M · Elo:${t.stats?.elo||1500} · PPG:${t.stats?.ppg||'?'}</div></div>`).join('')||'<div style="text-align:center;color:var(--sub);padding:12px">Aucune</div>';},
+  searchStats(){const q=clean(document.getElementById('statsSearch')?.value||'');const sd=document.getElementById('suggestStats');if(q.length<2){sd.style.display='none';return;}const matches=this._teamsCache.filter(t=>clean(t.name).includes(q)||clean(t.displayName||'').includes(q)).slice(0,8);sd.innerHTML=matches.map(t=>`<div onclick="App.showTeamStats('${t.name}')">${t.displayName||t.name}</div>`).join('');sd.style.display=matches.length?'block':'none';},
+  showTeamStats(name){const t=this._teamsCache.find(x=>x.name===name);if(!t)return;document.getElementById('suggestStats').style.display='none';document.getElementById('statsDetail').innerHTML=`<div class="card"><h3>${t.displayName||t.name}</h3><div class="stat-row"><span>Matchs</span><span class="stat-value">${t.allMatches?.length||0}</span></div><div class="stat-row"><span>Elo</span><span class="stat-value">${t.stats?.elo||1500}</span></div><div class="stat-row"><span>PPG</span><span class="stat-value">${t.stats?.ppg||'?'}</span></div><div class="stat-row"><span>Série victoires</span><span class="stat-value">${t.stats?.streakW||0}</span></div><div class="section-title">🏠 Domicile</div><div class="stat-row"><span>xG</span><span class="stat-value">${t.homeStats?.xg||'?'}</span></div><div class="stat-row"><span>xGA</span><span class="stat-value">${t.homeStats?.xga||'?'}</span></div><div class="stat-row"><span>PPG</span><span class="stat-value">${t.homeStats?.ppg||'?'}</span></div><div class="stat-row"><span>BTTS</span><span class="stat-value">${t.homeStats?.btts||'?'}%</span></div><div class="section-title">✈️ Extérieur</div><div class="stat-row"><span>xG</span><span class="stat-value">${t.awayStats?.xg||'?'}</span></div><div class="stat-row"><span>xGA</span><span class="stat-value">${t.awayStats?.xga||'?'}</span></div><div class="stat-row"><span>PPG</span><span class="stat-value">${t.awayStats?.ppg||'?'}</span></div><div class="section-title">📈 Forme</div><div class="stat-row"><span>5 derniers</span><span>${t.last5?.join(' ')||'?'}</span></div><div class="stat-row"><span>10 derniers</span><span style="font-size:0.5rem">${t.last10?.join(' ')||'?'}</span></div></div>`;},
+
+  async showHistory(){const a=await DB.getAllAnalyses();const total=a.length;const correct=a.filter(x=>x.isCorrect===true).length;const avgEdge=a.reduce((s,x)=>s+(x.edgeValue||x.pickEdge||0),0)/(total||1);document.getElementById('historyStats').innerHTML=`Total: ${total} · Réussite: ${total>0?((correct/total)*100).toFixed(1):0}% · Edge moyen: ${(avgEdge*100).toFixed(1)}%`;document.getElementById('historyContent').innerHTML=a.slice(-50).reverse().map(x=>`<div style="padding:6px;border-bottom:1px solid var(--border);font-size:0.55rem"><b>${x.nameA} vs ${x.nameB}</b><br>Pick: ${x.pickMarket} ${x.pickSelection} @${x.pickOdd} · Edge: ${(x.edgeValue||x.pickEdge||0).toFixed(2)} · ⭐${getRating((x.rating||0)*20,5)}<br><span style="color:var(--sub)">${formatDate(x.date)}</span></div>`).join('')||'<div style="text-align:center;color:var(--sub);padding:12px">Aucune</div>';},
+
+  loadSettings(){document.getElementById('setElo').value=this._settings.elo;document.getElementById('setDC').value=this._settings.dc;document.getElementById('setMC').value=this._settings.mc;document.getElementById('setMom').value=this._settings.momentum;document.getElementById('setH2H').value=this._settings.h2h;document.getElementById('setXG').value=this._settings.xg;document.getElementById('setValueTh').value=this._settings.value_th;document.getElementById('setConfMin').value=this._settings.conf_min;document.getElementById('setSims').value=this._settings.sims;document.getElementById('setKelly').value=this._settings.kelly_fraction;},
+  async saveSettings(){this._settings.elo=parseFloat(document.getElementById('setElo').value)||0.20;this._settings.dc=parseFloat(document.getElementById('setDC').value)||0.25;this._settings.mc=parseFloat(document.getElementById('setMC').value)||0.22;this._settings.momentum=parseFloat(document.getElementById('setMom').value)||0.10;this._settings.h2h=parseFloat(document.getElementById('setH2H').value)||0.08;this._settings.xg=parseFloat(document.getElementById('setXG').value)||0.15;this._settings.value_th=parseFloat(document.getElementById('setValueTh').value)||3;this._settings.conf_min=parseFloat(document.getElementById('setConfMin').value)||50;this._settings.sims=parseInt(document.getElementById('setSims').value)||10000;this._settings.kelly_fraction=parseFloat(document.getElementById('setKelly').value)||0.5;for(const[k,v]of Object.entries(this._settings))await DB.saveSetting(k,v);showToast('✅ Sauvegardé');},
+  async resetDatabase(){if(confirm('Réinitialiser TOUT ?')){await DB.deleteDatabase();this._teamsCache=[];this._leaguesCache={...DEFAULT_LEAGUES};DB.clearCache();await DB.open();this._populateLeagueSelect();await this._updateCounts();showToast('🗑️ Réinitialisé');}},
+
+  async showReport(){const teams=this._teamsCache;const analyses=await DB.getAllAnalyses();const totalMatches=teams.reduce((s,t)=>s+(t.allMatches?.length||0),0);const leagues=await DB.getAllLeagues();const avgElo=teams.length>0?Math.round(teams.reduce((s,t)=>s+(t.stats?.elo||1500),0)/teams.length):1500;const correct=analyses.filter(x=>x.isCorrect===true).length;const roi=analyses.reduce((s,x)=>s+(x.edgeValue||x.pickEdge||0),0);document.getElementById('globalReport').innerHTML=`<div class="stat-row"><span>🗄️ Équipes</span><span class="stat-value">${teams.length}</span></div><div class="stat-row"><span>⚽ Matchs</span><span class="stat-value">${totalMatches}</span></div><div class="stat-row"><span>📈 Analyses</span><span class="stat-value">${analyses.length}</span></div><div class="stat-row"><span>🏆 Ligues</span><span class="stat-value">${leagues.length||Object.keys(this._leaguesCache).length-1}</span></div><div class="stat-row"><span>📊 Elo moyen</span><span class="stat-value">${avgElo}</span></div><div class="stat-row"><span>✅ Réussite</span><span class="stat-value">${analyses.length>0?((correct/analyses.length)*100).toFixed(1):0}%</span></div><div class="stat-row"><span>💰 ROI théorique</span><span class="stat-value" style="color:${roi>0?'var(--green)':'var(--red)'}">${(roi*100).toFixed(1)}%</span></div>`;},
+
+  async showDashboard(){const teams=this._teamsCache;const analyses=await DB.getAllAnalyses();const totalMatches=teams.reduce((s,t)=>s+(t.allMatches?.length||0),0);const leagues=await DB.getAllLeagues();const nLeagues=leagues.length||Object.keys(this._leaguesCache).length-1;const correct=analyses.filter(x=>x.isCorrect===true).length;const avgEdge=analyses.reduce((s,x)=>s+(x.edgeValue||x.pickEdge||0),0)/(analyses.length||1);const lastUpdate=teams.length>0?formatDate(teams.sort((a,b)=>(b.updatedAt||'').localeCompare(a.updatedAt||''))[0]?.updatedAt||now()):'Jamais';document.getElementById('dashboardContent').innerHTML=`<div class="four-col" style="text-align:center"><div><div style="font-size:1.3rem;font-weight:900;color:var(--cyan)">${teams.length}</div><small style="font-size:0.45rem">Équipes</small></div><div><div style="font-size:1.3rem;font-weight:900;color:var(--green)">${totalMatches}</div><small style="font-size:0.45rem">Matchs</small></div><div><div style="font-size:1.3rem;font-weight:900;color:var(--purple)">${analyses.length}</div><small style="font-size:0.45rem">Analyses</small></div><div><div style="font-size:1.3rem;font-weight:900;color:var(--gold)">${nLeagues}</div><small style="font-size:0.45rem">Ligues</small></div></div><div class="section-title">📊 Performances</div><div class="stat-row"><span>Edge moyen</span><span style="color:${avgEdge>0?'var(--green)':'var(--red)'}">${(avgEdge*100).toFixed(1)}%</span></div><div class="stat-row"><span>Accuracy</span><span>${analyses.length>0?((correct/analyses.length)*100).toFixed(1):0}%</span></div><div class="stat-row"><span>ROI théorique</span><span style="color:${avgEdge>0?'var(--green)':'var(--red)'}">${(avgEdge*100).toFixed(1)}%</span></div><div class="section-title">📅 Dernière mise à jour</div><div style="font-size:0.6rem;color:var(--sub)">${lastUpdate}</div><div class="section-title">⚡ État moteur</div><div class="stat-row"><span>Version</span><span>${VERSION}</span></div><div class="stat-row"><span>Cache</span><span style="color:var(--green)">✅ Actif</span></div><div class="stat-row"><span>Simulations</span><span>${this._settings.sims}</span></div>`;},
+
+  async _updateCounts(){const t=await DB.countTeams();const m=this._teamsCache.reduce((s,x)=>s+(x.allMatches?.length||0),0);document.getElementById('hdrDB').textContent=t;document.getElementById('hdrMatches').textContent=m;document.getElementById('dbCount').textContent=t;const dbm=document.getElementById('dbMatchCount');if(dbm)dbm.textContent=m;}
+};
+
+// ==================== INIT ====================
+document.addEventListener('click',e=>{if(!e.target.closest('.field'))document.querySelectorAll('.suggestions').forEach(d=>d.style.display='none');});
+document.addEventListener('DOMContentLoaded',()=>App.init());
+
+Object.defineProperty(window,'LEAGUES_CONFIG',{get(){return App._leaguesCache;}});
+</script>
+</body>
+</html>
