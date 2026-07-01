@@ -392,7 +392,7 @@
         }
         .tracking-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+            grid-template-columns: 2fr 1fr 0.8fr 0.8fr 1fr 0.8fr 0.8fr 0.8fr;
             gap: 4px;
             align-items: center;
             padding: 6px 4px;
@@ -410,7 +410,7 @@
             padding: 10px;
             margin-bottom: 10px;
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
             gap: 8px;
             text-align: center;
         }
@@ -538,7 +538,11 @@
                     </div>
                     <div class="two-col">
                         <input type="number" id="betStakeInput" step="0.01" placeholder="Mise (€)" min="0.01" value="10">
+                        <input type="number" id="betClosingOddsInput" step="0.01" placeholder="Cote clôture (optionnelle)" min="1.01">
+                    </div>
+                    <div class="two-col">
                         <input type="number" id="betKellyInput" step="0.01" placeholder="Mise Kelly recommandée" readonly style="background:#0d1117;color:var(--gold);font-weight:bold;">
+                        <div></div>
                     </div>
                     <button class="btn btn-success" onclick="App.saveBetToTracking()">💾 Enregistrer le pari</button>
                     <div id="betSaveStatus" style="font-size:0.6rem;margin-top:6px;"></div>
@@ -586,7 +590,7 @@
                     <div id="manualProgressFill" class="progress-fill low" style="width:0%;"></div>
                 </div>
                 <div id="manualProgressText" style="font-size:0.55rem;color:var(--sub);margin-bottom:10px;">0% · Données insuffisantes</div>
-                <input type="text" id="manualTeamName" placeholder="Nom équipe ★" oninput="App.updateManualProgress()">
+                <input type="text" id="manualTeamName" placeholder="Nom de l'équipe (obligatoire)" oninput="App.updateManualProgress()">
                 <select id="manualLeague" style="margin-bottom:8px;">
                     <option value="">-- Ligue (optionnel) --</option>
                     <option value="Premier League">Premier League</option>
@@ -597,56 +601,56 @@
                     <option value="Standard">Standard</option>
                 </select>
                 <div class="two-col">
-                    <input type="number" id="manualElo" placeholder="Elo" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualMatches" placeholder="Matchs joués" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualElo" placeholder="Classement Elo (1500 = moyenne)" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualMatches" placeholder="Matchs joués cette saison" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualXG" placeholder="xG ★" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualXGA" placeholder="xGA ★" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualXG" placeholder="xG (buts attendus marqués/match)" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualXGA" placeholder="xGA (buts attendus concédés/match)" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualGoalsScored" placeholder="Buts marqués" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualGoalsConceded" placeholder="Buts encaissés" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualGoalsScored" placeholder="Buts marqués (total)" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualGoalsConceded" placeholder="Buts encaissés (total)" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualShots" placeholder="Tirs/match ★" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualShotsTarget" placeholder="Tirs cadrés ★" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualShots" placeholder="Tirs tentés par match" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualShotsTarget" placeholder="Tirs cadrés par match" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualShotsAgainst" placeholder="Tirs concédés" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualShotsAgainstTarget" placeholder="Tirs cadrés concédés" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualShotsAgainst" placeholder="Tirs concédés par match" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualShotsAgainstTarget" placeholder="Tirs cadrés concédés par match" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualBigCreated" placeholder="Grosses occasions créées" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualBigConceded" placeholder="Grosses occasions concédées" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualBigCreated" placeholder="Grosses occasions créées (total)" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualBigConceded" placeholder="Grosses occasions concédées (total)" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualPossession" placeholder="Possession % ★" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualPass" placeholder="Passes %" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualPossession" placeholder="Possession moyenne en %" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualPass" placeholder="Précision des passes en %" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualPPDA" placeholder="PPDA" oninput="App.updateManualProgress()">
-                    <input type="number" id="manualShotConversion" placeholder="Conversion tirs" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualPPDA" placeholder="PPDA (pressions subies par action défensive)" oninput="App.updateManualProgress()">
+                    <input type="number" id="manualShotConversion" placeholder="Conversion tirs (buts/tirs cadrés)" oninput="App.updateManualProgress()">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualCorners" placeholder="Corners pour">
-                    <input type="number" id="manualCornersAgainst" placeholder="Corners contre">
+                    <input type="number" id="manualCorners" placeholder="Corners obtenus (moy/match)">
+                    <input type="number" id="manualCornersAgainst" placeholder="Corners concédés (moy/match)">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualBTTS" placeholder="BTTS %">
-                    <input type="number" id="manualOver" placeholder="Over 2.5 %">
+                    <input type="number" id="manualBTTS" placeholder="% matchs avec BTTS">
+                    <input type="number" id="manualOver" placeholder="% matchs avec Over 2.5">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualClean" placeholder="Clean sheets">
-                    <input type="text" id="manualForm" placeholder="Forme WWDLW">
+                    <input type="number" id="manualClean" placeholder="Clean sheets (total)">
+                    <input type="text" id="manualForm" placeholder="Forme récente (ex: WWDLW)">
                 </div>
                 <div class="two-col">
-                    <input type="number" id="manualInjuries" placeholder="Blessures 0-1">
-                    <input type="number" id="manualRest" placeholder="Jours repos">
+                    <input type="number" id="manualInjuries" placeholder="Impact blessures (0=aucun, 1=max)">
+                    <input type="number" id="manualRest" placeholder="Jours de repos depuis dernier match">
                 </div>
                 <div class="two-col">
                     <input type="number" id="manualTravel" placeholder="Distance déplacement (km)">
-                    <input type="number" id="manualCongestion" placeholder="Congestion calendrier">
+                    <input type="number" id="manualCongestion" placeholder="Indice congestion calendrier (0-10)">
                 </div>
                 <div class="two-col">
                     <input type="number" id="manualHomeStrength" placeholder="Force domicile (-1 à 1)">
@@ -683,6 +687,14 @@
                     <div class="tracking-summary-item">
                         <div class="label">Profit Net</div>
                         <div class="value" id="trackProfit" style="color:var(--sub);">0.00€</div>
+                    </div>
+                    <div class="tracking-summary-item">
+                        <div class="label">CLV Moy.</div>
+                        <div class="value" id="trackAvgCLV" style="color:var(--cyan);">--</div>
+                    </div>
+                    <div class="tracking-summary-item">
+                        <div class="label">% CLV+</div>
+                        <div class="value" id="trackCLVPositiveRate" style="color:var(--green);">--</div>
                     </div>
                 </div>
                 <div style="display:flex;gap:8px;margin-bottom:10px;">
@@ -1638,7 +1650,6 @@
                 return result;
             },
 
-            // ========== NETTOYAGE DES COTES BOOKMAKER (suppression de la marge) ==========
             cleanBookmakerOdds(odds) {
                 if (!odds) return null;
                 const cleaned = { ...odds };
@@ -1700,7 +1711,6 @@
                 return cleaned;
             },
 
-            // ========== CRITÈRE DE KELLY ==========
             kellyCriterion(modelProb, bookmakerOdd, bankrollFraction = 0.25) {
                 if (!bookmakerOdd || bookmakerOdd <= 1.01 || modelProb <= 0 || modelProb >= 1) return 0;
                 const impliedProb = 1 / bookmakerOdd;
@@ -1713,7 +1723,6 @@
                 return Math.max(0, Math.min(0.15, fractionalKelly));
             },
 
-            // ========== ensemble (avec bestPick + value bets BTTS + Kelly) ==========
             ensemble(homeTeam, awayTeam, leagueConfig, h2hData = null, bookmakerOdds = null, terrain = "home") {
                 this.validateInputQuality(homeTeam, awayTeam);
 
@@ -1884,10 +1893,8 @@
                 if (confidence > 68 && trap < 32) risk = 'Faible';
                 else if (confidence < 38 || trap > 62) risk = 'Élevé';
 
-                // ========== NETTOYAGE DES COTES BOOKMAKER ==========
                 const cleanedOdds = this.cleanBookmakerOdds(bookmakerOdds);
 
-                // ========== VALUE BETS AMÉLIORÉS AVEC KELLY ==========
                 const valueBets = [];
                 if (cleanedOdds && cleanedOdds.fairHomeProb !== undefined) {
                     const markets1X2 = [
@@ -1907,6 +1914,7 @@
                             if (strength) {
                                 valueBets.push({
                                     market: m.market,
+                                    prob: m.modelProb,
                                     modelProb: m.modelProb,
                                     bookmakerOdd: m.bookmakerOdd,
                                     fairOdd: m.modelProb > 0 ? 1 / m.modelProb : 999,
@@ -1928,6 +1936,7 @@
                         const kelly = this.kellyCriterion(modelOver, bookmakerOdds.over25, 0.25);
                         goalValueBets.push({
                             market: 'Over 2.5',
+                            prob: modelOver,
                             modelProb: modelOver,
                             bookmakerOdd: bookmakerOdds.over25,
                             fairOdd: 1 / modelOver,
@@ -1944,6 +1953,7 @@
                         const kelly = this.kellyCriterion(modelUnder, bookmakerOdds.under25, 0.25);
                         goalValueBets.push({
                             market: 'Under 2.5',
+                            prob: modelUnder,
                             modelProb: modelUnder,
                             bookmakerOdd: bookmakerOdds.under25,
                             fairOdd: 1 / modelUnder,
@@ -1963,6 +1973,7 @@
                         const kelly = this.kellyCriterion(modelBTTS, bookmakerOdds.bttsYes, 0.25);
                         bttsValueBets.push({
                             market: 'BTTS Oui',
+                            prob: modelBTTS,
                             modelProb: modelBTTS,
                             bookmakerOdd: bookmakerOdds.bttsYes,
                             fairOdd: 1 / modelBTTS,
@@ -1978,6 +1989,7 @@
                         const kelly = this.kellyCriterion(1 - modelBTTS, bookmakerOdds.bttsNo, 0.25);
                         bttsValueBets.push({
                             market: 'BTTS Non',
+                            prob: 1 - modelBTTS,
                             modelProb: 1 - modelBTTS,
                             bookmakerOdd: bookmakerOdds.bttsNo,
                             fairOdd: 1 / (1 - modelBTTS),
@@ -1989,22 +2001,26 @@
                     }
                 }
 
-                // ========== MEILLEUR PICK (basé sur l'edge et la cohérence) ==========
-                let bestPick = { market: '1', prob: calibrated.p1, edge: 0, strength: '', kellyFraction: 0 };
+                // Meilleur pick unifié : toujours contient .prob et .edge
+                let bestPick = { market: '1', prob: calibrated.p1, edge: 0, strength: '', kellyFraction: 0, bookmakerOdd: null };
                 const allValueBetsCombined = [...valueBets, ...goalValueBets, ...bttsValueBets];
 
                 if (allValueBetsCombined.length > 0) {
                     allValueBetsCombined.sort((a, b) => b.edge - a.edge);
                     bestPick = { ...allValueBetsCombined[0] };
+                    // S'assurer que prob existe (les value bets ont prob ET modelProb)
                 } else {
-                    ['1', 'X', '2'].forEach(m => {
-                        let prob = m === '1' ? calibrated.p1 : (m === 'X' ? calibrated.pX : calibrated.p2);
-                        if (prob > bestPick.prob) bestPick = { market: m, prob, edge: 0, strength: '', kellyFraction: 0 };
-                    });
-                    if (markets.Over25 > bestPick.prob) bestPick = { market: 'Over 2.5', prob: markets.Over25, edge: 0, strength: '', kellyFraction: 0 };
-                    if (markets.Under25 > bestPick.prob) bestPick = { market: 'Under 2.5', prob: markets.Under25, edge: 0, strength: '', kellyFraction: 0 };
-                    if (markets.BTTS > bestPick.prob) bestPick = { market: 'BTTS Oui', prob: markets.BTTS, edge: 0, strength: '', kellyFraction: 0 };
-                    if (1 - markets.BTTS > bestPick.prob) bestPick = { market: 'BTTS Non', prob: 1 - markets.BTTS, edge: 0, strength: '', kellyFraction: 0 };
+                    // Pas de value bet, on prend le marché avec la plus haute probabilité
+                    const candidates = [
+                        { market: '1', prob: calibrated.p1, edge: 0, strength: '', kellyFraction: 0 },
+                        { market: 'X', prob: calibrated.pX, edge: 0, strength: '', kellyFraction: 0 },
+                        { market: '2', prob: calibrated.p2, edge: 0, strength: '', kellyFraction: 0 },
+                        { market: 'Over 2.5', prob: markets.Over25, edge: 0, strength: '', kellyFraction: 0 },
+                        { market: 'Under 2.5', prob: markets.Under25, edge: 0, strength: '', kellyFraction: 0 },
+                        { market: 'BTTS Oui', prob: markets.BTTS, edge: 0, strength: '', kellyFraction: 0 },
+                        { market: 'BTTS Non', prob: 1 - markets.BTTS, edge: 0, strength: '', kellyFraction: 0 }
+                    ];
+                    bestPick = candidates.reduce((best, current) => current.prob > best.prob ? current : best, bestPick);
                 }
 
                 const valid = this.isCalculationValid({ probabilities: calibrated, dataQuality });
@@ -2139,6 +2155,18 @@
                 document.addEventListener('change', (e) => {
                     if (e.target.closest('#h2hMatchesContainer')) {
                         this.updateH2HStats();
+                    }
+                });
+
+                document.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('closing-odds-input')) {
+                        const id = parseInt(e.target.dataset.id);
+                        const value = parseFloat(e.target.value);
+                        if (!isNaN(value) && value > 1.01) {
+                            this.updateClosingOdds(id, value);
+                        } else if (e.target.value === '') {
+                            this.updateClosingOdds(id, null);
+                        }
                     }
                 });
             },
@@ -2667,7 +2695,6 @@
                 }
             },
 
-            // ========== runAnalysis ==========
             async runAnalysis() {
                 const homeName = document.getElementById('analysisHome').value.trim();
                 const awayName = document.getElementById('analysisAway').value.trim();
@@ -2731,7 +2758,7 @@
                     const lambdas = result.lambdas || { lA: 0, lB: 0 };
                     const best = result.bestPick;
                     let bestPickHtml = '';
-                    if (best) {
+                    if (best && best.prob !== undefined && !isNaN(best.prob)) {
                         bestPickHtml = `
                         <div class="pick-box" style="border-color: var(--cyan); margin-top: 8px;">
                             <div style="font-size:0.5rem;text-transform:uppercase;letter-spacing:2px;color:var(--cyan)">🎯 MEILLEUR PICK</div>
@@ -2837,6 +2864,7 @@
                 const betType = document.getElementById('betTypeSelect').value;
                 const odds = parseFloat(document.getElementById('betOddsInput').value);
                 const stake = parseFloat(document.getElementById('betStakeInput').value);
+                const closingOddsInput = parseFloat(document.getElementById('betClosingOddsInput').value) || null;
 
                 if (!betType) {
                     showToast('❌ Sélectionnez un type de pari');
@@ -2875,6 +2903,7 @@
                     betType,
                     odds,
                     stake,
+                    closingOdds: closingOddsInput,
                     modelProb,
                     edge,
                     kellyFraction: kelly,
@@ -2896,7 +2925,14 @@
                 this.trackingData.sort((a, b) => new Date(b.date) - new Date(a.date));
             },
 
-            async renderTracking() {
+            async updateClosingOdds(id, value) {
+                const updates = { closingOdds: value };
+                await DB.updateTracking(id, updates);
+                await this.loadTrackingData();
+                this.renderTracking();
+            },
+
+            renderTracking() {
                 const filtered = this.trackingFilter === 'all' ?
                     this.trackingData :
                     this.trackingData.filter(b => b.result === this.trackingFilter);
@@ -2907,13 +2943,23 @@
                 if (filtered.length === 0) {
                     list.innerHTML = '<div style="padding:8px;color:var(--sub);">Aucun pari enregistré.</div>';
                 } else {
-                    let html = '<div class="tracking-row header-row"><span>Match</span><span>Type</span><span>Cote</span><span>Mise</span><span>Statut</span><span>Profit</span><span></span></div>';
+                    let html = '<div class="tracking-row header-row"><span>Match</span><span>Type</span><span>Cote</span><span>Mise</span><span>Statut</span><span>Profit</span><span>Clôture</span><span>CLV</span></div>';
                     filtered.forEach(bet => {
                         const statusBadge = bet.result === 'win' ? '<span class="badge badge-green">Gagné</span>' :
                             bet.result === 'loss' ? '<span class="badge badge-red">Perdu</span>' :
                             bet.result === 'push' ? '<span class="badge badge-yellow">Remboursé</span>' :
                             '<span class="badge badge-cyan">En attente</span>';
                         const profitColor = bet.profit > 0 ? 'var(--green)' : bet.profit < 0 ? 'var(--red)' : 'var(--sub)';
+
+                        let closingDisplay = bet.closingOdds ? bet.closingOdds.toFixed(2) : '';
+                        let clvDisplay = '-';
+                        let clvColor = 'var(--sub)';
+                        if (bet.closingOdds && bet.closingOdds > 1.01) {
+                            const clv = ((1 / bet.closingOdds) - (1 / bet.odds)) * 100;
+                            clvDisplay = (clv >= 0 ? '+' : '') + clv.toFixed(1) + '%';
+                            clvColor = clv > 0 ? 'var(--green)' : (clv < 0 ? 'var(--red)' : 'var(--sub)');
+                        }
+
                         html += `
                             <div class="tracking-row">
                                 <span>${bet.homeTeam} vs ${bet.awayTeam}</span>
@@ -2922,6 +2968,10 @@
                                 <span>${bet.stake.toFixed(2)}€</span>
                                 <span>${statusBadge}</span>
                                 <span style="color:${profitColor};font-weight:bold;">${bet.profit >= 0 ? '+' : ''}${bet.profit.toFixed(2)}€</span>
+                                <span style="font-size:0.55rem;">
+                                    <input type="number" step="0.01" min="1.01" class="closing-odds-input" data-id="${bet.id}" value="${closingDisplay}" placeholder="Clôture" style="width:60px;padding:2px;font-size:0.55rem;margin:0;text-align:center;">
+                                </span>
+                                <span style="color:${clvColor};font-weight:bold;font-size:0.55rem;">${clvDisplay}</span>
                                 <span>
                                     <select onchange="App.updateBetResult(${bet.id}, this.value)" style="padding:2px;font-size:0.5rem;margin:0;width:auto;">
                                         <option value="pending" ${bet.result==='pending'?'selected':''}>En attente</option>
@@ -3003,6 +3053,28 @@
                 document.getElementById('trackWinRate').textContent = winRate.toFixed(1) + '%';
                 document.getElementById('trackProfit').textContent = (totalProfit >= 0 ? '+' : '') + totalProfit.toFixed(2) + '€';
                 document.getElementById('trackProfit').style.color = totalProfit >= 0 ? 'var(--green)' : 'var(--red)';
+
+                const closingBets = all.filter(b => b.closingOdds && b.closingOdds > 1.01);
+                if (closingBets.length > 0) {
+                    let totalCLV = 0;
+                    let positiveCLV = 0;
+                    closingBets.forEach(b => {
+                        const clv = ((1 / b.closingOdds) - (1 / b.odds)) * 100;
+                        totalCLV += clv;
+                        if (clv > 0) positiveCLV++;
+                    });
+                    const avgCLV = totalCLV / closingBets.length;
+                    const clvPositiveRate = (positiveCLV / closingBets.length) * 100;
+                    document.getElementById('trackAvgCLV').textContent = (avgCLV >= 0 ? '+' : '') + avgCLV.toFixed(2) + '%';
+                    document.getElementById('trackAvgCLV').style.color = avgCLV > 0 ? 'var(--green)' : (avgCLV < 0 ? 'var(--red)' : 'var(--sub)');
+                    document.getElementById('trackCLVPositiveRate').textContent = clvPositiveRate.toFixed(1) + '%';
+                    document.getElementById('trackCLVPositiveRate').style.color = clvPositiveRate > 50 ? 'var(--green)' : 'var(--red)';
+                } else {
+                    document.getElementById('trackAvgCLV').textContent = '--';
+                    document.getElementById('trackAvgCLV').style.color = 'var(--sub)';
+                    document.getElementById('trackCLVPositiveRate').textContent = '--';
+                    document.getElementById('trackCLVPositiveRate').style.color = 'var(--sub)';
+                }
             },
 
             updateTrackingStatsByType() {
@@ -3018,18 +3090,35 @@
 
                 const byType = {};
                 settled.forEach(b => {
-                    if (!byType[b.betType]) byType[b.betType] = { total: 0, won: 0, profit: 0, staked: 0 };
+                    if (!byType[b.betType]) byType[b.betType] = { total: 0, won: 0, profit: 0, staked: 0, clvTotal: 0, clvCount: 0 };
                     byType[b.betType].total++;
                     byType[b.betType].staked += b.stake;
                     if (b.result === 'win') { byType[b.betType].won++; }
                     byType[b.betType].profit += b.profit || 0;
+                    if (b.closingOdds && b.closingOdds > 1.01) {
+                        const clv = ((1 / b.closingOdds) - (1 / b.odds)) * 100;
+                        byType[b.betType].clvTotal += clv;
+                        byType[b.betType].clvCount++;
+                    }
                 });
 
-                let html = '<table class="table-value"><thead><tr><th>Type</th><th>Paris</th><th>Gagnés</th><th>Win Rate</th><th>Profit</th><th>ROI</th></tr></thead><tbody>';
+                let html = '<table class="table-value"><thead><tr><th>Type</th><th>Paris</th><th>Gagnés</th><th>Win Rate</th><th>Profit</th><th>ROI</th><th>CLV Moy.</th><th>% CLV+</th></tr></thead><tbody>';
                 for (const [type, stats] of Object.entries(byType)) {
                     const wr = stats.total > 0 ? (stats.won / stats.total * 100) : 0;
                     const roi = stats.staked > 0 ? (stats.profit / stats.staked * 100) : 0;
                     const profitColor = stats.profit >= 0 ? 'var(--green)' : 'var(--red)';
+
+                    let avgCLV = '--';
+                    let clvColor = 'var(--sub)';
+                    let clvPositiveRate = '--';
+                    if (stats.clvCount > 0) {
+                        const avg = stats.clvTotal / stats.clvCount;
+                        avgCLV = (avg >= 0 ? '+' : '') + avg.toFixed(2) + '%';
+                        clvColor = avg > 0 ? 'var(--green)' : (avg < 0 ? 'var(--red)' : 'var(--sub)');
+                        const positiveCount = settled.filter(b => b.betType === type && b.closingOdds && b.closingOdds > 1.01 && (((1 / b.closingOdds) - (1 / b.odds)) * 100) > 0).length;
+                        clvPositiveRate = ((positiveCount / stats.clvCount) * 100).toFixed(1) + '%';
+                    }
+
                     html += `<tr>
                         <td>${type}</td>
                         <td>${stats.total}</td>
@@ -3037,6 +3126,8 @@
                         <td>${wr.toFixed(1)}%</td>
                         <td style="color:${profitColor};font-weight:bold;">${stats.profit >= 0 ? '+' : ''}${stats.profit.toFixed(2)}€</td>
                         <td style="color:${profitColor};">${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%</td>
+                        <td style="color:${clvColor};font-weight:bold;">${avgCLV}</td>
+                        <td style="color:${clvColor};">${clvPositiveRate}</td>
                     </tr>`;
                 }
                 html += '</tbody></table>';
