@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>🇨🇩⚽️🥏 RED PRO AI v14 · Moteur Optimisé Final</title>
+    <title>⚽ RED PRO AI v14 · Moteur Optimisé Final</title>
     <style>
         :root {
             --bg: #0a0d14;
@@ -40,6 +40,7 @@
         .btn-danger { background: var(--red); color: #fff; }
         .btn-warning { background: var(--orange); color: #000; }
         .btn-success { background: var(--green); color: #000; }
+        .btn-reload { background: var(--purple); color: #fff; }
         .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(31,41,55,.5); font-size: 0.7rem; }
         .stat-row:last-child { border-bottom: none; }
         .team-item { background: #0d1117; border-radius: 6px; padding: 8px; margin-bottom: 4px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -115,6 +116,7 @@
         <div class="nav-item" data-page="pg-leagues">🏆 Ligues</div>
     </div>
 
+    <!-- ########## PAGE ANALYSE ########## -->
     <div id="pg-analyse" class="page" style="display:block;">
         <div class="card">
             <h2>🧠 Analyse de match</h2>
@@ -216,6 +218,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE IMPORT ########## -->
     <div id="pg-import" class="page" style="display:none;">
         <div class="card">
             <h2>📥 Importer un match (JSON)</h2>
@@ -231,6 +234,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE GESTION ########## -->
     <div id="pg-data" class="page" style="display:none;">
         <div class="card">
             <h2>📂 Gestion des données</h2>
@@ -240,6 +244,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE ÉQUIPES ########## -->
     <div id="pg-teams" class="page" style="display:none;">
         <div class="card">
             <h2>🔍 Équipes enregistrées</h2>
@@ -248,6 +253,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE SAISIE ########## -->
     <div id="pg-manual" class="page" style="display:none;">
         <div class="card">
             <h2>📝 Saisie manuelle complète</h2>
@@ -321,6 +327,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE VALUE ########## -->
     <div id="pg-value" class="page" style="display:none;">
         <div class="card">
             <h2>📊 Value & Cotes</h2>
@@ -328,6 +335,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE SUIVI ########## -->
     <div id="pg-tracking" class="page" style="display:none;">
         <div class="card">
             <h2>📋 Suivi des paris</h2>
@@ -339,16 +347,18 @@
                 <div class="tracking-summary-item"><div class="label">CLV Moy.</div><div class="value" id="trackAvgCLV" style="color:var(--cyan);">--</div></div>
                 <div class="tracking-summary-item"><div class="label">% CLV+</div><div class="value" id="trackCLVPositiveRate" style="color:var(--green);">--</div></div>
             </div>
-            <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
                 <button class="btn btn-small btn-secondary" onclick="App.filterTracking('all')" id="trackFilterAll">Tous</button>
                 <button class="btn btn-small btn-secondary" onclick="App.filterTracking('pending')" id="trackFilterPending">En attente</button>
                 <button class="btn btn-small btn-secondary" onclick="App.filterTracking('win')" id="trackFilterWin">Gagnés</button>
                 <button class="btn btn-small btn-secondary" onclick="App.filterTracking('loss')" id="trackFilterLoss">Perdus</button>
                 <button class="btn btn-small btn-danger" onclick="App.clearAllTracking()">🗑️ Tout effacer</button>
+                <button class="btn btn-small btn-reload" onclick="App.forceRefreshTracking()">🔄 Forcer l'actualisation</button>
             </div>
             <div id="trackingList" style="max-height:500px;overflow-y:auto;">
                 <div style="padding:8px;color:var(--sub);">Aucun pari enregistré.</div>
             </div>
+            <div id="trackingStatus" style="font-size:0.6rem;color:var(--sub);margin-top:8px;"></div>
         </div>
         <div class="card">
             <h2>📈 Statistiques par type de pari</h2>
@@ -356,6 +366,7 @@
         </div>
     </div>
 
+    <!-- ########## PAGE LIGUES ########## -->
     <div id="pg-leagues" class="page" style="display:none;">
         <div class="card">
             <h2>🏆 Gestion des ligues</h2>
@@ -466,7 +477,7 @@ function clampStat(value, min, max) { return Math.min(max, Math.max(min, safeSig
 function clampProb(value) { return Math.min(0.999, Math.max(0.001, safeNumber(value, 0.5))); }
 
 // ======================================================================
-// 2. INDEXEDDB (avec store 'leagues')
+// 2. INDEXEDDB
 // ======================================================================
 const DB = {
     _db: null,
@@ -496,7 +507,19 @@ const DB = {
     async clearHistory() { await this.open(); return new Promise(res => { const tx = this._db.transaction('history', 'readwrite'); tx.objectStore('history').clear(); tx.oncomplete = () => res(); }); },
     async saveLastAnalysis(data) { await this.open(); return new Promise(res => { const tx = this._db.transaction('lastAnalysis', 'readwrite'); tx.objectStore('lastAnalysis').put({ id: 'latest', ...data }); tx.oncomplete = () => res(); }); },
     async getLastAnalysis() { await this.open(); return new Promise(res => { const req = this._db.transaction('lastAnalysis').objectStore('lastAnalysis').get('latest'); req.onsuccess = () => res(req.result || null); }); },
-    async saveTracking(entry) { await this.open(); return new Promise(res => { const tx = this._db.transaction('tracking', 'readwrite'); tx.objectStore('tracking').add(entry); tx.oncomplete = () => res(entry); }); },
+    async saveTracking(entry) {
+        await this.open();
+        return new Promise((res, rej) => {
+            const tx = this._db.transaction('tracking', 'readwrite');
+            const store = tx.objectStore('tracking');
+            const { id, ...cleanEntry } = entry;
+            if (!cleanEntry.result) cleanEntry.result = 'pending';
+            if (!cleanEntry.profit) cleanEntry.profit = 0;
+            const req = store.add(cleanEntry);
+            req.onsuccess = () => res(req.result);
+            req.onerror = () => rej(req.error);
+        });
+    },
     async getAllTracking() { await this.open(); return new Promise(res => { const req = this._db.transaction('tracking').objectStore('tracking').getAll(); req.onsuccess = () => res(req.result || []); }); },
     async updateTracking(id, updates) { await this.open(); return new Promise(res => { const tx = this._db.transaction('tracking', 'readwrite'); const store = tx.objectStore('tracking'); const req = store.get(id); req.onsuccess = () => { const entry = req.result; if (entry) { Object.assign(entry, updates); store.put(entry); } }; tx.oncomplete = () => res(); }); },
     async deleteTracking(id) { await this.open(); return new Promise(res => { const tx = this._db.transaction('tracking', 'readwrite'); tx.objectStore('tracking').delete(id); tx.oncomplete = () => res(); }); },
@@ -507,7 +530,7 @@ const DB = {
 };
 
 // ======================================================================
-// 3. CONFIGURATION DES LIGUES (dynamique)
+// 3. CONFIGURATION DES LIGUES (inchangé)
 // ======================================================================
 const LeagueConfig = {
     predefined: {
@@ -530,7 +553,6 @@ const LeagueConfig = {
         calibration: null
     },
     _customLeagues: null,
-
     async loadCustomLeagues() {
         if (this._customLeagues === null) {
             this._customLeagues = await DB.getAllLeagues();
@@ -552,7 +574,7 @@ const LeagueConfig = {
 };
 
 // ======================================================================
-// 4. MODULE H2H
+// 4. MODULE H2H (inchangé)
 // ======================================================================
 const H2HModule = {
     get(teamA, teamB) {
@@ -652,7 +674,7 @@ const H2HModule = {
 };
 
 // ======================================================================
-// 5. MOTEUR ANALYTIQUE (version complète)
+// 5. MOTEUR ANALYTIQUE (avec les modifications demandées)
 // ======================================================================
 const Engine = {
     maxGoals: 8,
@@ -969,19 +991,32 @@ const Engine = {
         return base;
     },
 
+    // ---- offensiveRating MODIFIÉ ----
     offensiveRating(team, league, terrain = 'home') {
         const w = {
-            xG: 0.22, goals: 0.12, shots: 0.08, onTarget: 0.08, bigChances: 0.08,
-            possession: 0.05, pass: 0.04, corners: 0.04, ppda: 0.05, form: 0.08,
-            shotConversion: 0.06, homeAwayXG: 0.10
+            xG: 0.12,
+            goals: 0.10,
+            shots: 0.06,
+            onTarget: 0.06,
+            bigChances: 0.20,
+            possession: 0.04,
+            pass: 0.03,
+            corners: 0.03,
+            ppda: 0.04,
+            form: 0.06,
+            shotConversion: 0.05,
+            homeAwayXG: 0.06,
+            elo: 0.25
         };
         let rating = 0;
         const xgUse = terrain === 'home' ? this.estimateMissingStat(team, 'xG_home', league, true) :
             (terrain === 'away' ? this.estimateMissingStat(team, 'xG_away', league, false) : this.estimateMissingStat(team, 'xG', league, true));
         const leagueXG = terrain === 'home' ? league.xgHome : league.xgAway;
         rating += (xgUse / Math.max(0.1, leagueXG)) * w.xG;
+
         const goalsPerMatch = (team.matchesPlayed && team.matchesPlayed > 0) ? (team.goalsScored || 0) / team.matchesPlayed : league.goalsHome;
         rating += (goalsPerMatch / Math.max(0.1, league.goalsHome)) * w.goals;
+
         rating += (this.estimateMissingStat(team, 'shotsFor', league) / Math.max(0.1, league.avgShots || 10)) * w.shots;
         rating += (this.estimateMissingStat(team, 'shotsOnTargetFor', league) / Math.max(0.1, (league.avgShots || 10) * 0.38)) * w.onTarget;
         rating += (this.estimateMissingStat(team, 'bigChancesCreated', league) / 1.5) * w.bigChances;
@@ -990,25 +1025,44 @@ const Engine = {
         rating += (this.estimateMissingStat(team, 'cornersFor', league) / Math.max(0.1, league.avgCorners || 4)) * w.corners;
         rating += (10 / Math.max(1, this.estimateMissingStat(team, 'ppda', league))) * w.ppda;
         rating += (safeSignedNumber(team.shotConversion, 0.12) / 0.12) * w.shotConversion;
+
         const form = team.formLast5 || [];
         const points = form.reduce((acc, r) => acc + (r === 'W' ? 3 : (r === 'D' ? 1 : 0)), 0);
         rating += (points / Math.max(1, form.length * 3)) * w.form;
+
         if (terrain === 'home') rating += (safeSignedNumber(team.xG_home, league.xgHome) / Math.max(0.1, league.xgHome)) * w.homeAwayXG;
         else if (terrain === 'away') rating += (safeSignedNumber(team.xG_away, league.xgAway) / Math.max(0.1, league.xgAway)) * w.homeAwayXG;
+
+        const eloFactor = (team.elo || 1500) / 1500;
+        rating += eloFactor * w.elo;
+
         return Math.max(0.2, Math.min(3.0, rating));
     },
 
+    // ---- defensiveRating MODIFIÉ ----
     defensiveRating(team, league, terrain = 'home') {
         const w = {
-            xGA: 0.22, goalsConc: 0.12, shotsConc: 0.08, onTargetConc: 0.08, bigChancesConc: 0.08,
-            cleanSheets: 0.08, ppda: 0.04, possession: 0.04, pass: 0.03, cornersAgainst: 0.04,
-            homeAwayXGA: 0.10, form: 0.05, btts: 0.04
+            xGA: 0.12,
+            goalsConc: 0.10,
+            shotsConc: 0.06,
+            onTargetConc: 0.06,
+            bigChancesConc: 0.20,
+            cleanSheets: 0.06,
+            ppda: 0.04,
+            possession: 0.04,
+            pass: 0.03,
+            cornersAgainst: 0.03,
+            homeAwayXGA: 0.06,
+            form: 0.06,
+            btts: 0.04,
+            elo: 0.20
         };
         let rating = 0;
         const xgaUse = terrain === 'home' ? this.estimateMissingStat(team, 'xGA_home', league, true) :
             (terrain === 'away' ? this.estimateMissingStat(team, 'xGA_away', league, false) : this.estimateMissingStat(team, 'xGA', league, false));
         const leagueXGA = terrain === 'home' ? league.xgAway : league.xgHome;
         rating += (1 - xgaUse / Math.max(0.1, leagueXGA * 1.8)) * w.xGA;
+
         const goalsConcededPerMatch = (team.matchesPlayed && team.matchesPlayed > 0) ? (team.goalsConceded || 0) / team.matchesPlayed : league.goalsAway;
         rating += (1 - goalsConcededPerMatch / Math.max(0.1, league.goalsAway * 2)) * w.goalsConc;
         rating += (1 - this.estimateMissingStat(team, 'shotsAgainst', league) / 18) * w.shotsConc;
@@ -1026,71 +1080,51 @@ const Engine = {
         const form = team.formLast5 || [];
         const pts = form.reduce((acc, r) => acc + (r === 'W' ? 3 : (r === 'D' ? 1 : 0)), 0);
         rating += (pts / Math.max(1, form.length * 3)) * w.form;
+
+        const eloFactor = (team.elo || 1500) / 1500;
+        rating += eloFactor * w.elo;
+
         return Math.max(0.25, Math.min(2.8, rating));
     },
 
+    // ---- computeLambdas NOUVELLE VERSION ----
     computeLambdas(homeTeam, awayTeam, leagueConfig, terrain, h2hData) {
         const league = leagueConfig;
-        const xGHome = this.estimateMissingStat(homeTeam, 'xG', league, true);
-        const xGAway = this.estimateMissingStat(awayTeam, 'xG', league, false);
-        const xGAwayDef = this.estimateMissingStat(awayTeam, 'xGA', league, false);
-        const xGHomeDef = this.estimateMissingStat(homeTeam, 'xGA', league, true);
 
-        let homeAdvMultiplier = 1.0;
-        let awayDisadvantage = 1.0;
-        if (terrain === 'home') { homeAdvMultiplier = 1.12; awayDisadvantage = 0.94; }
-        else if (terrain === 'away') { homeAdvMultiplier = 0.94; awayDisadvantage = 1.12; }
-        else { homeAdvMultiplier = 1.0; awayDisadvantage = 1.0; }
+        const offHome = this.offensiveRating(homeTeam, league, terrain === 'home' ? 'home' : 'away');
+        const offAway = this.offensiveRating(awayTeam, league, terrain === 'away' ? 'away' : 'home');
+        const defHome = this.defensiveRating(homeTeam, league, terrain === 'home' ? 'home' : 'away');
+        const defAway = this.defensiveRating(awayTeam, league, terrain === 'away' ? 'away' : 'home');
 
-        const homeStrength = clampStat(homeTeam.homeStrength || 0, -1, 1) * 0.05;
-        const awayStrength = clampStat(awayTeam.awayStrength || 0, -1, 1) * 0.05;
-        if (terrain === 'home') { homeAdvMultiplier += homeStrength; awayDisadvantage -= awayStrength; }
-        else if (terrain === 'away') { homeAdvMultiplier -= awayStrength; awayDisadvantage += homeStrength; }
+        const offFactorHome = (offHome + (2 - defAway)) / 2;
+        const offFactorAway = (offAway + (2 - defHome)) / 2;
 
-        let lA = xGHome * homeAdvMultiplier;
-        let lB = xGAway * awayDisadvantage;
+        const formHome = this.formModel(homeTeam);
+        const formAway = this.formModel(awayTeam);
 
-        const defRatingA = this.defensiveRating(awayTeam, league, terrain === 'home' ? 'away' : 'home');
-        const defRatingH = this.defensiveRating(homeTeam, league, terrain === 'away' ? 'away' : 'home');
-        const defMultiplierA = 2 - clampStat(defRatingA, 0.5, 1.5);
-        const defMultiplierH = 2 - clampStat(defRatingH, 0.5, 1.5);
-        lA *= defMultiplierA;
-        lB *= defMultiplierH;
+        const eloHome = (homeTeam.elo || 1500) / 1500;
+        const eloAway = (awayTeam.elo || 1500) / 1500;
 
-        const eloDiff = (homeTeam.elo || 1500) - (awayTeam.elo || 1500);
-        let eloFactor = 1.0;
-        if (eloDiff > 100) { eloFactor = Math.min(1.15, Math.pow(10, eloDiff / 1200)); }
-        else if (eloDiff < -100) { eloFactor = 1.0 / Math.min(1.15, Math.pow(10, -eloDiff / 1200)); }
-        lA *= eloFactor;
-        lB *= (1.0 / eloFactor);
+        const bigChancesHome = this.estimateMissingStat(homeTeam, 'bigChancesCreated', league, true) / 1.5;
+        const bigChancesAway = this.estimateMissingStat(awayTeam, 'bigChancesCreated', league, false) / 1.5;
 
-        const fatigueHome = homeTeam.daysRest >= 7 ? 1.04 : (homeTeam.daysRest <= 3 ? 0.93 : 0.98);
-        const fatigueAway = awayTeam.daysRest >= 7 ? 1.04 : (awayTeam.daysRest <= 3 ? 0.93 : 0.98);
-        lA *= fatigueHome; lB *= fatigueAway;
+        let lA = (offFactorHome * 0.55) + (formHome * 0.15) + (eloHome * 0.15) + (bigChancesHome * 0.15);
+        let lB = (offFactorAway * 0.55) + (formAway * 0.15) + (eloAway * 0.15) + (bigChancesAway * 0.15);
 
-        const injHome = 1 - Math.min(0.45, clampStat(homeTeam.injuriesImpact || 0, 0, 1) * 0.18);
-        const injAway = 1 - Math.min(0.45, clampStat(awayTeam.injuriesImpact || 0, 0, 1) * 0.18);
-        lA *= injHome; lB *= injAway;
-
-        if (awayTeam.travelDistance > 400) lB *= 0.94;
-
-        if (h2hData && h2hData.matches > 0) {
-            const matchFactor = Math.min(1, h2hData.matches / 8);
-            const h2hStrength = 0.15 * matchFactor;
-            const h2hHomeWinRate = h2hData.homeWins / h2hData.matches;
-            const h2hAwayWinRate = h2hData.awayWins / h2hData.matches;
-            lA *= 1 + (h2hHomeWinRate - 0.35) * h2hStrength;
-            lB *= 1 + (h2hAwayWinRate - 0.30) * h2hStrength;
-            if (h2hData.matches >= 3) {
-                const avgGD = h2hData.totalGoalDifference / h2hData.matches;
-                lA *= 1 + clampStat(avgGD * 0.04, -0.08, 0.08);
-                lB *= 1 - clampStat(avgGD * 0.04, -0.08, 0.08);
-            }
+        if (terrain === 'home') {
+            lA *= 1.08;
+            lB *= 0.94;
+        } else if (terrain === 'away') {
+            lA *= 0.94;
+            lB *= 1.08;
         }
 
-        const MAX_LAMBDA = 3.2, MIN_LAMBDA = 0.2;
-        lA = clampStat(lA, MIN_LAMBDA, MAX_LAMBDA);
-        lB = clampStat(lB, MIN_LAMBDA, MAX_LAMBDA);
+        const MAX_HOME = 3.5;
+        const MAX_AWAY = 2.5;
+        lA = Math.min(lA, MAX_HOME);
+        lB = Math.min(lB, MAX_AWAY);
+        lA = Math.max(0.2, lA);
+        lB = Math.max(0.2, lB);
 
         return { lA: Number(lA.toFixed(3)), lB: Number(lB.toFixed(3)) };
     },
@@ -1270,10 +1304,8 @@ const Engine = {
         const league = leagueConfig || LeagueConfig.default;
 
         let { lA, lB } = this.computeLambdas(homeTeam, awayTeam, league, terrain, h2hData);
-        lA = clampStat(lA, 0.20, 3.20);
-        lB = clampStat(lB, 0.20, 3.20);
-        if (lA > 2.8) lA = 2.8 + (lA - 2.8) * 0.15;
-        if (lB > 2.8) lB = 2.8 + (lB - 2.8) * 0.15;
+        lA = clampStat(lA, 0.20, 3.50);
+        lB = clampStat(lB, 0.20, 2.50);
 
         const poisson = this.fullPoissonMatrix(lA, lB, this.maxGoals);
         const rho = league.rho || -0.08;
@@ -1586,7 +1618,7 @@ const Engine = {
 };
 
 // ======================================================================
-// 6. APPLICATION (avec gestion des ligues)
+// 6. APPLICATION
 // ======================================================================
 function createEmptyTeam(name) {
     return {
@@ -1681,6 +1713,7 @@ const App = {
         this.updateManualProgress();
         await this.loadTrackingData();
         this.renderTracking();
+        this.updateTrackingStatus();
         await this.populateLeagueSelects();
 
         document.addEventListener('input', (e) => {
@@ -1701,11 +1734,38 @@ const App = {
         this.navigateTo('pg-analyse');
     },
 
-    // ----- Ligues -----
-    async loadCustomLeagues() {
-        await LeagueConfig.loadCustomLeagues();
+    // ---- Forcer l'actualisation du suivi (optionnel) ----
+    async forceRefreshTracking() {
+        const status = document.getElementById('trackingStatus');
+        status.textContent = '🔄 Rechargement en cours...';
+        status.style.color = 'var(--yellow)';
+        await this.loadTrackingData();
+        this.renderTracking();
+        this.updateTrackingStatus();
+        showToast(`✅ Suivi actualisé : ${this.trackingData.length} paris`);
+        console.log(`📊 ${this.trackingData.length} paris dans le suivi après rechargement`);
+        if (this.trackingData.length === 0) {
+            status.innerHTML = '⚠️ Aucun pari trouvé. Vérifie que le fichier JSON contient bien un tableau "tracking".';
+            status.style.color = 'var(--red)';
+        } else {
+            status.innerHTML = `✅ ${this.trackingData.length} paris chargés avec succès.`;
+            status.style.color = 'var(--green)';
+        }
     },
 
+    updateTrackingStatus() {
+        const status = document.getElementById('trackingStatus');
+        if (this.trackingData.length === 0) {
+            status.innerHTML = 'ℹ️ Aucun pari enregistré. Importez un fichier JSON ou enregistrez un pari depuis l\'analyse.';
+            status.style.color = 'var(--sub)';
+        } else {
+            status.innerHTML = `✅ ${this.trackingData.length} paris chargés.`;
+            status.style.color = 'var(--green)';
+        }
+    },
+
+    // ----- Ligues -----
+    async loadCustomLeagues() { await LeagueConfig.loadCustomLeagues(); },
     async populateLeagueSelects() {
         const allLeagues = await LeagueConfig.getAllLeagues();
         const leagueNames = Object.keys(allLeagues).sort();
@@ -1724,7 +1784,6 @@ const App = {
             });
         });
     },
-
     async renderLeagueManagement() {
         const container = document.getElementById('leagueListContainer');
         if (!container) return;
@@ -1752,7 +1811,6 @@ const App = {
         html += `<div style="margin-top:10px;"><button class="btn btn-primary btn-small" onclick="App.showLeagueEditor()">➕ Ajouter une ligue</button></div>`;
         container.innerHTML = html;
     },
-
     showLeagueEditor(leagueName = null) {
         const editor = document.getElementById('leagueEditor');
         const title = document.getElementById('leagueEditorTitle');
@@ -1808,12 +1866,10 @@ const App = {
         }
         editor.scrollIntoView({ behavior: 'smooth', block: 'center' });
     },
-
     cancelLeagueEdit() {
         document.getElementById('leagueEditor').style.display = 'none';
         document.getElementById('leagueEditStatus').textContent = '';
     },
-
     async saveLeague() {
         const name = document.getElementById('leagueEditName').value.trim();
         if (!name) { document.getElementById('leagueEditStatus').textContent = '❌ Le nom est obligatoire.'; return; }
@@ -1846,7 +1902,6 @@ const App = {
         showToast(`✅ Ligue "${name}" sauvegardée`);
         this.refreshLeagueSelects();
     },
-
     async deleteLeague(name) {
         if (!confirm(`Supprimer définitivement la ligue "${name}" ?`)) return;
         if (LeagueConfig.predefined[name]) { showToast('❌ Impossible de supprimer une ligue prédéfinie.'); return; }
@@ -1857,7 +1912,6 @@ const App = {
         showToast(`🗑️ Ligue "${name}" supprimée`);
         this.refreshLeagueSelects();
     },
-
     async editLeague(name) {
         const all = await LeagueConfig.getAllLeagues();
         if (!all[name]) return;
@@ -1866,10 +1920,7 @@ const App = {
         if (!isCustom) { showToast('🔒 Cette ligue est prédéfinie (lecture seule).'); return; }
         this.showLeagueEditor(name);
     },
-
-    async refreshLeagueSelects() {
-        await this.populateLeagueSelects();
-    },
+    async refreshLeagueSelects() { await this.populateLeagueSelects(); },
 
     // ----- Navigation -----
     navigateTo(pageId) {
@@ -1885,7 +1936,12 @@ const App = {
         if (pageId === 'pg-value') this.updateValueTab();
         if (pageId === 'pg-analyse') { this.refreshDiagnostic(); this.loadExistingH2H(); }
         if (pageId === 'pg-manual') this.updateManualProgress();
-        if (pageId === 'pg-tracking') { this.loadTrackingData().then(() => this.renderTracking()); }
+        if (pageId === 'pg-tracking') { 
+            this.loadTrackingData().then(() => {
+                this.renderTracking();
+                this.updateTrackingStatus();
+            });
+        }
         if (pageId === 'pg-leagues') this.renderLeagueManagement();
     },
 
@@ -2056,7 +2112,6 @@ const App = {
 
         const key = clean(awayName);
         if (!homeTeam.h2hByOpponent) homeTeam.h2hByOpponent = {};
-        // Initialiser ou réinitialiser pour éviter l'écrasement
         if (!homeTeam.h2hByOpponent[key]) {
             homeTeam.h2hByOpponent[key] = {
                 matches: 0, asHome: { matches: 0, wins: 0, draws: 0, losses: 0, goalsScored: 0, goalsConceded: 0, totalGoalDiff: 0 },
@@ -2455,6 +2510,7 @@ const App = {
         await DB.saveTracking(entry);
         await this.loadTrackingData();
         this.renderTracking();
+        this.updateTrackingStatus();
         document.getElementById('betSaveStatus').innerHTML = '<span style="color:var(--green);">✅ Pari enregistré pour le suivi !</span>';
         showToast('💰 Pari enregistré dans le suivi');
     },
@@ -2462,6 +2518,7 @@ const App = {
     async loadTrackingData() {
         this.trackingData = await DB.getAllTracking();
         this.trackingData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        console.log(`📊 ${this.trackingData.length} paris chargés dans le state.`);
     },
 
     async updateClosingOdds(id, value) {
@@ -2531,6 +2588,7 @@ const App = {
         await DB.updateTracking(id, { result, profit });
         await this.loadTrackingData();
         this.renderTracking();
+        this.updateTrackingStatus();
         showToast(`✅ Pari mis à jour : ${result === 'win' ? 'Gagné +' + profit.toFixed(2) + '€' : result === 'loss' ? 'Perdu ' + profit.toFixed(2) + '€' : 'Remboursé'}`);
     },
 
@@ -2539,6 +2597,7 @@ const App = {
             await DB.deleteTracking(id);
             await this.loadTrackingData();
             this.renderTracking();
+            this.updateTrackingStatus();
             showToast('🗑️ Pari supprimé');
         }
     },
@@ -2556,6 +2615,7 @@ const App = {
             await DB.clearAllTracking();
             await this.loadTrackingData();
             this.renderTracking();
+            this.updateTrackingStatus();
             showToast('🗑️ Tous les paris supprimés');
         }
     },
@@ -2848,37 +2908,28 @@ const App = {
         }
     },
 
-    async exportAllData() {
-        const teams = await DB.getAllTeams();
-        const history = await DB.getHistory();
-        const tracking = await DB.getAllTracking();
-        const leagues = await DB.getAllLeagues();
-
-        const exportData = {
-            version: 'EdgeProV14',
-            exportDate: new Date().toISOString(),
-            teams: teams.map(t => { const copy = { ...t }; delete copy.derived; return copy; }),
-            history,
-            tracking,
-            leagues
-        };
-
-        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `edgepro_backup_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('📤 Export terminé');
-    },
-
+    // ---- handleFileImport (corrigé pour charger toutes les données) ----
     async handleFileImport(event) {
         const file = event.target.files[0];
         if (!file) return;
         try {
             const text = await file.text();
             const data = JSON.parse(text);
+            console.log('📥 Import du fichier JSON', data);
+
+            // 1. Importer les ligues
+            if (data.leagues && Array.isArray(data.leagues)) {
+                for (const league of data.leagues) {
+                    await DB.saveLeague(league);
+                }
+                await LeagueConfig.invalidateCache();
+                await this.loadCustomLeagues();
+                await this.populateLeagueSelects();
+                this.renderLeagueManagement();
+                showToast(`✅ ${data.leagues.length} ligues importées`);
+            }
+
+            // 2. Importer les équipes
             if (data.teams && Array.isArray(data.teams)) {
                 for (const team of data.teams) {
                     const league = await LeagueConfig.getConfig(team.league);
@@ -2889,19 +2940,92 @@ const App = {
                 this.refreshUI();
                 showToast(`✅ ${data.teams.length} équipes importées`);
             }
-            if (data.leagues && Array.isArray(data.leagues)) {
-                for (const league of data.leagues) {
-                    await DB.saveLeague(league);
+
+            // 3. Importer l'historique
+            if (data.history && Array.isArray(data.history)) {
+                await DB.clearHistory();
+                for (const entry of data.history) {
+                    const { id, ...entryWithoutId } = entry;
+                    await DB.saveHistory(entryWithoutId);
                 }
-                await this.loadCustomLeagues();
-                await this.populateLeagueSelects();
-                this.renderLeagueManagement();
-                showToast(`✅ ${data.leagues.length} ligues importées`);
+                showToast(`✅ ${data.history.length} analyses historiques importées`);
             }
+
+            // 4. Importer le suivi des paris (avec rechargement)
+            if (data.tracking && Array.isArray(data.tracking)) {
+                console.log(`📥 Import de ${data.tracking.length} paris en cours...`);
+                await DB.clearAllTracking();
+                for (const bet of data.tracking) {
+                    const { id, ...betWithoutId } = bet;
+                    if (!betWithoutId.result) betWithoutId.result = 'pending';
+                    if (!betWithoutId.profit) betWithoutId.profit = 0;
+                    await DB.saveTracking(betWithoutId);
+                }
+                console.log(`✅ ${data.tracking.length} paris sauvegardés en base.`);
+
+                await this.loadTrackingData();
+                console.log(`📊 ${this.trackingData.length} paris chargés dans le state.`);
+
+                this.trackingFilter = 'all';
+                this.renderTracking();
+                this.updateTrackingStatus();
+
+                // Naviguer vers le suivi et forcer un second rendu
+                this.navigateTo('pg-tracking');
+                setTimeout(() => {
+                    this.renderTracking();
+                    this.updateTrackingStatus();
+                    console.log('🔄 Second rendu effectué.');
+                }, 500);
+
+                showToast(`✅ ${data.tracking.length} paris importés dans le suivi`);
+            }
+
+            // 5. Dernière analyse
+            if (data.lastAnalysis) {
+                await DB.saveLastAnalysis(data.lastAnalysis);
+                this.updateValueTab();
+            }
+
+            // Rafraîchir toute l'interface
+            this.refreshUI();
+            this.searchTeams();
+            this.searchDataTeam();
+            this.updateValueTab();
+
+            showToast('📥 Import complet terminé avec succès !');
         } catch (e) {
+            console.error('❌ Erreur lors de l\'import :', e);
             showToast(`❌ Erreur d'import: ${e.message}`);
         }
         event.target.value = '';
+    },
+
+    async exportAllData() {
+        const teams = await DB.getAllTeams();
+        const history = await DB.getHistory();
+        const tracking = await DB.getAllTracking();
+        const leagues = await DB.getAllLeagues();
+        const lastAnalysis = await DB.getLastAnalysis();
+
+        const exportData = {
+            version: '1.0',
+            exportedAt: new Date().toISOString(),
+            teams,
+            history,
+            tracking,
+            leagues,
+            lastAnalysis
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `RED_PRO_AI_export_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('📤 Export JSON terminé');
     },
 
     // ----- Gestion des données -----
@@ -3049,9 +3173,6 @@ const App = {
     }
 };
 
-// ======================================================================
-// 7. INITIALISATION
-// ======================================================================
 window.addEventListener('DOMContentLoaded', () => App.init());
 </script>
 </body>
