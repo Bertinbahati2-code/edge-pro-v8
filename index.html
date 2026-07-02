@@ -41,6 +41,8 @@
         .btn-warning { background: var(--orange); color: #000; }
         .btn-success { background: var(--green); color: #000; }
         .btn-reload { background: var(--purple); color: #fff; }
+        .btn-import { background: var(--blue); color: #fff; }
+        .btn-export { background: var(--cyan); color: #000; }
         .stat-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid rgba(31,41,55,.5); font-size: 0.7rem; }
         .stat-row:last-child { border-bottom: none; }
         .team-item { background: #0d1117; border-radius: 6px; padding: 8px; margin-bottom: 4px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -355,6 +357,11 @@
                 <button class="btn btn-small btn-danger" onclick="App.clearAllTracking()">🗑️ Tout effacer</button>
                 <button class="btn btn-small btn-reload" onclick="App.forceRefreshTracking()">🔄 Forcer l'actualisation</button>
             </div>
+            <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;border-top:1px solid var(--border);padding-top:10px;">
+                <button class="btn btn-small btn-import" onclick="document.getElementById('trackingFileInput').click()">📥 Importer le suivi (JSON)</button>
+                <button class="btn btn-small btn-export" onclick="App.exportTrackingJSON()">📤 Exporter le suivi (JSON)</button>
+                <input type="file" id="trackingFileInput" accept=".json" style="display:none;" onchange="App.importTrackingJSON(this)">
+            </div>
             <div id="trackingList" style="max-height:500px;overflow-y:auto;">
                 <div style="padding:8px;color:var(--sub);">Aucun pari enregistré.</div>
             </div>
@@ -530,7 +537,7 @@ const DB = {
 };
 
 // ======================================================================
-// 3. CONFIGURATION DES LIGUES (inchangé)
+// 3. CONFIGURATION DES LIGUES
 // ======================================================================
 const LeagueConfig = {
     predefined: {
@@ -574,7 +581,7 @@ const LeagueConfig = {
 };
 
 // ======================================================================
-// 4. MODULE H2H (inchangé)
+// 4. MODULE H2H
 // ======================================================================
 const H2HModule = {
     get(teamA, teamB) {
@@ -674,7 +681,7 @@ const H2HModule = {
 };
 
 // ======================================================================
-// 5. MOTEUR ANALYTIQUE (avec les modifications demandées)
+// 5. MOTEUR ANALYTIQUE (avec estimateMissingStat corrigée)
 // ======================================================================
 const Engine = {
     maxGoals: 8,
@@ -890,6 +897,7 @@ const Engine = {
         return result;
     },
 
+    // ---- estimateMissingStat CORRIGÉE ----
     estimateMissingStat(team, statKey, league, isHome = true) {
         const defaults = {
             xG: isHome ? league.xgHome : league.xgAway,
@@ -915,11 +923,20 @@ const Engine = {
         };
         const current = team[statKey];
         if (current !== undefined && current !== null && typeof current === 'number' && isFinite(current) && current > 0) {
-            if ((statKey === 'goalsScored' || statKey === 'goalsConceded') && team.matchesPlayed && team.matchesPlayed > 0) {
-                return current / team.matchesPlayed;
+            // Si c'est une stat qui peut être un total, on vérifie si la valeur est "grande" par rapport au nombre de matchs
+            // On considère que si current > default * 1.5 et matchesPlayed > 0, c'est probablement un total
+            const defaultVal = defaults[statKey] !== undefined ? defaults[statKey] : 1;
+            const matches = team.matchesPlayed || 1;
+            // Pour les stats qui sont typiquement des totaux (buts, occasions, clean sheets, corners, tirs)
+            const totalStats = ['goalsScored', 'goalsConceded', 'bigChancesCreated', 'bigChancesConceded', 'cleanSheets', 'cornersFor', 'cornersAgainst', 'shotsFor', 'shotsAgainst'];
+            if (totalStats.includes(statKey) && matches > 0 && current > defaultVal * 1.2) {
+                // On divise par matchesPlayed pour obtenir la moyenne par match
+                return current / matches;
             }
+            // Sinon on renvoie la valeur telle quelle (c'est déjà une moyenne)
             return current;
         }
+        // Valeur manquante : on utilise la valeur par défaut ajustée par la forme
         const baseDefault = defaults[statKey] !== undefined ? defaults[statKey] : 0;
         const form = team.formLast5 || [];
         const points = form.reduce((acc, r) => acc + (r === 'W' ? 3 : (r === 'D' ? 1 : 0)), 0);
@@ -1014,17 +1031,32 @@ const Engine = {
         const leagueXG = terrain === 'home' ? league.xgHome : league.xgAway;
         rating += (xgUse / Math.max(0.1, leagueXG)) * w.xG;
 
-        const goalsPerMatch = (team.matchesPlayed && team.matchesPlayed > 0) ? (team.goalsScored || 0) / team.matchesPlayed : league.goalsHome;
+        const goalsPerMatch = this.estimateMissingStat(team, 'goalsScored', league, true);
         rating += (goalsPerMatch / Math.max(0.1, league.goalsHome)) * w.goals;
 
-        rating += (this.estimateMissingStat(team, 'shotsFor', league) / Math.max(0.1, league.avgShots || 10)) * w.shots;
-        rating += (this.estimateMissingStat(team, 'shotsOnTargetFor', league) / Math.max(0.1, (league.avgShots || 10) * 0.38)) * w.onTarget;
-        rating += (this.estimateMissingStat(team, 'bigChancesCreated', league) / 1.5) * w.bigChances;
-        rating += (this.estimateMissingStat(team, 'possession', league) / 50) * w.possession;
-        rating += (this.estimateMissingStat(team, 'passAccuracy', league) / 80) * w.pass;
-        rating += (this.estimateMissingStat(team, 'cornersFor', league) / Math.max(0.1, league.avgCorners || 4)) * w.corners;
-        rating += (10 / Math.max(1, this.estimateMissingStat(team, 'ppda', league))) * w.ppda;
-        rating += (safeSignedNumber(team.shotConversion, 0.12) / 0.12) * w.shotConversion;
+        const shotsFor = this.estimateMissingStat(team, 'shotsFor', league, true);
+        rating += (shotsFor / Math.max(0.1, league.avgShots || 10)) * w.shots;
+
+        const shotsOnTarget = this.estimateMissingStat(team, 'shotsOnTargetFor', league, true);
+        rating += (shotsOnTarget / Math.max(0.1, (league.avgShots || 10) * 0.38)) * w.onTarget;
+
+        const bigChances = this.estimateMissingStat(team, 'bigChancesCreated', league, true);
+        rating += (bigChances / 1.5) * w.bigChances;
+
+        const possession = this.estimateMissingStat(team, 'possession', league, true);
+        rating += (possession / 50) * w.possession;
+
+        const passAcc = this.estimateMissingStat(team, 'passAccuracy', league, true);
+        rating += (passAcc / 80) * w.pass;
+
+        const corners = this.estimateMissingStat(team, 'cornersFor', league, true);
+        rating += (corners / Math.max(0.1, league.avgCorners || 4)) * w.corners;
+
+        const ppda = this.estimateMissingStat(team, 'ppda', league, true);
+        rating += (10 / Math.max(1, ppda)) * w.ppda;
+
+        const shotConv = safeSignedNumber(team.shotConversion, 0.12);
+        rating += (shotConv / 0.12) * w.shotConversion;
 
         const form = team.formLast5 || [];
         const points = form.reduce((acc, r) => acc + (r === 'W' ? 3 : (r === 'D' ? 1 : 0)), 0);
@@ -1063,20 +1095,39 @@ const Engine = {
         const leagueXGA = terrain === 'home' ? league.xgAway : league.xgHome;
         rating += (1 - xgaUse / Math.max(0.1, leagueXGA * 1.8)) * w.xGA;
 
-        const goalsConcededPerMatch = (team.matchesPlayed && team.matchesPlayed > 0) ? (team.goalsConceded || 0) / team.matchesPlayed : league.goalsAway;
-        rating += (1 - goalsConcededPerMatch / Math.max(0.1, league.goalsAway * 2)) * w.goalsConc;
-        rating += (1 - this.estimateMissingStat(team, 'shotsAgainst', league) / 18) * w.shotsConc;
-        rating += (1 - this.estimateMissingStat(team, 'shotsOnTargetAgainst', league) / 7) * w.onTargetConc;
-        rating += (1 - this.estimateMissingStat(team, 'bigChancesConceded', league) / 2.5) * w.bigChancesConc;
-        rating += (safeSignedNumber(team.cleanSheets, 0) / Math.max(1, team.matchesPlayed || 1)) * 2.5 * w.cleanSheets;
-        rating += (10 / Math.max(1, this.estimateMissingStat(team, 'ppda', league))) * w.ppda;
-        rating += (this.estimateMissingStat(team, 'possession', league) / 50) * w.possession;
-        rating += (this.estimateMissingStat(team, 'passAccuracy', league) / 80) * w.pass;
-        rating += (1 - this.estimateMissingStat(team, 'cornersAgainst', league) / 7) * w.cornersAgainst;
+        const goalsConc = this.estimateMissingStat(team, 'goalsConceded', league, false);
+        rating += (1 - goalsConc / Math.max(0.1, league.goalsAway * 2)) * w.goalsConc;
+
+        const shotsAgainst = this.estimateMissingStat(team, 'shotsAgainst', league, false);
+        rating += (1 - shotsAgainst / 18) * w.shotsConc;
+
+        const shotsOnTargetAgainst = this.estimateMissingStat(team, 'shotsOnTargetAgainst', league, false);
+        rating += (1 - shotsOnTargetAgainst / 7) * w.onTargetConc;
+
+        const bigChancesConc = this.estimateMissingStat(team, 'bigChancesConceded', league, false);
+        rating += (1 - bigChancesConc / 2.5) * w.bigChancesConc;
+
+        const cleanSheets = this.estimateMissingStat(team, 'cleanSheets', league, false);
+        rating += (cleanSheets / Math.max(1, team.matchesPlayed || 1)) * 2.5 * w.cleanSheets;
+
+        const ppda = this.estimateMissingStat(team, 'ppda', league, false);
+        rating += (10 / Math.max(1, ppda)) * w.ppda;
+
+        const possession = this.estimateMissingStat(team, 'possession', league, false);
+        rating += (possession / 50) * w.possession;
+
+        const passAcc = this.estimateMissingStat(team, 'passAccuracy', league, false);
+        rating += (passAcc / 80) * w.pass;
+
+        const cornersAgainst = this.estimateMissingStat(team, 'cornersAgainst', league, false);
+        rating += (1 - cornersAgainst / 7) * w.cornersAgainst;
+
         if (terrain === 'home') rating += (1 - safeSignedNumber(team.xGA_home, league.xgAway) / Math.max(0.1, league.xgAway * 1.8)) * w.homeAwayXGA;
         else if (terrain === 'away') rating += (1 - safeSignedNumber(team.xGA_away, league.xgHome) / Math.max(0.1, league.xgHome * 1.8)) * w.homeAwayXGA;
+
         const bttsVal = safeSignedNumber(team.btts, league.btts);
         rating += (1 - bttsVal) * w.btts;
+
         const form = team.formLast5 || [];
         const pts = form.reduce((acc, r) => acc + (r === 'W' ? 3 : (r === 'D' ? 1 : 0)), 0);
         rating += (pts / Math.max(1, form.length * 3)) * w.form;
@@ -1734,7 +1785,54 @@ const App = {
         this.navigateTo('pg-analyse');
     },
 
-    // ---- Forcer l'actualisation du suivi (optionnel) ----
+    // ---- IMPORT / EXPORT SUIVI ----
+    async importTrackingJSON(inputElement) {
+        const file = inputElement.files[0];
+        if (!file) return;
+        try {
+            const text = await file.text();
+            const data = JSON.parse(text);
+            let trackingData = data;
+            if (data.tracking && Array.isArray(data.tracking)) {
+                trackingData = data.tracking;
+            } else if (!Array.isArray(data)) {
+                showToast('❌ Format JSON invalide : attendu un tableau ou un objet avec "tracking".');
+                return;
+            }
+            await DB.clearAllTracking();
+            for (const bet of trackingData) {
+                const { id, ...betWithoutId } = bet;
+                if (!betWithoutId.result) betWithoutId.result = 'pending';
+                if (!betWithoutId.profit) betWithoutId.profit = 0;
+                await DB.saveTracking(betWithoutId);
+            }
+            await this.loadTrackingData();
+            this.renderTracking();
+            this.updateTrackingStatus();
+            showToast(`✅ ${trackingData.length} paris importés dans le suivi`);
+        } catch (e) {
+            console.error(e);
+            showToast('❌ Erreur lors de l\'import du fichier de suivi');
+        }
+        inputElement.value = '';
+    },
+
+    async exportTrackingJSON() {
+        const tracking = await DB.getAllTracking();
+        const exportData = {
+            tracking: tracking,
+            exportedAt: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `suivi_paris_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast(`📤 ${tracking.length} paris exportés`);
+    },
+
     async forceRefreshTracking() {
         const status = document.getElementById('trackingStatus');
         status.textContent = '🔄 Rechargement en cours...';
@@ -2908,7 +3006,6 @@ const App = {
         }
     },
 
-    // ---- handleFileImport (corrigé pour charger toutes les données) ----
     async handleFileImport(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -2917,7 +3014,6 @@ const App = {
             const data = JSON.parse(text);
             console.log('📥 Import du fichier JSON', data);
 
-            // 1. Importer les ligues
             if (data.leagues && Array.isArray(data.leagues)) {
                 for (const league of data.leagues) {
                     await DB.saveLeague(league);
@@ -2929,7 +3025,6 @@ const App = {
                 showToast(`✅ ${data.leagues.length} ligues importées`);
             }
 
-            // 2. Importer les équipes
             if (data.teams && Array.isArray(data.teams)) {
                 for (const team of data.teams) {
                     const league = await LeagueConfig.getConfig(team.league);
@@ -2941,7 +3036,6 @@ const App = {
                 showToast(`✅ ${data.teams.length} équipes importées`);
             }
 
-            // 3. Importer l'historique
             if (data.history && Array.isArray(data.history)) {
                 await DB.clearHistory();
                 for (const entry of data.history) {
@@ -2951,7 +3045,6 @@ const App = {
                 showToast(`✅ ${data.history.length} analyses historiques importées`);
             }
 
-            // 4. Importer le suivi des paris (avec rechargement)
             if (data.tracking && Array.isArray(data.tracking)) {
                 console.log(`📥 Import de ${data.tracking.length} paris en cours...`);
                 await DB.clearAllTracking();
@@ -2962,32 +3055,23 @@ const App = {
                     await DB.saveTracking(betWithoutId);
                 }
                 console.log(`✅ ${data.tracking.length} paris sauvegardés en base.`);
-
                 await this.loadTrackingData();
-                console.log(`📊 ${this.trackingData.length} paris chargés dans le state.`);
-
-                this.trackingFilter = 'all';
                 this.renderTracking();
                 this.updateTrackingStatus();
-
-                // Naviguer vers le suivi et forcer un second rendu
                 this.navigateTo('pg-tracking');
                 setTimeout(() => {
                     this.renderTracking();
                     this.updateTrackingStatus();
-                    console.log('🔄 Second rendu effectué.');
-                }, 500);
-
+                    console.log('🔄 Second rendu du suivi effectué.');
+                }, 300);
                 showToast(`✅ ${data.tracking.length} paris importés dans le suivi`);
             }
 
-            // 5. Dernière analyse
             if (data.lastAnalysis) {
                 await DB.saveLastAnalysis(data.lastAnalysis);
                 this.updateValueTab();
             }
 
-            // Rafraîchir toute l'interface
             this.refreshUI();
             this.searchTeams();
             this.searchDataTeam();
